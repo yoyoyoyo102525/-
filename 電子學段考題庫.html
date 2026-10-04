@@ -1,0 +1,537 @@
+<title>電子學段考題庫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one exam sheet column on cool graph paper; answer-card grid on top, question below. Blue pen = correct, red pen = wrong (like the notes). */
+:root {
+  --paper: #e9eef3;
+  --grid: rgba(60, 96, 140, 0.07);
+  --sheet: #fbfcfd;
+  --ink: #1b2a42;
+  --muted: #5a6a7f;
+  --rule: #d2dbe5;
+  --blue: #1f4fd1;
+  --blue-soft: rgba(31, 79, 209, 0.09);
+  --red: #cf3027;
+  --red-soft: rgba(207, 48, 39, 0.08);
+  --chip: #dfe6ee;
+  --shadow: 0 1px 0 rgba(27, 42, 66, 0.06), 0 8px 24px -14px rgba(27, 42, 66, 0.25);
+  --f-display: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "DFKai-SB", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0;
+    --muted: #94a3b6; --rule: #2c3644; --blue: #86a6ff; --blue-soft: rgba(134, 166, 255, 0.12);
+    --red: #ff7d70; --red-soft: rgba(255, 125, 112, 0.1); --chip: #232c38;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 26px -16px rgba(0, 0, 0, 0.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0;
+  --muted: #94a3b6; --rule: #2c3644; --blue: #86a6ff; --blue-soft: rgba(134, 166, 255, 0.12);
+  --red: #ff7d70; --red-soft: rgba(255, 125, 112, 0.1); --chip: #232c38;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 26px -16px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.65;
+  padding-inline: 16px;
+  padding-block: 28px 64px;
+}
+.wrap { max-width: 720px; margin-inline: auto; display: grid; gap: 18px; }
+
+header { display: grid; gap: 4px; }
+h1 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 6vw, 2.5rem);
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
+}
+.sub { color: var(--muted); font-size: 0.92rem; margin: 0; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip {
+  font: 500 0.92rem/1 var(--f-body);
+  border: 1px solid transparent;
+  background: var(--chip);
+  color: var(--ink);
+  padding: 9px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex; gap: 6px; align-items: center;
+}
+.chip .n { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--sheet); }
+.chip[aria-pressed="true"] .n { color: inherit; opacity: 0.75; }
+.chip.wrongbook[aria-pressed="true"] { background: var(--red); color: #fff; }
+.chip:disabled { opacity: 0.45; cursor: not-allowed; }
+.spacer { flex: 1 1 auto; }
+.toggle { display: inline-flex; gap: 8px; align-items: center; font-size: 0.92rem; color: var(--muted); cursor: pointer; user-select: none; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--blue); margin: 0; }
+
+/* answer card */
+.card-strip {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: grid; gap: 10px;
+}
+.strip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.strip-head .lbl { font-size: 0.78rem; letter-spacing: 0.12em; color: var(--muted); }
+.score { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+.score b { color: var(--blue); }
+.score i { color: var(--red); font-style: normal; }
+.cells { display: flex; flex-wrap: wrap; gap: 5px; }
+.cell {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--rule);
+  background: transparent;
+  color: var(--muted);
+  font: 600 0.68rem/1 var(--f-mono);
+  cursor: pointer;
+  padding: 0;
+  display: grid; place-items: center;
+}
+.cell.ok { background: var(--blue); border-color: var(--blue); color: var(--sheet); }
+.cell.bad { background: var(--red); border-color: var(--red); color: #fff; }
+.cell.cur { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* question sheet */
+.sheet {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 22px clamp(16px, 4vw, 30px) 24px;
+  display: grid; gap: 18px;
+  min-width: 0;
+}
+.meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 500 0.8rem/1.4 var(--f-mono); color: var(--muted); }
+.meta .tag { color: var(--ink); background: var(--chip); padding: 2px 8px; border-radius: 4px; }
+.qtext { font-size: 1.12rem; font-weight: 500; margin: 0; overflow-wrap: anywhere; }
+.qtext .f, .ex .f { font-family: var(--f-mono); font-size: 0.95em; white-space: nowrap; }
+
+.opts { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.opt {
+  width: 100%;
+  text-align: left;
+  font: 400 1rem/1.55 var(--f-body);
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 2.3em 1fr auto;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+.opt:hover:not(:disabled) { border-color: var(--ink); }
+.opt:disabled { cursor: default; }
+.opt .letter { font: 600 0.92rem/1 var(--f-mono); color: var(--muted); }
+.opt .txt { min-width: 0; overflow-wrap: anywhere; }
+.opt .mark { font: 700 1.5rem/1 var(--f-display); width: 1.2em; text-align: center; }
+.opt.right { border-color: var(--blue); background: var(--blue-soft); }
+.opt.right .letter, .opt.right .mark { color: var(--blue); }
+.opt.wrong { border-color: var(--red); background: var(--red-soft); }
+.opt.wrong .txt { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 2px; }
+.opt.wrong .letter, .opt.wrong .mark { color: var(--red); }
+.opt.dim { opacity: 0.55; }
+
+.ex { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; padding-top: 16px; border-top: 1px dashed var(--rule); }
+.jie {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--red); color: #fff;
+  display: grid; place-items: center;
+  font: 700 1rem/1 var(--f-display);
+}
+.ex p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.verdict { font-family: var(--f-display); font-size: 1.25rem; font-weight: 700; display: block; margin-bottom: 2px; }
+.verdict.ok { color: var(--blue); }
+.verdict.bad { color: var(--red); }
+
+.nav { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.btn {
+  font: 500 0.98rem/1 var(--f-body);
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1.5px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--sheet); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.hint { font-size: 0.8rem; color: var(--muted); }
+kbd { font: 500 0.75rem/1 var(--f-mono); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 2px 5px; }
+
+/* results */
+.result-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+.big { font: 700 clamp(2.6rem, 10vw, 3.6rem)/1 var(--f-display); color: var(--blue); }
+.big small { font-size: 0.45em; color: var(--muted); }
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 3.2em 1fr 4.5em; gap: 10px; align-items: center; font-size: 0.9rem; }
+.bar { height: 10px; background: var(--chip); border-radius: 99px; overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--blue); border-radius: 99px; }
+.bar-row .v { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
+h2 { font: 700 1.2rem/1.3 var(--f-display); margin: 6px 0 0; }
+.wrong-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.wrong-list li { border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; min-width: 0; }
+.wrong-list .q { font-weight: 500; overflow-wrap: anywhere; }
+.wrong-list .a { font-size: 0.92rem; color: var(--muted); overflow-wrap: anywhere; }
+.wrong-list .a b { color: var(--blue); font-weight: 600; }
+.wrong-list .a s { color: var(--red); }
+.empty { color: var(--muted); }
+
+button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .opt, .chip, .cell { transition: border-color .15s, background-color .15s, opacity .15s; }
+  .sheet.enter { animation: rise .22s ease-out; }
+  @keyframes rise { from { transform: translateY(6px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+@media (max-width: 480px) {
+  .opt { grid-template-columns: 2em 1fr auto; padding: 11px 12px; }
+  .hint { display: none; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>電子學段考題庫</h1>
+    <p class="sub">Ch1 概論・Ch2 二極體及應用電路・Ch3 雙極性接面電晶體｜選了就對答案，錯的題目會進錯題本</p>
+  </header>
+
+  <div class="controls" id="controls" role="group" aria-label="選擇範圍"></div>
+
+  <section class="card-strip" aria-label="答案卡">
+    <div class="strip-head">
+      <span class="lbl">答案卡</span>
+      <span class="score" id="score"></span>
+    </div>
+    <div class="cells" id="cells"></div>
+  </section>
+
+  <main class="sheet" id="sheet" aria-live="polite"></main>
+</div>
+
+<script>
+const Q = [
+  // ===== Ch1 =====
+  {id:'1a', ch:1, sec:'1-1 發展史', q:'電子學發展的三個時期，依序為？', o:['真空管 → 半導體 → 積體電路','半導體 → 真空管 → 積體電路','真空管 → 積體電路 → 半導體','積體電路 → 半導體 → 真空管'], a:0, ex:'真空管（速度 ms）→ 半導體／電晶體（μs）→ 積體電路（ns）。'},
+  {id:'1b', ch:1, sec:'1-1 發展史', q:'1947 年巴丁等人在貝爾實驗室研製出什麼？', o:['真空三極管','點接觸型鍺電晶體','MOSFET','第一顆積體電路'], a:1, ex:'1947 巴丁：點接觸型鍺電晶體。真空三極管是 1906 德福雷斯特，MOSFET 專利是 1960，IC 專利是 1958。'},
+  {id:'1c', ch:1, sec:'1-1 發展史', q:'「愛迪生效應」指的是哪一種現象？', o:['光伏效應','散粒效應','熱發射現象','單向傳導'], a:2, ex:'1883 年愛迪生發現熱發射現象，又稱愛迪生效應。光伏效應是硒（1876），散粒效應是蕭特基（1936），單向傳導是布勞恩（1874）。'},
+  {id:'1d', ch:1, sec:'1-1 真空管', q:'關於真空管的敘述，何者錯誤？', o:['使用前需先加熱陰極','體積大、玻璃管易碎','適合大功率設備','音頻響應差'], a:3, ex:'真空管的音頻響應反而很好，所以少數音響設備還在用。'},
+  {id:'1e', ch:1, sec:'1-1 IC 分類', q:'一顆 IC 內含 5000 個零件，屬於哪一類？', o:['SSI','MSI','LSI','VLSI'], a:2, ex:'零件數：SSI < 100、MSI 100–1k、LSI 1k–10k、VLSI 10k–100k、ULSI > 100k。'},
+  {id:'1f', ch:1, sec:'1-1 IC 分類', q:'一顆 IC 內含 50 個邏輯閘，屬於哪一類？', o:['SSI','MSI','LSI','ULSI'], a:1, ex:'邏輯閘數：SSI < 12、MSI 12–100、LSI 100–1000、VLSI 1000–10000、ULSI > 10000。'},
+  {id:'1g', ch:1, sec:'1-1 4C', q:'電子學技術的 4C 不包含下列何者？', o:['元件 components','通訊 communication','消費性電子 consumer electronics','控制 control'], a:2, ex:'4C = 元件、通訊、計算、控制。「消費性電子」是 3C（電腦、通訊、消費性電子）裡的。'},
+  {id:'1h', ch:1, sec:'1-2 波形', q:'振幅會隨時間改變，但極性不隨時間改變的波形是？', o:['純直流','脈動直流','交流','純交流'], a:1, ex:'純直流：振幅、極性都不變。脈動直流：振幅變、極性不變。交流：兩者都變。'},
+  {id:'1i', ch:1, sec:'1-2 波形', q:'<span class="f">v(t) = 6 + 8√2 sin ωt</span> V 屬於哪一種波形？', o:['純直流','脈動直流','交流電','純交流'], a:2, ex:'最低點 6 − 8√2 ≈ 6 − 11.3 < 0，極性會改變，所以是交流電（有直流成份，不是純交流）。'},
+  {id:'1j', ch:1, sec:'1-2 正弦波', q:'<span class="f">v(t) = 20 sin(377t)</span> V 的頻率是多少？', o:['50 Hz','60 Hz','120 Hz','377 Hz'], a:1, ex:'f = ω / 2π = 377 / 6.28 ≈ 60 Hz。也要記 314 → 50 Hz。'},
+  {id:'1k', ch:1, sec:'1-2 正弦波', q:'正弦波頻率 100 Hz、最大值 10 V（相位 0°），t = 7.5 ms 時電壓為？', o:['0 V','10 V','−10 V','5 V'], a:2, ex:'T = 10 ms，7.5 ms = ¾T → 270°，sin 270° = −1，所以 v = −10 V。'},
+  {id:'1l', ch:1, sec:'1-2 正弦波', q:'<span class="f">v(t) = 5 sin(314t + 60°)</span> V，t = 5 ms 時電壓為？', o:['2.5 V','4.33 V','5 V','−4.33 V'], a:0, ex:'f = 50 Hz、T = 20 ms，5 ms = ¼T → 90°。sin(90° + 60°) = sin 150° = ½，v = 2.5 V。'},
+  {id:'1m', ch:1, sec:'1-2 有效值', q:'峰值 10 V 的三角波，有效值約為？', o:['5 V','5.77 V','7.07 V','10 V'], a:1, ex:'三角波 Vrms = Vm/√3 = 0.577Vm = 5.77 V。（正弦 0.707Vm、方波 Vm）'},
+  {id:'1n', ch:1, sec:'1-2 有效值', q:'正弦波、方波、三角波的<b>峰值</b>都是 100 V，接相同電阻，誰的功率最大？', k:1, o:['正弦波','方波','三角波','三個一樣'], a:1, ex:'相同峰值時有效值：方 (Vm) > 正 (0.707Vm) > 三 (0.577Vm)，功率看有效值。'},
+  {id:'1o', ch:1, sec:'1-2 有效值', q:'正弦波、方波、三角波的<b>平均值</b>都是 100 V，接相同電阻，誰的功率最大？', k:1, o:['正弦波','方波','三角波','三個一樣'], a:2, ex:'相同平均值時有效值 = F.F. × Vav：三角波 F.F. 1.154 最大，正弦 1.11，方波 1。所以三 > 正 > 方。'},
+  {id:'1p', ch:1, sec:'1-2 有效值', q:'正弦波、方波、三角波的<b>有效值</b>都是 100 V，接相同電阻，誰的功率最大？', k:1, o:['正弦波','方波','三角波','三個一樣'], a:3, ex:'功率 P = Vrms²/R，有效值相同功率就相同。'},
+  {id:'1q', ch:1, sec:'1-2 脈波', q:'脈波高準位 7 ms、低準位 3 ms，工作週期與頻率為？', o:['70%，100 Hz','30%，100 Hz','70%，143 Hz','43%，100 Hz'], a:0, ex:'T = 7 + 3 = 10 ms → f = 100 Hz；D = PW/T = 7/10 = 70%。'},
+  {id:'1r', ch:1, sec:'1-2 脈波', q:'脈波工作週期 30%、峰值 5 V、低準位 0 V，平均值為？', o:['3.5 V','1.5 V','1.67 V','5 V'], a:1, ex:'Vav = Vm × D = 5 × 0.3 = 1.5 V。'},
+  {id:'1s', ch:1, sec:'1-2 均方根', q:'週期波形：0–1 ms 為 4 V，1–4 ms 為 −2 V。有效值約為？', o:['1 V','2.65 V','3 V','7 V'], a:1, ex:'Vrms = √[(4²×1 + 2²×3)/4] = √(28/4) = √7 ≈ 2.65 V。（平均值是 (4 − 6)/4 = −0.5 V）'},
+  {id:'1t', ch:1, sec:'1-2 混波', q:'<span class="f">v(t) = 4 + 3√2 sin ωt</span> V 的有效值為？', o:['4 V','5 V','7 V','3√2 V'], a:1, ex:'Vrms = √(Vdc² + Vac(rms)²) = √(4² + 3²) = 5 V。（3√2 是峰值，有效值 3）'},
+  {id:'1u', ch:1, sec:'1-2 因數', q:'正弦波的波峰因數 C.F. 為？', o:['1','1.11','1.414','1.732'], a:2, ex:'C.F. = Vm/Vrms = √2 ≈ 1.414。1.11 是正弦波的波形因數 F.F.，1.732 是三角波的 C.F.。'},
+  {id:'1v', ch:1, sec:'1-2 因數', q:'波形因數 F.F. 的定義是？', o:['Vm / Vrms','Vrms / Vav','Vav / Vrms','Vm / Vav'], a:1, ex:'F.F. = 有效值 ÷ 平均值；C.F. = 最大值 ÷ 有效值。'},
+  {id:'1w', ch:1, sec:'1-2 平均值', q:'峰值 4 V 的全波整流波形（每半週都是正的半個正弦），平均值為？', o:['1.27 V','2 V','2.544 V','2.83 V'], a:2, ex:'全波 Vav = 2Vm/π = 0.636 × 4 ≈ 2.544 V；有效值 = 4/√2 ≈ 2.83 V。'},
+  {id:'1x', ch:1, sec:'1-2 平均值', q:'峰值 4 V 的半波整流波形（半個週期正弦、半個週期 0），有效值為？', o:['2 V','2.83 V','1.27 V','4 V'], a:0, ex:'半波 Vrms = Vm/2 = 2 V；平均值 Vm/π ≈ 1.27 V。'},
+
+  // ===== Ch2 =====
+  {id:'2a', ch:2, sec:'2-1 半導體', q:'室溫下矽的能隙約為？', o:['0.66 eV','1.12 eV','3.4 eV','9 eV'], a:1, ex:'矽 1.12 eV、鍺 0.66 eV；GaN 3.4 eV 是第三代寬能隙；絕緣體 ≥ 9 eV。'},
+  {id:'2b', ch:2, sec:'2-1 P/N 型', q:'要做成 P 型半導體，應摻入下列哪一種元素？', o:['磷 P','砷 As','硼 B','銻 Sb'], a:2, ex:'P 型摻三價（硼、鋁、鎵、銦），稱受體；N 型摻五價（磷、砷、銻、鉍），稱施體。'},
+  {id:'2c', ch:2, sec:'2-1 P/N 型', q:'N 型半導體的多數載子是？', o:['電洞','電子','正離子','電子電洞一樣多'], a:1, ex:'N 型摻五價元素，多一個電子 → 多數載子是電子，少數載子是電洞。'},
+  {id:'2d', ch:2, sec:'2-1 P/N 型', q:'P 型半導體的多數載子是電洞，它整體的帶電性為？', o:['帶正電','帶負電','電中性','視摻雜量而定'], a:2, ex:'摻雜的原子本身是電中性的，所以外質半導體仍然是電中性。'},
+  {id:'2e', ch:2, sec:'2-1 本質', q:'本質半導體中 nᵢ、n、p 的關係為？', o:['n > p','nᵢ = n = p','n = p > nᵢ','p > n'], a:1, ex:'本質半導體電子電洞成對產生，nᵢ = n = p。質量作用定律 nᵢ² = np 對外質也成立。'},
+  {id:'2f', ch:2, sec:'2-1 質量作用', q:'矽 nᵢ = 1.5×10¹⁰ /cm³，摻雜後電洞濃度 p = 5×10¹⁴ /cm³，電子濃度 n 為？', o:['4.5×10⁵','3×10⁴','2.25×10²⁰','5×10¹⁴'], a:0, ex:'n = nᵢ²/p = 2.25×10²⁰ / 5×10¹⁴ = 4.5×10⁵ /cm³。'},
+  {id:'2g', ch:2, sec:'2-1 溫度係數', q:'純半導體或低摻雜半導體，溫度升高時電阻下降，稱為？', o:['正溫度係數','負溫度係數','熱膨脹係數','線性係數'], a:1, ex:'T↑ R↓ 是負溫度係數（電子電洞對變多）。金屬與高摻雜半導體是 T↑ R↑ 的正溫度係數。'},
+  {id:'2h', ch:2, sec:'2-2 P-N 接面', q:'二極體加順向偏壓時，空乏區會？', o:['變寬','不變','變窄','佈滿整個二極體'], a:2, ex:'順偏（P 接 +、N 接 −）空乏區變窄、擴散電流變大；逆偏則變寬。'},
+  {id:'2i', ch:2, sec:'2-2 P-N 接面', q:'空乏區內電場的方向是？', o:['由 P 指向 N','由 N 指向 P','沒有電場','隨偏壓方向改變'], a:1, ex:'N 側帶正電、P 側帶負電，電場由 N 指向 P，造成少數載子的漂移電流（N → P）。'},
+  {id:'2j', ch:2, sec:'2-2 P-N 接面', q:'擴散電流是因為什麼而產生？', o:['載子濃度不均','空乏區電場','外加磁場','溫度下降'], a:0, ex:'擴散電流：多數載子因濃度差移動（P → N）。漂移電流：少數載子受電場推動（N → P）。'},
+  {id:'2k', ch:2, sec:'2-2 P-N 接面', q:'P 型雜質濃度比 N 型高時，空乏區在哪一側比較寬？', o:['N 型','P 型','一樣寬','無法比較'], a:0, ex:'空乏區偏向摻雜濃度較低的一側。'},
+  {id:'2l', ch:2, sec:'2-2 特性', q:'矽二極體的切入電壓約為？', o:['0.2–0.3 V','0.6–0.7 V','1.7–3.3 V','5–6 V'], a:1, ex:'矽 0.6–0.7 V、鍺 0.2–0.3 V；1.7–3.3 V 是 LED。'},
+  {id:'2m', ch:2, sec:'2-2 溫度', q:'矽二極體 25 °C 時 I_S = 2 nA，升到 65 °C 時 I_S 約為？', o:['8 nA','16 nA','32 nA','64 nA'], a:2, ex:'每升 10 °C 變 2 倍：2n × 2⁴ = 32 nA。'},
+  {id:'2n', ch:2, sec:'2-2 溫度', q:'矽二極體 25 °C 時 Vt = 0.7 V，升到 85 °C 時 Vt 約為？', o:['0.85 V','0.65 V','0.4 V','0.55 V'], a:3, ex:'每升 1 °C 降 2.5 mV：0.7 − 2.5m × 60 = 0.7 − 0.15 = 0.55 V。'},
+  {id:'2o', ch:2, sec:'2-2 電阻', q:'二極體 Vt = 0.7 V，量得 V_D = 1 V、I_D = 5 mA，順向導通電阻 R_F 為？', o:['60 Ω','200 Ω','5 Ω','140 Ω'], a:0, ex:'R_F = (V_DQ − Vt)/I_DQ = 0.3/5m = 60 Ω。（R_D = 1/5m = 200 Ω，r_d = ηV_T/I = 25m/5m = 5 Ω）'},
+  {id:'2p', ch:2, sec:'2-2 電容', q:'二極體逆向偏壓增加時，空乏（過渡）電容會？', o:['增加','減少','不變','先增後減'], a:1, ex:'C_T = εA/W，逆偏 ↑ → 空乏區寬度 W ↑ → C_T ↓。'},
+  {id:'2q', ch:2, sec:'2-2 電容', q:'擴散電容與下列何者成正比？', o:['空乏區寬度','逆向偏壓','順向電流','截面積的倒數'], a:2, ex:'C_D = τ I_F / (ηV_T)，與順向（擴散）電流成正比，也與平均壽命 τ 成正比。逆偏時沒有擴散電容。'},
+  {id:'2r', ch:2, sec:'2-2 等效電路', q:'E = 12 V 串 R₁ = 5 kΩ，R₂ = 10 kΩ 並聯一顆順偏矽二極體（Vt = 0.7 V）。V_R1 為？', o:['4 V','8 V','11.3 V','0.7 V'], a:2, ex:'先拿掉二極體：V_th = 12 × 10/15 = 8 V ≥ 0.7 → 導通。V_R2 = 0.7 V、V_R1 = 12 − 0.7 = 11.3 V。'},
+  {id:'2s', ch:2, sec:'2-2 等效電路', q:'承上題，若把二極體反接，V_R2 為？', o:['8 V','0.7 V','4 V','12 V'], a:0, ex:'反接 → 逆偏開路，直接分壓：V_R2 = 12 × 10/15 = 8 V、V_R1 = 4 V。'},
+  {id:'2t', ch:2, sec:'2-2 等效電路', q:'理想二極體 D₁、D₂ 陽極分別接 5 V、3 V，陰極接在一起經 R 接地。Vo 為？', o:['3 V','5 V','8 V','0 V'], a:1, ex:'電壓最高的那顆導通（D₁），Vo = 5 V，D₂ 被反偏截止。'},
+  {id:'2u', ch:2, sec:'2-3 稽納', q:'E = 12 V、R₁ = 5 kΩ、R₂ = 10 kΩ，稽納 V_Z = 5 V 並聯在 R₂ 上。I_Z 為？', o:['0.5 mA','0.9 mA','1.4 mA','1.9 mA'], a:1, ex:'開路電壓 8 V ≥ 5 V → 崩潰，V_R2 = 5 V。I_R1 = 7/5k = 1.4 mA、I_R2 = 5/10k = 0.5 mA → I_Z = 0.9 mA。'},
+  {id:'2v', ch:2, sec:'2-3 稽納', q:'關於「稽納崩潰」，何者正確？', o:['發生在 6 V 以上','屬於正溫度係數','崩潰後不可回復','屬於負溫度係數，且可逆'], a:3, ex:'稽納崩潰：< 6 V、高濃度、電場效應、負溫度係數、可逆。累增崩潰：> 6 V、熱擾動、正溫度係數、不可逆。'},
+  {id:'2w', ch:2, sec:'2-3 稽納', q:'20 V 經 250 Ω 接稽納（V_Z = 5 V、P_Z = 200 mW）與 R_L 並聯。要維持 5 V，R_L 範圍約為？', o:['83–250 Ω','25–83 Ω','125–250 Ω','100–300 Ω'], a:0, ex:'I = 15/250 = 60 mA；I_ZM = 200m/5 = 40 mA。I_L 最大 60 mA → R_L 最小 83 Ω；I_L 最小 20 mA → R_L 最大 250 Ω。'},
+  {id:'2x', ch:2, sec:'2-4 LED', q:'發光二極體工作在？', o:['逆偏崩潰區','順向偏壓','零偏壓','截止區'], a:1, ex:'LED 順偏工作，電流越大越亮。稽納才是逆偏工作。'},
+  {id:'2y', ch:2, sec:'2-4 LED', q:'適合做 LED 的材料屬於？', o:['絕緣體','導體','間接能隙材料（如矽）','直接能隙材料（如砷化鎵）'], a:3, ex:'直接能隙（GaAs、GaN）發光效率高；矽、鍺是間接能隙，發光效率低。'},
+  {id:'2z', ch:2, sec:'2-4 LED', q:'12 V 電源串 4 顆 LED（每顆 V_F = 1.7 V），要 10 mA，限流電阻為？', o:['1030 Ω','520 Ω','680 Ω','170 Ω'], a:1, ex:'R = (12 − 4 × 1.7)/10m = 5.2/10m = 520 Ω。'},
+  {id:'2A', ch:2, sec:'2-5 變壓器', q:'變壓器 N₁ : N₂ = 5 : 2，訊號源內阻 R_S = 400 Ω，要最大功率轉移，R_L 應為？', o:['160 Ω','1000 Ω','64 Ω','2500 Ω'], a:2, ex:'R_L = R_S × (N₂/N₁)² = 400 × 4/25 = 64 Ω。'},
+  {id:'2B', ch:2, sec:'2-5 變壓器', q:'變壓器 11 : 1，初級 110 V，次級接 20 Ω。初級電流 I₁ 約為？', o:['0.045 A','0.5 A','5.5 A','0.011 A'], a:0, ex:'V₂ = 10 V、I₂ = 0.5 A；I₁ = I₂ × N₂/N₁ = 0.5/11 ≈ 0.045 A。'},
+  {id:'2C', ch:2, sec:'2-5 整流', q:'中心抽頭式全波整流，每顆二極體的 PIV 為？', o:['Vm','2Vm','Vm/2','√2 Vm'], a:1, ex:'半波 Vm、中心抽頭 2Vm、橋式 Vm。'},
+  {id:'2D', ch:2, sec:'2-5 整流', q:'橋式整流電路輸入 60 Hz，輸出頻率為？', o:['30 Hz','60 Hz','120 Hz','240 Hz'], a:2, ex:'全波（中心抽頭、橋式）f_o = 2f_i；半波 f_o = f_i。'},
+  {id:'2E', ch:2, sec:'2-5 整流', q:'輸入峰值 10 V，半波整流輸出的平均值為？', o:['6.36 V','7.07 V','5 V','3.18 V'], a:3, ex:'半波 Vav = Vm/π = 0.318 × 10 = 3.18 V，有效值 Vm/2 = 5 V。'},
+  {id:'2F', ch:2, sec:'2-5 整流', q:'中心抽頭全波整流輸出有效值 100 V，二極體 PIV 為？', o:['100 V','141.4 V','200 V','282.8 V'], a:3, ex:'Vm = 100 × √2 = 141.4 V，PIV = 2Vm = 282.8 V。'},
+  {id:'2G', ch:2, sec:'2-5 電表', q:'電表用半波整流讀平均值、刻度以正弦有效值顯示。輸入直流 10 V，會顯示？', o:['10 V','11.1 V','22.2 V','31.4 V'], a:2, ex:'倍率 = 0.707/0.318 ≈ 2.22 → 22.2 V。若改全波整流，倍率 0.707/0.636 ≈ 1.11 → 11.1 V。'},
+  {id:'2H', ch:2, sec:'2-5 漣波', q:'全波整流（未濾波）輸出的漣波百分比約為？', o:['121%','48%','0%','100%'], a:1, ex:'全波 r ≈ 0.48（48%）；半波 r ≈ 1.21（121%）。'},
+  {id:'2I', ch:2, sec:'2-5 漣波', q:'濾波輸出 Vo(m) = 12 V、Vr(p-p) = 4 V，Vo(dc) 為？', o:['12 V','8 V','11 V','10 V'], a:3, ex:'Vdc = Vm − Vr(p-p)/2 = 12 − 2 = 10 V。'},
+  {id:'2J', ch:2, sec:'2-5 漣波', q:'全波濾波，市電 60 Hz，Vdc = 12 V、C = 200 μF、R_L = 10 kΩ。漣波峰對峰值約為？', o:['10 mV','24 mV','25 mV','50 mV'], a:3, ex:'Idc = 1.2 mA，f_o = 120 Hz：Vr(p-p) = Idc/(C f_o) = 1.2m/(200μ × 120) = 50 mV。'},
+  {id:'2K', ch:2, sec:'2-5 漣波', q:'<span class="f">v(t) = 10 + √2 sin 314t</span> V 的漣波百分比為？', o:['1%','10%','14.1%','100%'], a:1, ex:'Vr(rms) = √2/√2 = 1 V，r% = 1/10 = 10%。'},
+  {id:'2L', ch:2, sec:'2-5 濾波', q:'下列哪一種濾波器適合重負載（R_L 小、電流大）？', o:['RC 濾波','純電容濾波','純電感濾波','π 型 CRC'], a:2, ex:'電感先接的（純電感、LC、T 型）適合重負載，且只能接全波整流；RC 濾波適合輕負載。'},
+  {id:'2M', ch:2, sec:'2-5 濾波', q:'半波整流加電容濾波後，二極體 PIV 為？', o:['0.5Vm','Vm','2Vm','3Vm'], a:2, ex:'電容維持 Vm，負半週時二極體兩端承受 2Vm。橋式濾波則仍是 Vm。'},
+  {id:'2N', ch:2, sec:'2-6 穩壓', q:'E = 30 V、內阻 R_S = 10 Ω、負載 R_L = 40 Ω，電壓調整率為？', o:['20%','25%','33%','80%'], a:1, ex:'V_NL = 30 V、V_FL = 30 × 40/50 = 24 V；VR% = (30 − 24)/24 = 25%。越小越好，理想為 0。'},
+  {id:'2O', ch:2, sec:'2-6 穩壓', q:'直流電源的流程依序為？', o:['變壓、濾波、整流、穩壓','變壓、整流、濾波、穩壓','穩壓、整流、濾波、變壓','整流、變壓、濾波、穩壓'], a:1, ex:'變壓器降壓 → 整流成脈動直流 → 濾波讓漣波變小 → 穩壓成純直流。'},
+
+  // ===== Ch3 =====
+  {id:'3a', ch:3, sec:'3-1 構造', q:'BJT 三層的摻雜濃度大小為？', o:['C > B > E','E > B > C','B > E > C','E > C > B'], a:1, ex:'摻雜 E > B > C；寬度 C > E > B（B 最薄，約 1/150）。'},
+  {id:'3b', ch:3, sec:'3-1 構造', q:'BJT 哪一極的寬度（體積）最大？', o:['射極 E','基極 B','集極 C','三極一樣'], a:2, ex:'C 最寬，要收集載子，也和外殼相接幫忙散熱。'},
+  {id:'3c', ch:3, sec:'3-1 構造', q:'BJT 又稱「雙載子元件」，原因是？', o:['有兩個 P-N 接面','有三支接腳','電流同時包含電子流與電洞流','可以放大也可以當開關'], a:2, ex:'C、E 之間的電流同時有電子流與電洞流。'},
+  {id:'3d', ch:3, sec:'3-1 工作區', q:'要讓電晶體工作在放大（順向主動區），偏壓應為？', o:['B-E 順偏、B-C 順偏','B-E 順偏、B-C 逆偏','B-E 逆偏、B-C 逆偏','B-E 逆偏、B-C 順偏'], a:1, ex:'射順集逆 → 放大。都順 → 飽和（ON）；都逆 → 截止（OFF）；B-E 逆、B-C 順 → 逆向主動。'},
+  {id:'3e', ch:3, sec:'3-1 工作區', q:'NPN 矽電晶體 V_C = 5 V、V_B = 3 V、V_E = 3 V，工作在？', o:['順向主動區','飽和區','截止區','逆向主動區'], a:2, ex:'V_BE = 0 < 0.7 → B-E 逆偏；V_BC = −2 → B-C 逆偏。兩個都逆 → 截止。'},
+  {id:'3f', ch:3, sec:'3-1 工作區', q:'PNP 矽電晶體 V_C = 3 V、V_B = 6 V、V_E = 9 V，工作在？', o:['順向主動區','飽和區','截止區','逆向主動區'], a:0, ex:'PNP 看 V_EB = 3 V → 順偏；V_CB = −3 V → B-C 逆偏。射順集逆 → 主動區。'},
+  {id:'3g', ch:3, sec:'3-1 工作區', q:'NPN 矽電晶體 V_C = 3 V、V_B = 7 V、V_E = 2 V，工作在？', o:['順向主動區','飽和區','截止區','逆向主動區'], a:1, ex:'V_BE = 5 → 順偏；V_BC = 4 > 0.5 → 順偏。兩個都順 → 飽和。'},
+  {id:'3h', ch:3, sec:'3-1 工作區', q:'PNP 矽電晶體 V_E = 0 V、V_B = 1 V、V_C = −5 V，工作在？', o:['順向主動區','飽和區','截止區','逆向主動區'], a:2, ex:'V_EB = −1 → 逆偏；V_CB = −6 → 逆偏。兩個都逆 → 截止。'},
+  {id:'3i', ch:3, sec:'3-1 工作區', q:'電晶體在飽和區時，V_CE(sat) 約為？', o:['0 V','0.2 V','0.7 V','V_CC'], a:1, ex:'V_CE(sat) = V_CB(t) − V_EB(t) = −0.5 − (−0.7) = 0.2 V，C-E 可視為短路（ON）。'},
+  {id:'3j', ch:3, sec:'3-1 工作區', q:'電晶體在截止區時，C-E 兩端可視為？', o:['短路','開路','0.2 V 電池','固定電阻'], a:1, ex:'截止：I_B = I_C = I_E = 0，C-E 開路（OFF），V_CE ≈ V_CC。'},
+  {id:'3k', ch:3, sec:'3-1 增益', q:'電晶體在作用區，I_B = 50 μA、I_C = 5 mA，γ 為？', o:['99','100','101','0.99'], a:2, ex:'β = 5m/50μ = 100，γ = 1 + β = 101，α = 100/101 ≈ 0.99。'},
+  {id:'3l', ch:3, sec:'3-1 增益', q:'主動區放大器 I_B = 0.02 mA、I_E = 4.02 mA，β 為？', o:['100','150','200','201'], a:2, ex:'I_C = I_E − I_B = 4 mA，β = 4/0.02 = 200。'},
+  {id:'3m', ch:3, sec:'3-1 增益', q:'α = 0.98，β 為？', o:['49','50','98','0.98'], a:0, ex:'β = α/(1 − α) = 0.98/0.02 = 49；γ = 1/(1 − α) = 50。'},
+  {id:'3n', ch:3, sec:'3-1 漏電流', q:'β = 99、I_CBO = 0.1 μA，I_CEO 為？', o:['0.1 μA','9.9 μA','10 μA','100 μA'], a:2, ex:'I_CEO = (1 + β) I_CBO = 100 × 0.1μ = 10 μA。'},
+  {id:'3o', ch:3, sec:'3-1 功率', q:'電晶體 I_C = 4.3 mA、V_CE = 3.4 V，消耗功率 P_Q 約為？', o:['1.27 mW','14.6 mW','7.7 mW','43 mW'], a:1, ex:'P_Q = I_C × V_CE = 4.3m × 3.4 ≈ 14.6 mW。'},
+  {id:'3p', ch:3, sec:'3-1 相依源', q:'電路中「相依電源」的符號是什麼形狀？', o:['圓形','菱形','方形','三角形'], a:1, ex:'獨立電源用圓形，相依電源（受其他電壓或電流控制）用菱形。'},
+  {id:'3q', ch:3, sec:'3-1 相依源', q:'5 V 經 1 kΩ 的電流為 I；另一迴路中相依電壓源 40I（單位 V）接 200 Ω。流過 200 Ω 的電流為？', o:['0.2 mA','1 mA','5 mA','40 mA'], a:1, ex:'I = 5 mA → 40I = 40 × 5m = 0.2 V → 0.2/200 = 1 mA。'},
+  {id:'3r', ch:3, sec:'3-2 組態', q:'共射極 (CE) 組態的輸入端、輸出端、共用端分別是？', o:['B、C、E','B、E、C','C、E、B','E、C、B'], a:0, ex:'CE：B 入、C 出、E 共用（增益 β）。CB：E 入 C 出（α）。CC：B 入 E 出（γ）。'},
+  {id:'3s', ch:3, sec:'3-2 組態', q:'三種組態的電流增益大小為？', o:['CB > CE > CC','CC > CB > CE','CE > CC > CB','CC > CE > CB'], a:3, ex:'CC 是 γ = 1 + β 最大，CE 是 β，CB 是 α < 1 最小。'},
+  {id:'3t', ch:3, sec:'3-2 組態', q:'電晶體組態中，哪一極不能當輸入端？', k:1, o:['射極 E','基極 B','集極 C','都可以'], a:2, ex:'C 極不能當輸入，B 極不能當輸出。'},
+  {id:'3u', ch:3, sec:'3-2 特性曲線', q:'共射極輸出特性曲線的 X 軸是？', o:['V_BE','V_CE','V_CB','I_B'], a:1, ex:'CE 輸出曲線：X 軸 V_CE、Y 軸 I_C，每條線是不同 I_B。V_CE ≤ 0.2 V 為飽和區。'},
+  {id:'3v', ch:3, sec:'3-3 偏壓', q:'CE 電路 V_BB = 5 V、R_B = 100 kΩ、V_CC = 12 V、R_C = 2 kΩ、β = 100、V_BE = 0.7 V。V_CE 為？', o:['3.4 V','8.6 V','0.2 V','12 V'], a:0, ex:'I_B = 4.3/100k = 43 μA → I_C = 4.3 mA → V_CE = 12 − 4.3m × 2k = 3.4 V（> 0.2 V，在主動區）。'},
+  {id:'3w', ch:3, sec:'3-3 偏壓', q:'承上題，把 R_B 改成 20 kΩ，電晶體會進入？', o:['順向主動區','飽和區','截止區','崩潰區'], a:1, ex:'I_B = 215 μA → 若在主動區 I_C = 21.5 mA，V_CE = 12 − 43 < 0，不可能 → 飽和，I_C(sat) = 11.8/2k = 5.9 mA。'},
+];
+
+const CH_NAME = {1:'Ch1 概論', 2:'Ch2 二極體', 3:'Ch3 BJT'};
+const LETTERS = ['A','B','C','D'];
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+
+let wrongBook = new Set(store.get('ec-wrong', []).filter(id => Q.some(q => q.id === id)));
+let state = {
+  scope: store.get('ec-scope', 'all'),
+  shuffle: store.get('ec-shuffle', false),
+  order: [],
+  idx: 0,
+  answers: {},
+  perm: {},
+  done: false,
+};
+
+const byId = id => Q.find(q => q.id === id);
+const $ = id => document.getElementById(id);
+
+function pool(scope) {
+  if (scope === 'wrong') return Q.filter(q => wrongBook.has(q.id));
+  if (scope === 'all') return Q.slice();
+  return Q.filter(q => q.ch === Number(scope));
+}
+function shuffled(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function makePerm(q) {
+  if (!q.k) return shuffled([0, 1, 2, 3]);
+  return shuffled([0, 1, 2]).concat(3);
+}
+const permOf = id => (state.perm && state.perm[id]) || [0, 1, 2, 3];
+const shown = (id, orig) => LETTERS[permOf(id).indexOf(orig)];
+function startRound(scope, ids) {
+  if (scope === 'wrong' && wrongBook.size === 0) scope = 'all';
+  state.scope = scope;
+  store.set('ec-scope', scope);
+  let list = ids ? ids.map(byId).filter(Boolean) : pool(scope);
+  if (state.shuffle && !ids) list = shuffled(list);
+  state.order = list.map(q => q.id);
+  state.perm = {};
+  list.forEach(q => { state.perm[q.id] = state.shuffle ? makePerm(q) : [0, 1, 2, 3]; });
+  state.idx = 0;
+  state.answers = {};
+  state.done = false;
+  render(true);
+}
+
+function renderControls() {
+  const counts = {all: Q.length, 1: 0, 2: 0, 3: 0};
+  Q.forEach(q => counts[q.ch]++);
+  const items = [['all','全部',counts.all],['1','Ch1 概論',counts[1]],['2','Ch2 二極體',counts[2]],['3','Ch3 BJT',counts[3]]];
+  let html = items.map(([k, label, n]) =>
+    `<button class="chip" id="scope-${k}" data-scope="${k}" aria-pressed="${state.scope === k}">${label}<span class="n">${n}</span></button>`).join('');
+  html += `<button class="chip wrongbook" id="scope-wrong" data-scope="wrong" aria-pressed="${state.scope === 'wrong'}" ${wrongBook.size ? '' : 'disabled'}>錯題本<span class="n">${wrongBook.size}</span></button>`;
+  html += `<span class="spacer"></span><label class="toggle" for="shuffle"><input type="checkbox" id="shuffle" ${state.shuffle ? 'checked' : ''}>隨機（題目＋選項）</label>`;
+  $('controls').innerHTML = html;
+  $('controls').querySelectorAll('[data-scope]').forEach(b => b.addEventListener('click', () => startRound(b.dataset.scope)));
+  $('shuffle').addEventListener('change', e => { state.shuffle = e.target.checked; store.set('ec-shuffle', state.shuffle); startRound(state.scope); });
+}
+
+function tally() {
+  let ok = 0, bad = 0;
+  state.order.forEach(id => { if (id in state.answers) (state.answers[id] === byId(id).a ? ok++ : bad++); });
+  return {ok, bad, left: state.order.length - ok - bad};
+}
+
+function renderStrip() {
+  const t = tally();
+  $('score').innerHTML = `<b>✓ ${t.ok}</b>　<i>✗ ${t.bad}</i>　剩 ${t.left}`;
+  $('cells').innerHTML = state.order.map((id, i) => {
+    const q = byId(id);
+    let cls = 'cell';
+    if (id in state.answers) cls += state.answers[id] === q.a ? ' ok' : ' bad';
+    if (!state.done && i === state.idx) cls += ' cur';
+    return `<button class="${cls}" data-i="${i}" aria-label="第 ${i + 1} 題">${i + 1}</button>`;
+  }).join('');
+  $('cells').querySelectorAll('.cell').forEach(c => c.addEventListener('click', () => {
+    state.idx = Number(c.dataset.i); state.done = false; render(true);
+  }));
+}
+
+function renderQuestion(animate) {
+  const id = state.order[state.idx];
+  const q = byId(id);
+  const picked = state.answers[id];
+  const answered = picked !== undefined;
+  const opts = permOf(id).map((i, pos) => {
+    const txt = q.o[i];
+    let cls = 'opt', mark = '';
+    if (answered) {
+      if (i === q.a) { cls += ' right'; mark = '✓'; }
+      else if (i === picked) { cls += ' wrong'; mark = '✗'; }
+      else cls += ' dim';
+    }
+    return `<li><button class="${cls}" id="opt-${pos}" data-i="${i}" ${answered ? 'disabled' : ''}>
+      <span class="letter">(${LETTERS[pos]})</span><span class="txt">${txt}</span><span class="mark" aria-hidden="true">${mark}</span></button></li>`;
+  }).join('');
+  const correct = answered && picked === q.a;
+  const ex = answered ? `<div class="ex"><span class="jie" aria-hidden="true">解</span><p>
+      <span class="verdict ${correct ? 'ok' : 'bad'}">${correct ? '答對了' : '答錯了，正解是 (' + shown(id, q.a) + ')'}</span>${q.ex}</p></div>` : '';
+  const last = state.idx === state.order.length - 1;
+  const t = tally();
+  const nextLabel = last ? (t.left === 0 ? '看結果' : '看結果（還有題目沒寫）') : '下一題';
+  $('sheet').innerHTML = `
+    <div class="meta"><span class="tag">${CH_NAME[q.ch]}</span><span>${q.sec}</span><span>第 ${state.idx + 1} / ${state.order.length} 題</span></div>
+    <p class="qtext">${q.q}</p>
+    <ul class="opts">${opts}</ul>
+    ${ex}
+    <div class="nav">
+      <button class="btn" id="prev" ${state.idx === 0 ? 'disabled' : ''}>上一題</button>
+      <span class="hint">按 <kbd>1</kbd>–<kbd>4</kbd> 作答，<kbd>Enter</kbd> 下一題</span>
+      <button class="btn primary" id="next">${nextLabel}</button>
+    </div>`;
+  if (animate) { $('sheet').classList.remove('enter'); void $('sheet').offsetWidth; $('sheet').classList.add('enter'); }
+  $('sheet').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => answer(Number(b.dataset.i))));
+  $('prev').addEventListener('click', () => go(-1));
+  $('next').addEventListener('click', () => go(1));
+}
+
+function answer(i) {
+  const id = state.order[state.idx];
+  if (state.done || id in state.answers) return;
+  state.answers[id] = i;
+  if (i === byId(id).a) wrongBook.delete(id); else wrongBook.add(id);
+  store.set('ec-wrong', [...wrongBook]);
+  render(false);
+  const n = $('next'); if (n) n.focus({preventScroll: true});
+}
+
+function go(step) {
+  if (state.done) return;
+  const ni = state.idx + step;
+  if (ni < 0) return;
+  if (ni >= state.order.length) { state.done = true; render(true); return; }
+  state.idx = ni;
+  render(true);
+}
+
+function renderResult() {
+  const t = tally();
+  const total = state.order.length;
+  const per = {};
+  state.order.forEach(id => {
+    const q = byId(id);
+    per[q.ch] = per[q.ch] || {ok: 0, n: 0};
+    per[q.ch].n++;
+    if (state.answers[id] === q.a) per[q.ch].ok++;
+  });
+  const bars = Object.keys(per).sort().map(ch => {
+    const p = per[ch], pct = Math.round(p.ok / p.n * 100);
+    return `<div class="bar-row"><span>Ch${ch}</span><div class="bar"><span style="width:${pct}%"></span></div><span class="v">${p.ok}/${p.n}</span></div>`;
+  }).join('');
+  const wrongIds = state.order.filter(id => id in state.answers && state.answers[id] !== byId(id).a);
+  const skipped = state.order.filter(id => !(id in state.answers));
+  const list = wrongIds.map(id => {
+    const q = byId(id);
+    return `<li><span class="q">${q.q}</span><span class="a">你選 <s>(${shown(id, state.answers[id])}) ${q.o[state.answers[id]]}</s>　正解 <b>(${shown(id, q.a)}) ${q.o[q.a]}</b></span><span class="a">${q.ex}</span></li>`;
+  }).join('');
+  $('sheet').innerHTML = `
+    <div class="result-top"><span class="big">${t.ok}<small> / ${total}</small></span>
+      <span class="sub">${t.left ? `還有 ${t.left} 題沒寫・` : ''}正確率 ${total ? Math.round(t.ok / total * 100) : 0}%</span></div>
+    <div class="bars">${bars}</div>
+    <h2>這一輪答錯的題目</h2>
+    ${wrongIds.length ? `<ul class="wrong-list">${list}</ul>` : `<p class="empty">${t.ok ? '全部答對，可以換一個範圍或開隨機再練一次。' : '這一輪還沒有作答。'}</p>`}
+    <div class="nav">
+      <button class="btn" id="again">重新開始這個範圍</button>
+      ${skipped.length ? `<button class="btn" id="skipped">寫沒寫完的 ${skipped.length} 題</button>` : ''}
+      <button class="btn primary" id="redo" ${wrongIds.length ? '' : 'disabled'}>只練這輪錯題</button>
+    </div>`;
+  $('again').addEventListener('click', () => startRound(state.scope));
+  $('redo').addEventListener('click', () => startRound(state.scope, wrongIds));
+  if (skipped.length) $('skipped').addEventListener('click', () => startRound(state.scope, skipped));
+}
+
+function render(animate) {
+  renderControls();
+  renderStrip();
+  if (state.done) renderResult(); else renderQuestion(animate);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target.tagName === 'INPUT') return;
+  if (!state.done && /^[1-4]$/.test(e.key)) { answer(permOf(state.order[state.idx])[Number(e.key) - 1]); e.preventDefault(); }
+  else if (!state.done && e.key === 'Enter' && e.target.tagName !== 'BUTTON') { go(1); e.preventDefault(); }
+  else if (!state.done && e.key === 'ArrowRight') go(1);
+  else if (!state.done && e.key === 'ArrowLeft') go(-1);
+});
+
+function boot(data) {
+  if (data && data.order && data.order.every(byId)) {
+    Object.assign(state, data);
+    render(false);
+  } else {
+    startRound(['all','1','2','3','wrong'].includes(state.scope) ? state.scope : 'all');
+  }
+}
+boot({});
+</script>

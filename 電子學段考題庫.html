@@ -218,7 +218,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 <div class="wrap">
   <header>
     <h1>電子學段考題庫</h1>
-    <p class="sub">Ch1 概論・Ch2 二極體及應用電路・Ch3 雙極性接面電晶體｜選了就對答案，錯的題目會進錯題本</p>
+    <p class="sub">Ch1 概論・Ch2 二極體及應用電路・Ch3 雙極性接面電晶體｜課本題＋隨堂測驗卷，選了就對答案，錯的題目會進錯題本</p>
   </header>
 
   <div class="controls" id="controls" role="group" aria-label="選擇範圍"></div>
@@ -329,6 +329,39 @@ const Q = [
   {id:'3u', ch:3, sec:'3-2 特性曲線', q:'共射極輸出特性曲線的 X 軸是？', o:['V_BE','V_CE','V_CB','I_B'], a:1, ex:'CE 輸出曲線：X 軸 V_CE、Y 軸 I_C，每條線是不同 I_B。V_CE ≤ 0.2 V 為飽和區。'},
   {id:'3v', ch:3, sec:'3-3 偏壓', q:'CE 電路 V_BB = 5 V、R_B = 100 kΩ、V_CC = 12 V、R_C = 2 kΩ、β = 100、V_BE = 0.7 V。V_CE 為？', o:['3.4 V','8.6 V','0.2 V','12 V'], a:0, ex:'I_B = 4.3/100k = 43 μA → I_C = 4.3 mA → V_CE = 12 − 4.3m × 2k = 3.4 V（> 0.2 V，在主動區）。'},
   {id:'3w', ch:3, sec:'3-3 偏壓', q:'承上題，把 R_B 改成 20 kΩ，電晶體會進入？', o:['順向主動區','飽和區','截止區','崩潰區'], a:1, ex:'I_B = 215 μA → 若在主動區 I_C = 21.5 mA，V_CE = 12 − 43 < 0，不可能 → 飽和，I_C(sat) = 11.8/2k = 5.9 mA。'},
+
+  // ===== 測驗卷 第7回（第一次段考 Ch1–Ch2）=====
+  {id:'p7-1', src:'第7回 #1', ch:1, sec:'1-1 真空管', q:'真空管到現在有時仍被採用，原因是？', o:['體積小','輸出功率大','消耗功率小','價格便宜'], a:1, ex:'真空管適合大功率、音頻響應好，所以音響設備還在用。體積小、省電、便宜都是半導體的優點。'},
+  {id:'p7-2', src:'第7回 #2', ch:2, sec:'2-1 半導體', q:'下列何者是半導體？', o:['矽','鉛','砷','硼'], a:0, ex:'矽是四價的元素半導體。鉛是金屬；硼（三價）和砷（五價）是拿來摻雜的雜質。'},
+  {id:'p7-3', src:'第7回 #3', ch:1, sec:'1-1 IC 分類', q:'下列何者是小型積體電路？', o:['VLSI','LSI','MSI','SSI'], a:3, ex:'SSI = Small Scale IC，零件 < 100、邏輯閘 < 12。'},
+  {id:'p7-4', src:'第7回 #4', ch:1, sec:'1-1 IC 分類', q:'VLSI 每片晶片含有多少個以上的零件？', o:['10 個','100 個','1000 個','10000 個'], a:3, ex:'VLSI 零件數 10k–100k，也就是 10000 個以上。'},
+  {id:'p7-5', src:'第7回 #5', ch:2, sec:'2-2 二極體', q:'用歐姆表測二極體，不論測試棒怎麼接，指針都指在低值，表示二極體？', o:['正常','斷路','短路','無法判斷'], a:2, ex:'兩個方向都低 → 短路；兩個方向都高 → 斷路；一高一低 → 正常（順偏低、逆偏高）。'},
+  {id:'p7-6', src:'第7回 #6', ch:2, sec:'2-1 N 型', q:'N 型半導體中，主要載子（電子）濃度與施體正離子濃度的關係為？', o:['主要載子大得多','大約相等','施體正離子大得多','不一定'], a:1, ex:'每個施體原子放出一個自由電子、留下一個正離子，所以兩者大約相等，整體電中性。'},
+  {id:'p7-7', src:'第7回 #7', ch:2, sec:'2-2 P-N 接面', q:'PN 二極體中，比較容易產生電子流的方向是？', o:['由 P 型到 N 型','由 N 型到 P 型','兩個方向都很容易','兩個方向都很難'], a:1, ex:'順偏時電流由 P 流向 N，電子流方向和電流相反，所以是 N → P。'},
+  {id:'p7-8', src:'第7回 #8', ch:2, sec:'2-1 半導體', q:'一個原子失去電子後，會變成？', o:['不帶電','帶正電的離子','帶負電的離子','可能帶正電也可能帶負電'], a:1, ex:'失去電子 → 正離子；得到電子 → 負離子。'},
+  {id:'p7-9', src:'第7回 #9', ch:2, sec:'2-1 N 型', q:'N 型半導體是在鍺或矽中加入幾價的雜質？', o:['三價','四價','五價','各價都可以'], a:2, ex:'N 型摻五價（施體）；P 型摻三價（受體）。'},
+  {id:'p7-10', src:'第7回 #10', ch:1, sec:'1-1 元件', q:'下列何者「不是」主動元件？', o:['電容器','電晶體','真空管','場效電晶體'], a:0, ex:'電阻、電容、電感是被動元件；電晶體、真空管、FET 是主動元件。'},
+  {id:'p7-11', src:'第7回 #11', ch:2, sec:'2-2 P-N 接面', q:'二極體加順向偏壓時？', o:['障壁電壓降低，空乏區變窄','障壁電壓增加，空乏區變窄','障壁電壓增加，空乏區變寬','障壁電壓降低，空乏區變寬'], a:0, ex:'順偏抵銷空乏區電場：障壁電壓降低、空乏區變窄，擴散電流變大。'},
+  {id:'p7-12', src:'第7回 #12', ch:2, sec:'2-2 P-N 接面', q:'二極體加逆向偏壓時仍有少量電流，這是因為？', o:['多數載子流動','少數載子流動','主、副載子同時流動','以上皆非'], a:1, ex:'逆偏時擴散電流 = 0，只剩少數載子的漂移電流，也就是逆向飽和電流 I_S。'},
+  {id:'p7-13', src:'第7回 #13', ch:2, sec:'2-3 稽納', q:'10 V 經 4 Ω 接到稽納二極體（崩潰電壓 6 V），稽納並聯 8 Ω 負載。I_Z 為？', o:['0.05 A','0.1 A','0.25 A','0.5 A'], a:2, ex:'開路電壓 10 × 8/12 ≈ 6.67 V > 6 V → 崩潰。I = (10 − 6)/4 = 1 A、I_L = 6/8 = 0.75 A → I_Z = 0.25 A。'},
+  {id:'p7-14', src:'第7回 #14', ch:2, sec:'2-1 質量作用', q:'純矽 nᵢ = 1.5×10¹⁰ /cm³、原子密度 5×10²² /cm³，每 10⁹ 個矽原子摻 1 個施體。電洞濃度為？', o:['4.5×10⁵ /cm³','4.5×10⁶ /cm³','4.5×10⁷ /cm³','4.5×10⁸ /cm³'], a:1, ex:'n = 5×10²²/10⁹ = 5×10¹³；p = nᵢ²/n = 2.25×10²⁰ / 5×10¹³ = 4.5×10⁶ /cm³。'},
+  {id:'p7-15', src:'第7回 #15', ch:2, sec:'2-5 濾波', q:'半波整流加電容濾波（接 R_L），下列敘述何者錯誤？', o:['整流峰值電流與電容量成正比','漣波率隨負載加重而增大','無負載時輸出電壓等於峰值電壓','無負載時二極體耐壓等於峰值電壓'], a:3, ex:'半波電容濾波（不論有無負載）PIV = 2Vm，不是 Vm。'},
+  {id:'p7-16', src:'第7回 #16', ch:2, sec:'2-5 漣波', q:'下列漣波因數 r 何者最好，而且做得到？', o:['r = 0','r = 1.21','r = 0.7','r = 0.023'], a:3, ex:'r 越小越好，但 r = 0 是理想值做不到；1.21 是半波沒濾波。'},
+  {id:'p7-17', src:'第7回 #17', ch:2, sec:'2-5 濾波', q:'110 V 經變壓器降成 10 V(rms)，半波整流後接電容，負載電阻很大。輸出電壓約為？', o:['7.07 V','10 V','14.14 V','6.37 V'], a:2, ex:'負載很大 → 電容幾乎不放電，會充到峰值：Vm = √2 × 10 ≈ 14.14 V。'},
+  {id:'p7-19', src:'第7回 #19', ch:2, sec:'2-5 漣波', q:'關於整流濾波電路，下列何者錯誤？', o:['電容濾波時，電容愈大漣波因數 r 愈小','漣波因數 r 愈小，表示濾波效果愈差','電壓調整率 VR = (V_NL − V_FL)/V_FL × 100%','電壓調整率愈小，表示輸出電壓受負載影響愈小'], a:1, ex:'r 愈小，濾波效果愈好。'},
+  {id:'p7-20', src:'第7回 #20', ch:2, sec:'2-5 漣波', q:'整流後 Vdc = 20 V，漣波是<b>正弦波</b>、Vr(p-p) = 2.828 V。漣波百分率為？', o:['5%','10%','15%','20%'], a:0, ex:'正弦漣波：Vr(rms) = (2.828/2)/√2 = 1 V → r% = 1/20 = 5%。注意：課本電容濾波的漣波當三角波，用 Vr(p-p)/(2√3)；漣波是正弦時才用 Vr(p-p)/(2√2)。'},
+
+  // ===== 測驗卷 第8回（第二次段考 Ch3–Ch4，只收 BJT 基礎）=====
+  {id:'p8-1', src:'第8回 #1', ch:3, sec:'3-1 工作區', q:'電晶體的集極與射極對調接，結果是？', o:['耐壓提高，增益降低','耐壓降低，增益不變','耐壓不變，增益降低','耐壓降低，增益也降低'], a:3, ex:'對調就是逆向主動區：E 濃度高、承受逆偏的能力差（耐壓低），電流也明顯變小（增益低）。'},
+  {id:'p8-2', src:'第8回 #2', ch:3, sec:'3-1 增益', q:'α 由 0.98 變成 0.99，β 如何變化？', o:['由 88 變 49','由 66 變 49','由 49 變 88','由 49 變 99'], a:3, ex:'β = α/(1 − α)：0.98/0.02 = 49，0.99/0.01 = 99。α 只差一點，β 差很多。'},
+  {id:'p8-3', src:'第8回 #3', ch:3, sec:'3-1 增益', q:'集極電流 2 mA、射極電流 2.02 mA，β_dc 為？', o:['10','50','100','150'], a:2, ex:'I_B = 2.02 − 2 = 0.02 mA，β = 2/0.02 = 100。'},
+  {id:'p8-4', src:'第8回 #4', ch:3, sec:'3-1 電流', q:'若「流入電晶體」的電流取正值，已知 I_B = 0.2 mA、I_C = 2 mA，則 I_E 為？', o:['+2.2 mA','−1.8 mA','+1.8 mA','−2.2 mA'], a:3, ex:'三個都以流入為正，總和為 0：I_E = −(0.2 + 2) = −2.2 mA。負號表示 I_E 實際上是流出。'},
+  {id:'p8-6', src:'第8回 #6', ch:3, sec:'3-1 構造', q:'關於 BJT 基極的敘述，何者正確？', o:['發射載子，提供傳導電流','收集射極發出的大部分載子','控制射極載子流向集極的數量','基極摻雜濃度最高'], a:2, ex:'E 發射、B 控制、C 收集。摻雜濃度最高的是 E。'},
+  {id:'p8-7', src:'第8回 #7', ch:3, sec:'3-1 構造', q:'關於 NPN 與 PNP 的比較，何者錯誤？', o:['PNP 主要靠電洞傳導，NPN 主要靠電子','在主動區時，兩者的基射接面都是順偏','現在使用的電晶體大多是 NPN','PNP 的頻率響應比 NPN 好，適合高頻'], a:3, ex:'電子移動率比電洞快，所以 NPN 的高頻響應較好，也比較常用。'},
+  {id:'p8-8', src:'第8回 #8', ch:3, sec:'3-1 漏電流', q:'矽電晶體的電流增益受溫度影響，和鍺電晶體比起來？', o:['較大','較小','一樣','無法比較'], a:1, ex:'鍺的漏電流 I_CO 是 μA 等級，矽只有 nA 等級，所以矽受溫度影響小。'},
+  {id:'p8-10', src:'第8回 #10', ch:3, sec:'3-1 構造', q:'電晶體全部寬度與中央層（基極）寬度的比值約為？', o:['150 : 1','100 : 1','50 : 1','25 : 1'], a:0, ex:'基極很薄，約佔整顆電晶體的 1/150。'},
+  {id:'p8-11', src:'第8回 #11', ch:3, sec:'3-3 偏壓', q:'固定偏壓 CE 電路：V_CC = 12 V、R_B = 250 kΩ（接 V_CC）、R_C = 2.1 kΩ、β = 100、V_BE = 0.7 V。V_CE 為？', o:['6.5 V','4.5 V','2.5 V','1.5 V'], a:2, ex:'I_B = (12 − 0.7)/250k = 45.2 μA → I_C = 4.52 mA → V_CE = 12 − 4.52m × 2.1k ≈ 2.5 V。'},
+  {id:'p8-12', src:'第8回 #12', ch:3, sec:'3-3 偏壓（延伸）', q:'分壓偏壓：V_CC = 20 V、R₁ = 90 kΩ、R₂ = 10 kΩ、R_C = 5 kΩ、R_E = 1 kΩ，I_B ≈ 0、V_BE = 0.7 V。V_CB 為？', o:['10.5 V','11.5 V','12.5 V','13.5 V'], a:1, ex:'V_B = 20 × 10/100 = 2 V → V_E = 1.3 V → I_E ≈ I_C = 1.3 mA → V_C = 20 − 1.3m × 5k = 13.5 V → V_CB = 13.5 − 2 = 11.5 V。'},
 ];
 
 const CH_NAME = {1:'Ch1 概論', 2:'Ch2 二極體', 3:'Ch3 BJT'};
@@ -355,6 +388,7 @@ const $ = id => document.getElementById(id);
 function pool(scope) {
   if (scope === 'wrong') return Q.filter(q => wrongBook.has(q.id));
   if (scope === 'all') return Q.slice();
+  if (scope === 'paper') return Q.filter(q => q.src);
   return Q.filter(q => q.ch === Number(scope));
 }
 function shuffled(arr) {
@@ -389,6 +423,7 @@ function renderControls() {
   const items = [['all','全部',counts.all],['1','Ch1 概論',counts[1]],['2','Ch2 二極體',counts[2]],['3','Ch3 BJT',counts[3]]];
   let html = items.map(([k, label, n]) =>
     `<button class="chip" id="scope-${k}" data-scope="${k}" aria-pressed="${state.scope === k}">${label}<span class="n">${n}</span></button>`).join('');
+  html += `<button class="chip" id="scope-paper" data-scope="paper" aria-pressed="${state.scope === 'paper'}">測驗卷<span class="n">${Q.filter(q => q.src).length}</span></button>`;
   html += `<button class="chip wrongbook" id="scope-wrong" data-scope="wrong" aria-pressed="${state.scope === 'wrong'}" ${wrongBook.size ? '' : 'disabled'}>錯題本<span class="n">${wrongBook.size}</span></button>`;
   html += `<span class="spacer"></span><label class="toggle" for="shuffle"><input type="checkbox" id="shuffle" ${state.shuffle ? 'checked' : ''}>隨機（題目＋選項）</label>`;
   $('controls').innerHTML = html;
@@ -440,7 +475,7 @@ function renderQuestion(animate) {
   const t = tally();
   const nextLabel = last ? (t.left === 0 ? '看結果' : '看結果（還有題目沒寫）') : '下一題';
   $('sheet').innerHTML = `
-    <div class="meta"><span class="tag">${CH_NAME[q.ch]}</span><span>${q.sec}</span><span>第 ${state.idx + 1} / ${state.order.length} 題</span></div>
+    <div class="meta"><span class="tag">${CH_NAME[q.ch]}</span><span>${q.sec}</span>${q.src ? `<span>測驗卷${q.src}</span>` : ''}<span>第 ${state.idx + 1} / ${state.order.length} 題</span></div>
     <p class="qtext">${q.q}</p>
     <ul class="opts">${opts}</ul>
     ${ex}
@@ -530,7 +565,7 @@ function boot(data) {
     Object.assign(state, data);
     render(false);
   } else {
-    startRound(['all','1','2','3','wrong'].includes(state.scope) ? state.scope : 'all');
+    startRound(['all','1','2','3','paper','wrong'].includes(state.scope) ? state.scope : 'all');
   }
 }
 boot({});

@@ -224,7 +224,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 <div class="wrap">
   <header>
     <h1>數位邏輯段考題庫</h1>
-    <p class="sub">數位邏輯設計 1-1 ～ 4-2｜Ch1 基本概念・Ch2 基本邏輯閘・Ch3 布林代數與第摩根定理・Ch4 布林代數式｜選了就對答案，錯的題目會進錯題本</p>
+    <p class="sub">數位邏輯設計 1-1 ～ 4-2｜Ch1 基本概念・Ch2 基本邏輯閘・Ch3 布林代數與第摩根定理・Ch4 布林代數化簡（到 4-2）｜選了就對答案，錯的題目會進錯題本</p>
   </header>
 
   <div class="controls" id="controls" role="group" aria-label="選擇範圍"></div>
@@ -389,7 +389,7 @@ const Q = [
   {id:'4aa', ch:4, sec:'4-2 由文字敘述', q:'駕駛坐上（A = 1）且沒繫安全帶（B = 0），或車門沒關（C = 1）時警告燈亮，F(A, B, C) = ？', o:['Σm(4, 5)','Σm(1, 3, 5, 7)','Σm(1, 3, 4, 5, 7)','Σm(4, 5, 6, 7)'], a:2, ex:'F = AB′ + C；AB′ → m4、m5；C → m1、m3、m5、m7 → Σm(1, 3, 4, 5, 7)。'},
 ];
 
-const CH_NAME = {1:'Ch1 基本概念', 2:'Ch2 邏輯閘', 3:'Ch3 布林代數', 4:'Ch4 布林代數式'};
+const CH_NAME = {1:'Ch1 基本概念', 2:'Ch2 邏輯閘', 3:'Ch3 布林代數', 4:'Ch4 布林代數化簡'};
 const LETTERS = ['A','B','C','D'];
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },

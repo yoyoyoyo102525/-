@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>數位邏輯題庫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one exam sheet column on cool graph paper; answer-card grid on top, question below. Blue pen = correct, red pen = wrong (like the notes). */
+:root {
+  --paper: #e9eef3;
+  --grid: rgba(60, 96, 140, 0.07);
+  --sheet: #fbfcfd;
+  --ink: #1b2a42;
+  --muted: #5a6a7f;
+  --rule: #d2dbe5;
+  --blue: #1f4fd1;
+  --blue-soft: rgba(31, 79, 209, 0.09);
+  --red: #cf3027;
+  --red-soft: rgba(207, 48, 39, 0.08);
+  --chip: #dfe6ee;
+  --shadow: 0 1px 0 rgba(27, 42, 66, 0.06), 0 8px 24px -14px rgba(27, 42, 66, 0.25);
+  --f-display: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "DFKai-SB", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0;
+    --muted: #94a3b6; --rule: #2c3644; --blue: #86a6ff; --blue-soft: rgba(134, 166, 255, 0.12);
+    --red: #ff7d70; --red-soft: rgba(255, 125, 112, 0.1); --chip: #232c38;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 26px -16px rgba(0, 0, 0, 0.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0;
+  --muted: #94a3b6; --rule: #2c3644; --blue: #86a6ff; --blue-soft: rgba(134, 166, 255, 0.12);
+  --red: #ff7d70; --red-soft: rgba(255, 125, 112, 0.1); --chip: #232c38;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 26px -16px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.65;
+  padding-inline: 16px;
+  padding-block: 28px 64px;
+}
+.wrap { max-width: 720px; margin-inline: auto; display: grid; gap: 18px; }
+
+header { display: grid; gap: 4px; }
+h1 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 6vw, 2.5rem);
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
+}
+.sub { color: var(--muted); font-size: 0.92rem; margin: 0; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip {
+  font: 500 0.92rem/1 var(--f-body);
+  border: 1px solid transparent;
+  background: var(--chip);
+  color: var(--ink);
+  padding: 9px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex; gap: 6px; align-items: center;
+}
+.chip .n { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--sheet); }
+.chip[aria-pressed="true"] .n { color: inherit; opacity: 0.75; }
+.chip.wrongbook[aria-pressed="true"] { background: var(--red); color: #fff; }
+.chip:disabled { opacity: 0.45; cursor: not-allowed; }
+.spacer { flex: 1 1 auto; }
+.toggle { display: inline-flex; gap: 8px; align-items: center; font-size: 0.92rem; color: var(--muted); cursor: pointer; user-select: none; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--blue); margin: 0; }
+
+/* answer card */
+.card-strip {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: grid; gap: 10px;
+}
+.strip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.strip-head .lbl { font-size: 0.78rem; letter-spacing: 0.12em; color: var(--muted); }
+.score { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+.score b { color: var(--blue); }
+.score i { color: var(--red); font-style: normal; }
+.cells { display: flex; flex-wrap: wrap; gap: 5px; }
+.cell {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--rule);
+  background: transparent;
+  color: var(--muted);
+  font: 600 0.68rem/1 var(--f-mono);
+  cursor: pointer;
+  padding: 0;
+  display: grid; place-items: center;
+}
+.cell.ok { background: var(--blue); border-color: var(--blue); color: var(--sheet); }
+.cell.bad { background: var(--red); border-color: var(--red); color: #fff; }
+.cell.cur { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* question sheet */
+.sheet {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 22px clamp(16px, 4vw, 30px) 24px;
+  display: grid; gap: 18px;
+  min-width: 0;
+}
+.meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 500 0.8rem/1.4 var(--f-mono); color: var(--muted); }
+.meta .tag { color: var(--ink); background: var(--chip); padding: 2px 8px; border-radius: 4px; }
+.qtext { font-size: 1.12rem; font-weight: 500; margin: 0; overflow-wrap: anywhere; }
+.qtext .f, .ex .f { font-family: var(--f-mono); font-size: 0.95em; white-space: nowrap; }
+
+.opts { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.opt {
+  width: 100%;
+  text-align: left;
+  font: 400 1rem/1.55 var(--f-body);
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 2.3em 1fr auto;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+.opt:hover:not(:disabled) { border-color: var(--ink); }
+.opt:disabled { cursor: default; }
+.opt .letter { font: 600 0.92rem/1 var(--f-mono); color: var(--muted); }
+.opt .txt { min-width: 0; overflow-wrap: anywhere; }
+.opt .mark { font: 700 1.5rem/1 var(--f-display); width: 1.2em; text-align: center; }
+.opt.right { border-color: var(--blue); background: var(--blue-soft); }
+.opt.right .letter, .opt.right .mark { color: var(--blue); }
+.opt.wrong { border-color: var(--red); background: var(--red-soft); }
+.opt.wrong .txt { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 2px; }
+.opt.wrong .letter, .opt.wrong .mark { color: var(--red); }
+.opt.dim { opacity: 0.55; }
+
+.ex { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; padding-top: 16px; border-top: 1px dashed var(--rule); }
+.jie {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--red); color: #fff;
+  display: grid; place-items: center;
+  font: 700 1rem/1 var(--f-display);
+}
+.ex p { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.verdict { font-family: var(--f-display); font-size: 1.25rem; font-weight: 700; display: block; margin-bottom: 2px; }
+.verdict.ok { color: var(--blue); }
+.verdict.bad { color: var(--red); }
+
+.nav { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.btn {
+  font: 500 0.98rem/1 var(--f-body);
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1.5px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--sheet); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.hint { font-size: 0.8rem; color: var(--muted); }
+kbd { font: 500 0.75rem/1 var(--f-mono); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 2px 5px; }
+
+/* results */
+.result-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+.big { font: 700 clamp(2.6rem, 10vw, 3.6rem)/1 var(--f-display); color: var(--blue); }
+.big small { font-size: 0.45em; color: var(--muted); }
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 3.2em 1fr 4.5em; gap: 10px; align-items: center; font-size: 0.9rem; }
+.bar { height: 10px; background: var(--chip); border-radius: 99px; overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--blue); border-radius: 99px; }
+.bar-row .v { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
+h2 { font: 700 1.2rem/1.3 var(--f-display); margin: 6px 0 0; }
+.wrong-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.wrong-list li { border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; min-width: 0; }
+.wrong-list .q { font-weight: 500; overflow-wrap: anywhere; }
+.wrong-list .a { font-size: 0.92rem; color: var(--muted); overflow-wrap: anywhere; }
+.wrong-list .a b { color: var(--blue); font-weight: 600; }
+.wrong-list .a s { color: var(--red); }
+.empty { color: var(--muted); }
+
+button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .opt, .chip, .cell { transition: border-color .15s, background-color .15s, opacity .15s; }
+  .sheet.enter { animation: rise .22s ease-out; }
+  @keyframes rise { from { transform: translateY(6px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+@media (max-width: 480px) {
+  .opt { grid-template-columns: 2em 1fr auto; padding: 11px 12px; }
+  .hint { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>數位邏輯段考題庫</h1>
+    <p class="sub">數位邏輯設計 1-1 ～ 4-2｜Ch1 基本概念・Ch2 基本邏輯閘・Ch3 布林代數與第摩根定理・Ch4 布林代數式｜選了就對答案，錯的題目會進錯題本</p>
+  </header>
+
+  <div class="controls" id="controls" role="group" aria-label="選擇範圍"></div>
+
+  <section class="card-strip" aria-label="答案卡">
+    <div class="strip-head">
+      <span class="lbl">答案卡</span>
+      <span class="score" id="score"></span>
+    </div>
+    <div class="cells" id="cells"></div>
+  </section>
+
+  <main class="sheet" id="sheet" aria-live="polite"></main>
+</div>
+
+<script>
+const Q = [
+  // ===== Ch1 數位邏輯基本概念 =====
+  {id:'1a', ch:1, sec:'1-1 數量表示法', q:'下列何者屬於「數位表示法」？', o:['指針式三用電表','水銀溫度計','七段顯示器的電子鐘','傳統指針時鐘'], a:2, ex:'數位表示法的數值是不連續（離散）的，七段顯示器一格一格跳。其他三個的指針或水銀柱都是連續變化，屬於類比。'},
+  {id:'1b', ch:1, sec:'1-1 數量表示法', q:'類比量的特性是？', o:['只有 0 與 1 兩種值','數值不連續、一階一階變化','只能用脈波表示','數值連續變化'], a:3, ex:'類比 = 連續，數位 = 離散（不連續）。自然界的溫度、聲音、光等大多是類比量。'},
+  {id:'1c', ch:1, sec:'1-2 數位與類比', q:'數位系統和類比系統相比，下列何者「不是」數位系統的優點？', o:['抗雜訊能力強','資料容易儲存','可直接處理自然界的類比訊號','容易整合成 IC'], a:2, ex:'自然界是類比的，數位系統必須先經 ADC 轉成數位才能處理，這正是它的缺點。'},
+  {id:'1d', ch:1, sec:'1-2 數位與類比', q:'把類比訊號轉換成數位訊號的電路稱為？', o:['DAC','ADC','MUX','ALU'], a:1, ex:'ADC = Analog to Digital Converter（類比→數位）；DAC 是反過來（數位→類比）。'},
+  {id:'1e', ch:1, sec:'1-2 數位與類比', q:'數位錄放音系統：麥克風 → ① → 數位處理 → ② → 喇叭。①、② 分別是？', o:['ADC、DAC','DAC、ADC','ADC、ADC','DAC、DAC'], a:0, ex:'麥克風的類比訊號先經 ADC 變數位，處理完再經 DAC 變回類比送喇叭。'},
+  {id:'1f', ch:1, sec:'1-3 邏輯準位', q:'在「負邏輯」系統中，高電位代表？', o:['邏輯 1','高阻抗','不確定','邏輯 0'], a:3, ex:'正邏輯：H = 1、L = 0；負邏輯：H = 0、L = 1。'},
+  {id:'1g', ch:1, sec:'1-3 邏輯準位', q:'一個正邏輯的 AND 閘，改用負邏輯來看，功能等同於？', o:['AND','OR','NAND','XOR'], a:1, ex:'正邏輯 ↔ 負邏輯互換：AND ↔ OR、NAND ↔ NOR、XOR ↔ XNOR，NOT 不變。'},
+  {id:'1h', ch:1, sec:'1-3 邏輯準位', q:'TTL 的 V_IL(max) = 0.8 V、V_IH(min) = 2.0 V。輸入 1.5 V 會被判定為？', o:['邏輯 0','邏輯 1','不確定區（禁止區）','高阻抗狀態'], a:2, ex:'0.8 V ～ 2.0 V 之間是不確定區，TTL 無法判定是 0 還是 1。'},
+  {id:'1i', ch:1, sec:'1-3 雜訊邊限', q:'TTL：V_OH(min) = 2.4 V、V_IH(min) = 2.0 V，高準位雜訊邊限 NM_H 為？', o:['0.4 V','0.8 V','1.2 V','2.0 V'], a:0, ex:'NM_H = V_OH(min) − V_IH(min) = 2.4 − 2.0 = 0.4 V。低準位 NM_L = 0.8 − 0.4 = 0.4 V。'},
+  {id:'1j', ch:1, sec:'1-3 二進位', q:'4 個位元最多可以表示幾種不同狀態？', o:['4','8','15','16'], a:3, ex:'n 位元 → 2ⁿ 種狀態，2⁴ = 16（0 ～ 15）。'},
+  {id:'1k', ch:1, sec:'1-3 二進位', q:'8 位元無號二進位數，可表示的最大十進位值是？', o:['127','255','128','256'], a:1, ex:'最大值 = 2ⁿ − 1 = 2⁸ − 1 = 255。共 256 種狀態（0 ～ 255）。'},
+  {id:'1l', ch:1, sec:'1-3 二進位', q:'1 個位元組（byte）等於幾個位元？', o:['8','4','16','32'], a:0, ex:'nibble（半位元組）= 4 bits，byte = 8 bits。'},
+  {id:'1m', ch:1, sec:'1-3 二進位', q:'二進位數 1011₂ 等於十進位多少？', o:['9','10','13','11'], a:3, ex:'1×8 + 0×4 + 1×2 + 1×1 = 11。'},
+  {id:'1n', ch:1, sec:'1-3 數位波形', q:'非理想脈波的「上升時間 t_r」是指振幅由多少上升到多少所需的時間？', o:['0% → 100%','50% → 100%','10% → 90%','0% → 50%'], a:2, ex:'上升時間 10% → 90%，下降時間 90% → 10%，脈波寬度量在 50% 處。'},
+  {id:'1o', ch:1, sec:'1-3 數位波形', q:'非理想脈波的「脈波寬度 t_w」是在振幅的哪個位置量測？', o:['10%','50%','90%','100%'], a:1, ex:'脈波寬度：前緣與後緣在 50% 振幅處之間的時間。'},
+  {id:'1p', ch:1, sec:'1-3 數位波形', q:'週期性脈波週期 10 ms、高準位時間 2 ms，其工作週期與頻率為？', o:['20%、10 Hz','25%、100 Hz','80%、100 Hz','20%、100 Hz'], a:3, ex:'D = 2/10 = 20%；f = 1/T = 1/10 ms = 100 Hz。'},
+  {id:'1q', ch:1, sec:'1-3 數位波形', q:'時脈頻率 250 kHz，工作週期 25%，脈波寬度為？', o:['1 μs','4 μs','2 μs','0.25 μs'], a:0, ex:'T = 1/250k = 4 μs，t_w = 4 μs × 25% = 1 μs。'},
+  {id:'1r', ch:1, sec:'1-3 數位波形', q:'訊號由低準位變為高準位的瞬間稱為？', o:['負緣（後緣）','脈波寬度','下降時間','正緣（前緣）'], a:3, ex:'0 → 1 是正緣（上升緣、前緣）；1 → 0 是負緣（下降緣、後緣）。'},
+  {id:'1s', ch:1, sec:'1-3 傳輸', q:'傳送 8 位元資料，用「並列傳輸」需要幾條資料線、幾個時脈週期？', o:['1 條、8 個','8 條、1 個','8 條、8 個','1 條、1 個'], a:1, ex:'並列：n 條線一次送完（快、線多）；串列：1 條線一次一位元，要 n 個時脈（慢、省線）。'},
+  {id:'1t', ch:1, sec:'1-4 IC 分類', q:'一顆 IC 內含約 50 個邏輯閘，屬於哪一類？', o:['SSI','LSI','MSI','VLSI'], a:2, ex:'閘數：SSI < 12、MSI 12～100、LSI 100～1000、VLSI 1000～10000、ULSI > 10000（以課本數字為準）。'},
+  {id:'1u', ch:1, sec:'1-4 邏輯族', q:'IC 編號「74LS00」中的「LS」代表？', o:['低功率蕭特基','低速','大功率','線性'], a:0, ex:'LS = Low-power Schottky（低功率蕭特基），是最常用的 TTL 子系列。'},
+  {id:'1v', ch:1, sec:'1-4 邏輯族', q:'TTL 的 54 系列和 74 系列主要差在哪裡？', o:['電源電壓','邏輯功能','接腳數','工作溫度範圍'], a:3, ex:'54 系列：軍用 −55 ～ 125 °C；74 系列：商用 0 ～ 70 °C。功能、接腳相同。'},
+  {id:'1w', ch:1, sec:'1-4 邏輯族', q:'下列邏輯族中，消耗功率最小的是？', o:['TTL','ECL','DTL','CMOS'], a:3, ex:'CMOS 靜態功率幾乎為 0，最省電；ECL 功率最大。'},
+  {id:'1x', ch:1, sec:'1-4 邏輯族', q:'下列邏輯族中，速度最快的是？', o:['ECL','TTL','CMOS','RTL'], a:0, ex:'ECL（射極耦合邏輯）電晶體不進入飽和區，速度最快，但功率消耗最大。'},
+  {id:'1y', ch:1, sec:'1-4 特性參數', q:'某閘 t_PLH = 12 ns、t_PHL = 8 ns、P_D = 2 mW，速度功率積為？', o:['24 pJ','16 pJ','20 pJ','20 nJ'], a:2, ex:'t_pd = (12 + 8)/2 = 10 ns；速度功率積 = 10 ns × 2 mW = 20 pJ。'},
+  {id:'1z', ch:1, sec:'1-4 特性參數', q:'「扇出（fan-out）」是指？', o:['一個閘的輸入端個數','一個閘的輸出能推動同系列閘輸入的最大數目','輸入到輸出的延遲時間','可容忍的雜訊電壓'], a:1, ex:'扇出：輸出能推動幾個同系列閘的輸入。標準 TTL 10、74LS 20。'},
+  {id:'1aa', ch:1, sec:'1-4 包裝', q:'從頂面看 DIP 包裝 IC，接腳編號的方式是？', o:['缺口旁為第 1 腳，順時針編號','兩排各自由左而右編號','缺口旁為第 1 腳，逆時針編號','依廠商不同'], a:2, ex:'缺口（或圓點）旁邊是第 1 腳，從頂面看逆時針編號。'},
+  {id:'1ab', ch:1, sec:'1-4 包裝', q:'14 腳的 7400，電源 V_CC 和 GND 分別接第幾腳？', o:['14、7','7、14','16、8','1、14'], a:0, ex:'14 腳 TTL 標準接法：第 14 腳 V_CC、第 7 腳 GND。'},
+  {id:'1ac', ch:1, sec:'1-4 PLD', q:'PAL 的結構為？', o:['AND 固定、OR 可程式','AND、OR 都可程式','AND、OR 都固定','AND 可程式、OR 固定'], a:3, ex:'PROM：AND 固定、OR 可程式；PAL：AND 可程式、OR 固定；PLA：兩個都可程式。'},
+  {id:'1ad', ch:1, sec:'1-4 PLD', q:'AND 陣列和 OR 陣列「都可以程式化」的 SPLD 是？', o:['PROM','PLA','PAL','GAL'], a:1, ex:'PLA 兩個陣列都可程式，最有彈性。'},
+  {id:'1ae', ch:1, sec:'1-4 PLD', q:'以查表（LUT）為基本單元、多用 SRAM 儲存設定、斷電後要重新載入的是？', o:['PAL','GAL','CPLD','FPGA'], a:3, ex:'FPGA 用 SRAM 存組態，斷電即消失；CPLD 多用 EEPROM/Flash，斷電不會消失。'},
+  {id:'1af', ch:1, sec:'1-4 PLD', q:'設計 PLD 常用的硬體描述語言（HDL）是？', o:['C 與 Java','VHDL 與 Verilog','HTML 與 CSS','BASIC 與 Pascal'], a:1, ex:'HDL：VHDL、Verilog。'},
+  {id:'1ag', ch:1, sec:'※1-5 環保', q:'歐盟 RoHS 指令限用的有害物質「不包含」？', o:['鉛','汞','銅','鎘'], a:2, ex:'RoHS 限用：鉛、汞、鎘、六價鉻、多溴聯苯、多溴二苯醚（2.0 版再加 4 種塑化劑）。銅不在內。'},
+
+  // ===== Ch2 基本邏輯閘 =====
+  {id:'2a', ch:2, sec:'2-1 邏輯關係', q:'兩個開關「串聯」控制一盞燈，兩個都按下燈才亮，這是哪一種邏輯？', o:['OR','NOT','AND','XOR'], a:2, ex:'串聯 → AND（全 1 才 1）；並聯 → OR（有 1 就 1）。'},
+  {id:'2b', ch:2, sec:'2-1 邏輯關係', q:'兩個開關「並聯」控制一盞燈，這是哪一種邏輯？', o:['OR','AND','NAND','XNOR'], a:0, ex:'並聯：任一開關閉合燈就亮 → OR。'},
+  {id:'2c', ch:2, sec:'2-1 真值表', q:'3 個輸入的邏輯電路，真值表共有幾列（組合）？', o:['3','6','9','8'], a:3, ex:'n 個輸入 → 2ⁿ 列，2³ = 8。'},
+  {id:'2d', ch:2, sec:'2-2 OR／AND', q:'3 輸入 OR 閘，輸出為 0 的條件是？', o:['任一輸入為 0','輸入全為 0','輸入全為 1','任一輸入為 1'], a:1, ex:'OR 有 1 就 1，所以只有全部為 0 時輸出才是 0。'},
+  {id:'2e', ch:2, sec:'2-2 OR／AND', q:'3 輸入 AND 閘，輸入 A = 1、B = 0、C = 1，輸出為？', o:['1','不確定','0','高阻抗'], a:2, ex:'AND 全 1 才 1，B = 0 → 輸出 0。'},
+  {id:'2f', ch:2, sec:'2-2 致能／禁止', q:'AND 閘一端當控制端，控制端 = 0 時，輸出為？', o:['恆為 0（禁止）','恆為 1','等於另一輸入','等於另一輸入的反相'], a:0, ex:'AND 怕 0：控制端 0 → 輸出被卡在 0；控制端 1 → 另一輸入通過。'},
+  {id:'2g', ch:2, sec:'2-2 致能／禁止', q:'OR 閘一端當控制端，要讓另一輸入的訊號「通過」，控制端應接？', o:['1','0','時脈','另一輸入的反相'], a:1, ex:'OR 怕 1：控制端 1 → 輸出卡在 1；控制端 0 → A + 0 = A，訊號通過。'},
+  {id:'2h', ch:2, sec:'2-2 NOT', q:'NOT 閘輸入 1 kHz 方波，輸出為？', o:['2 kHz 方波','0.5 kHz 方波','恆為 1','1 kHz 反相方波'], a:3, ex:'NOT 只把 0、1 對調，頻率不變。'},
+  {id:'2i', ch:2, sec:'2-2 時序圖', q:'A 依序 = 0, 0, 1, 1；B 依序 = 0, 1, 0, 1。XOR 閘輸出依序為？', o:['0, 0, 0, 1','0, 1, 1, 1','0, 1, 1, 0','1, 0, 0, 1'], a:2, ex:'XOR 相異為 1 → 0110。（AND 0001、OR 0111、XNOR 1001）'},
+  {id:'2j', ch:2, sec:'2-2 時序圖', q:'A 依序 = 0, 0, 1, 1；B 依序 = 0, 1, 0, 1。NOR 閘輸出依序為？', o:['1, 0, 0, 0','0, 1, 1, 1','1, 1, 1, 0','0, 0, 0, 1'], a:0, ex:'NOR 全 0 才 1 → 只有第一組 (0,0) 輸出 1。'},
+  {id:'2k', ch:2, sec:'2-3 NAND／NOR', q:'NAND 閘輸出為 0 的條件是？', o:['任一輸入為 1','所有輸入皆為 0','任一輸入為 0','所有輸入皆為 1'], a:3, ex:'NAND = AND 再反相：全 1 才 0，其他都是 1。'},
+  {id:'2l', ch:2, sec:'2-3 NAND／NOR', q:'NOR 閘輸出為 1 的條件是？', o:['所有輸入皆為 0','任一輸入為 0','所有輸入皆為 1','任一輸入為 1'], a:0, ex:'NOR = OR 再反相：全 0 才 1。'},
+  {id:'2m', ch:2, sec:'2-3 萬用閘', q:'下列哪兩種閘稱為「萬用閘」？', o:['AND 與 OR','XOR 與 XNOR','NAND 與 NOR','NOT 與緩衝器'], a:2, ex:'只用 NAND（或只用 NOR）就能組出 NOT、AND、OR，所以能組出任何電路。'},
+  {id:'2n', ch:2, sec:'2-3 萬用閘', q:'只用 2 輸入 NAND 閘組成 OR 閘，最少需要幾個？', o:['1','2','4','3'], a:3, ex:'A、B 各用一個 NAND 反相得 A′、B′，再 NAND：(A′B′)′ = A + B，共 3 個。'},
+  {id:'2o', ch:2, sec:'2-3 萬用閘', q:'只用 2 輸入 NOR 閘組成 OR 閘，最少需要幾個？', o:['2','1','3','4'], a:0, ex:'NOR 後面再接一個當 NOT 的 NOR：((A + B)′)′ = A + B，共 2 個。用 NOR 組 AND 才要 3 個。'},
+  {id:'2p', ch:2, sec:'2-3 萬用閘', q:'只用 2 輸入 NOR 閘組成 AND 閘，最少需要幾個？', o:['1','2','3','4'], a:2, ex:'A′、B′ 各用一個 NOR 產生，再 NOR：(A′ + B′)′ = AB，共 3 個。'},
+  {id:'2q', ch:2, sec:'2-3 萬用閘', q:'2 輸入 NAND 閘的兩個輸入端接在一起，功能等同於？', o:['AND','NOT','緩衝器','OR'], a:1, ex:'(A · A)′ = A′ → NOT。NOR 輸入接在一起也是 NOT。'},
+  {id:'2r', ch:2, sec:'2-3 等效符號', q:'NAND 閘的等效符號是？', o:['輸出加圈的 OR','輸入加圈的 AND','輸入加圈的 OR（負 OR）','XOR'], a:2, ex:'第摩根：(AB)′ = A′ + B′ → 輸入先反相再 OR。NOR 則等效於負 AND。'},
+  {id:'2s', ch:2, sec:'2-4 XOR／XNOR', q:'2 輸入 XOR 閘輸出為 1 的條件是？', o:['兩輸入相同','兩輸入皆為 1','兩輸入皆為 0','兩輸入相異'], a:3, ex:'XOR = A′B + AB′，相異為 1；XNOR 相同為 1。'},
+  {id:'2t', ch:2, sec:'2-4 XOR／XNOR', q:'XOR 的布林式為？', o:['AB + A′B′','A′B + AB′','A + B','(AB)′'], a:1, ex:'A ⊕ B = A′B + AB′。AB + A′B′ 是 XNOR。'},
+  {id:'2u', ch:2, sec:'2-4 XOR 性質', q:'A ⊕ 1 = ？', o:['0','1','A′','A'], a:2, ex:'A ⊕ 0 = A、A ⊕ 1 = A′、A ⊕ A = 0、A ⊕ A′ = 1。'},
+  {id:'2v', ch:2, sec:'2-4 XOR 性質', q:'A ⊕ A′ = ？', o:['1','0','A','A′'], a:0, ex:'A 和 A′ 一定相異 → XOR 輸出 1。'},
+  {id:'2w', ch:2, sec:'2-4 XOR／XNOR', q:'3 輸入 XOR 閘，輸入為 1、1、1，輸出為？', o:['0','不確定','1','與 2 輸入相同為 0'], a:2, ex:'多輸入 XOR：1 的個數為奇數 → 1。三個 1 是奇數。'},
+  {id:'2x', ch:2, sec:'2-4 XOR／XNOR', q:'4 輸入 XNOR 閘，輸入為 1、0、1、1，輸出為？', o:['1','0','不確定','與輸入 A 相同'], a:1, ex:'有 3 個 1（奇數）→ XOR = 1 → XNOR = 0。XNOR：偶數個 1 才輸出 1。'},
+  {id:'2y', ch:2, sec:'2-4 可控反相器', q:'XOR 閘一端當控制端 C，C = 1 時輸出為？', o:['另一輸入本身','恆為 0','恆為 1','另一輸入的反相'], a:3, ex:'X ⊕ 1 = X′（反相）；X ⊕ 0 = X（原樣通過）→ XOR 可當可控反相器。'},
+  {id:'2z', ch:2, sec:'2-4 XOR／XNOR', q:'XNOR 閘又稱為？', o:['同值閘（比較閘）','互斥閘','萬用閘','緩衝閘'], a:0, ex:'XNOR 兩輸入相同才輸出 1，可用來比較兩位元是否相等，所以叫同值閘、比較閘。'},
+  {id:'2aa', ch:2, sec:'※2-5 IEEE 符號', q:'IEEE 矩形符號框內標示「≥1」代表哪一種閘？', o:['AND','XOR','OR','NOT'], a:2, ex:'& = AND、≥1 = OR、=1 = XOR、= = XNOR、1 = NOT／緩衝器。'},
+  {id:'2ab', ch:2, sec:'※2-5 IEEE 符號', q:'IEEE 矩形符號框內標示「=1」代表哪一種閘？', o:['XOR','XNOR','OR','緩衝器'], a:0, ex:'「=1」：剛好一個輸入為 1 時輸出 1（2 輸入時）→ XOR。'},
+  {id:'2ac', ch:2, sec:'※2-5 商用包裝', q:'下列 TTL IC 編號與功能的配對，何者錯誤？', o:['7400：NAND','7402：NOR','7408：AND','7432：XOR'], a:3, ex:'7432 是 OR，XOR 是 7486。記法：00 NAND、02 NOR、04 NOT、08 AND、32 OR、86 XOR。'},
+  {id:'2ad', ch:2, sec:'※2-5 商用包裝', q:'7404 這顆 IC 內含？', o:['4 個 2 輸入 NAND','6 個 NOT','4 個 2 輸入 AND','4 個 2 輸入 NOR'], a:1, ex:'7404 = hex inverter，6 個反相器。'},
+
+  // ===== Ch3 布林代數與第摩根定理 =====
+  {id:'3a', ch:3, sec:'3-1 特質', q:'布林運算的優先順序（不含括號）為？', o:['AND > OR > NOT','NOT > AND > OR','OR > AND > NOT','由左到右'], a:1, ex:'括號 → NOT → AND → OR。'},
+  {id:'3b', ch:3, sec:'3-1 對偶', q:'A + BC 的對偶式為？', o:['A′ + B′C′','A′(B′ + C′)','AB + C','A(B + C)'], a:3, ex:'對偶：+ ↔ ·、0 ↔ 1，變數不動 → A · (B + C)。注意要加括號保持運算順序。'},
+  {id:'3c', ch:3, sec:'3-1 定律', q:'下列哪一個式子在布林代數成立，但在普通代數「不成立」？', o:['A(B + C) = AB + AC','A + B = B + A','A + BC = (A + B)(A + C)','(AB)C = A(BC)'], a:2, ex:'第二分配律 A + BC = (A + B)(A + C) 只在布林代數成立。'},
+  {id:'3d', ch:3, sec:'3-1 對偶', q:'A + 0 = A 的對偶式為？', o:['A · 1 = A','A · 0 = 0','A + 1 = 1','A′ + 1 = A′'], a:0, ex:'+ 換 ·、0 換 1 → A · 1 = A。'},
+  {id:'3e', ch:3, sec:'3-2 單變數', q:'A · A′ = ？', o:['A','1','A′','0'], a:3, ex:'A 和 A′ 一定有一個是 0 → AND 結果為 0。對偶：A + A′ = 1。'},
+  {id:'3f', ch:3, sec:'3-2 單變數', q:'A + A = ？', o:['2A','A','1','0'], a:1, ex:'布林代數沒有 2A：1 + 1 = 1、0 + 0 = 0，所以 A + A = A。'},
+  {id:'3g', ch:3, sec:'3-2 單變數', q:'A + 1 = ？', o:['A','A′','1','0'], a:2, ex:'OR 有 1 就 1 → A + 1 = 1。對偶：A · 0 = 0。'},
+  {id:'3h', ch:3, sec:'3-3 多變數', q:'A + AB = ？', o:['AB','A + B','B','A'], a:3, ex:'吸收律：A + AB = A(1 + B) = A。'},
+  {id:'3i', ch:3, sec:'3-3 多變數', q:'A + A′B = ？', o:['A + B','AB','A','B'], a:0, ex:'消去律：A + A′B = (A + A′)(A + B) = A + B。'},
+  {id:'3j', ch:3, sec:'3-3 多變數', q:'A(A′ + B) = ？', o:['A','B','AB','A + B'], a:2, ex:'AA′ + AB = 0 + AB = AB。'},
+  {id:'3k', ch:3, sec:'3-3 多變數', q:'(A + B)(A + B′) = ？', o:['B','A','1','AB'], a:1, ex:'= A + BB′ = A + 0 = A（第二分配律）。'},
+  {id:'3l', ch:3, sec:'3-3 多變數', q:'(A + B)(A + C) = ？', o:['A + BC','AB + AC','A + B + C','ABC'], a:0, ex:'第二分配律反過來用：(A + B)(A + C) = A + BC。'},
+  {id:'3m', ch:3, sec:'3-3 共識定理', q:'AB + A′C + BC 化簡後為？', o:['AB + BC','A + C','AB + A′C','BC'], a:2, ex:'共識定理：A 在 AB、A′C 中以原形和補數出現，剩下的 B、C 相乘 BC 是多餘項。'},
+  {id:'3n', ch:3, sec:'3-4 第摩根', q:'(A + B)′ = ？', o:['A′ + B′','A′B′','AB','(AB)′'], a:1, ex:'斷線變號：(A + B)′ = A′ · B′。'},
+  {id:'3o', ch:3, sec:'3-4 第摩根', q:'(ABC)′ = ？', o:['A′B′C′','A + B + C','A′ + B′ + C′','(A + B + C)′'], a:2, ex:'(ABC)′ = A′ + B′ + C′。'},
+  {id:'3p', ch:3, sec:'3-4 求補數', q:'F = AB + C，則 F′ = ？', o:['A′ + B′C′','A′B′ + C′','(A + B)C','(A′ + B′)C′'], a:3, ex:'F′ = (AB)′ · C′ = (A′ + B′)C′。AB 變成 OR 時要加括號。'},
+  {id:'3q', ch:3, sec:'3-4 求補數', q:'F = A(B′ + C)，則 F′ = ？', o:['A′ + BC′','A′(B + C′)','A′ + B + C′','A′B′C'], a:0, ex:'F′ = A′ + (B′ + C)′ = A′ + BC′。'},
+  {id:'3r', ch:3, sec:'3-4 第摩根', q:'(A′B)′ = ？', o:['AB′','A + B′','A′ + B','A′ + B′'], a:1, ex:'(A′B)′ = A″ + B′ = A + B′。'},
+  {id:'3s', ch:3, sec:'3-4 第摩根', q:'((A + B)′ + C′)′ = ？', o:['A′B′C','A + B + C′','AC + BC','A′C + B′C'], a:2, ex:'= (A + B)″ · C″ = (A + B)C = AC + BC。'},
+  {id:'3t', ch:3, sec:'3-5 化簡', q:'化簡 F = AB + A(B + C) + B(B + C)。', o:['B + AC','A + BC','AB + C','A + B'], a:0, ex:'= AB + AB + AC + B + BC = AB + AC + B + BC，AB、BC 被 B 吸收 → B + AC。'},
+  {id:'3u', ch:3, sec:'3-5 化簡', q:'化簡 F = A′BC + ABC + AB′C。', o:['ABC','A + B + C','BC','C(A + B)'], a:3, ex:'A′BC + ABC = BC；ABC + AB′C = AC（ABC 可重複用）→ BC + AC = C(A + B)。'},
+  {id:'3v', ch:3, sec:'3-5 化簡', q:'化簡 F = (A + B)′ + (A′ + B)′。', o:['A′','B′','A ⊕ B','1'], a:1, ex:'= A′B′ + AB′ = B′(A′ + A) = B′。'},
+  {id:'3w', ch:3, sec:'3-5 化簡', q:'化簡 F = A + A′B + A′B′C。', o:['A + BC','A + B','A + B + C','ABC'], a:2, ex:'A + A′B = A + B；A′B′ = (A + B)′，再用消去律 → (A + B) + C。'},
+  {id:'3x', ch:3, sec:'3-5 化簡', q:'化簡 F = AB + ABC + AB′。', o:['A','AB','B','A + BC'], a:0, ex:'AB + ABC = AB（吸收）；AB + AB′ = A。'},
+  {id:'3y', ch:3, sec:'3-5 邏輯電路', q:'兩層 NAND-NAND 電路：第一層 NAND 輸入 A、B 和 C、D，第二層 NAND 接兩者輸出。F = ？', o:['(A + B)(C + D)','A′B′ + C′D′','ABCD','AB + CD'], a:3, ex:'F = ((AB)′(CD)′)′ = AB + CD。SOP 可以直接用 NAND-NAND 實現。'},
+  {id:'3z', ch:3, sec:'3-5 邏輯電路', q:'POS（和之積）形式的電路，最方便全部改用哪一種閘實現？', o:['NAND','NOR','XOR','XNOR'], a:1, ex:'SOP → NAND-NAND；POS → NOR-NOR。'},
+
+  // ===== Ch4 4-1、4-2 =====
+  {id:'4a', ch:4, sec:'4-1 SOP／POS', q:'下列何者為「積之和（SOP）」形式？', o:['(A + B)C','(A + B)(C + D)','AB + C′D','(AB + C)D'], a:2, ex:'SOP：AND 項再 OR 起來。(A + B)(C + D) 是 POS；另外兩個是混合形式。'},
+  {id:'4b', ch:4, sec:'4-1 標準式', q:'標準 SOP 中，每一個乘積項都必須？', o:['只含原變數','至少含兩個變數','不能有補數','包含全部變數（原形或補數）'], a:3, ex:'標準（完整）形式：每一項都要含所有變數，這樣的乘積項就是最小項 minterm。'},
+  {id:'4c', ch:4, sec:'4-1 最小項', q:'三變數 A、B、C 的最小項 m5 為？', o:['AB′C','A′BC′','A′ + B + C′','A + B′ + C'], a:0, ex:'5 = 101 → A = 1 原形、B = 0 取補數、C = 1 原形 → AB′C。'},
+  {id:'4d', ch:4, sec:'4-1 最大項', q:'三變數 A、B、C 的最大項 M5 為？', o:['A + B′ + C','AB′C','A′ + B + C′','A′BC′'], a:2, ex:'最大項規則和最小項相反：101 → 1 取補數、0 寫原形 → A′ + B + C′。'},
+  {id:'4e', ch:4, sec:'4-1 最小項', q:'三變數最小項 A′BC 的編號是？', o:['m6','m3','m1','m4'], a:1, ex:'A′BC → A = 0、B = 1、C = 1 → 011 = 3 → m3。'},
+  {id:'4f', ch:4, sec:'4-1 最小項與最大項', q:'同編號的最小項 m_i 與最大項 M_i 關係為？', o:['m_i = M_i','m_i + M_i = 0','m_i · M_i = 1','m_i′ = M_i'], a:3, ex:'互為補數：m_i′ = M_i。所以 m_i + M_i = 1、m_i · M_i = 0。'},
+  {id:'4g', ch:4, sec:'4-1 最小項', q:'4 個變數共有幾個最小項？', o:['4','8','16','32'], a:2, ex:'n 個變數 → 2ⁿ 個最小項，2⁴ = 16。'},
+  {id:'4h', ch:4, sec:'4-1 Σ 與 Π', q:'F(A, B, C) = Σm(1, 3, 5, 7)，寫成最大項之積為？', o:['ΠM(0, 2, 4, 6)','ΠM(1, 3, 5, 7)','ΠM(0, 1, 2, 3)','ΠM(4, 5, 6, 7)'], a:0, ex:'同一個函數 Σ 換 Π：取沒出現的編號 → 0、2、4、6。'},
+  {id:'4i', ch:4, sec:'4-1 Σ 與 Π', q:'F(A, B, C) = Σm(0, 2, 3)，則 F′ = ？', o:['Σm(0, 2, 3)','ΠM(1, 4, 5, 6, 7)','Σm(1, 4, 5, 6, 7)','Σm(4, 5, 6, 7)'], a:2, ex:'F′ 的最小項就是 F 沒有的那些：1、4、5、6、7。（F′ 也 = ΠM(0, 2, 3)）'},
+  {id:'4j', ch:4, sec:'4-1 Σ 與 Π', q:'F(A, B, C) = ΠM(0, 1, 2)，則 F 的 Σm 形式為？', o:['Σm(0, 1, 2)','Σm(5, 6, 7)','Σm(3, 4, 5, 6)','Σm(3, 4, 5, 6, 7)'], a:3, ex:'取剩下的編號：3、4、5、6、7。'},
+  {id:'4k', ch:4, sec:'4-1 展開', q:'F(A, B, C) = A + BC 展開成標準 SOP 為？', o:['Σm(3, 4, 5, 6, 7)','Σm(4, 5, 6, 7)','Σm(3, 7)','Σm(1, 3, 5, 7)'], a:0, ex:'A = 1 的列是 4～7；BC = 11 的列是 3、7 → 合起來 3、4、5、6、7。'},
+  {id:'4l', ch:4, sec:'4-1 展開', q:'三變數函數中，乘積項 A′B 展開成標準最小項，共有幾項？', o:['1','2','4','3'], a:1, ex:'缺 1 個變數（C）→ 2¹ = 2 項：A′BC′、A′BC，也就是 m2、m3。'},
+  {id:'4m', ch:4, sec:'4-1 展開', q:'F(A, B, C) = A′B + AC′ 的標準 SOP 為？', o:['Σm(2, 3, 5, 7)','Σm(1, 3, 4, 6)','Σm(2, 3, 4, 6)','Σm(0, 2, 4, 6)'], a:2, ex:'A′B → m2、m3；AC′ → AB′C′、ABC′ → m4、m6。'},
+  {id:'4n', ch:4, sec:'4-2 由真值表', q:'由真值表寫「和之積（POS）」形式時，要看輸出 F 為多少的列？', o:['F = 1 的列','全部的列','F = 0 的列','隨意項的列'], a:2, ex:'F = 1 的列 → Σm（SOP）；F = 0 的列 → ΠM（POS）。'},
+  {id:'4o', ch:4, sec:'4-2 由真值表', q:'由 F = 0 的列寫最大項時，輸入為 1 的變數要？', o:['取補數','寫原形','省略','原形、補數都寫'], a:0, ex:'最大項：0 → 原形、1 → 補數。例：110 → A′ + B′ + C。'},
+  {id:'4p', ch:4, sec:'4-2 由真值表', q:'三變數真值表中，輸出為 1 的列是 001、010、100、111，則 F = ？', o:['Σm(0, 3, 5, 6)','ΠM(1, 2, 4, 7)','Σm(1, 2, 3, 4)','Σm(1, 2, 4, 7)'], a:3, ex:'001 = 1、010 = 2、100 = 4、111 = 7 → Σm(1, 2, 4, 7)。這是「奇數個 1 → 1」，也就是 A ⊕ B ⊕ C。'},
+  {id:'4q', ch:4, sec:'4-2 由文字敘述', q:'三人投票，兩人以上同意（= 1）就通過。輸出 F 為？', o:['Σm(3, 5, 6, 7)','Σm(1, 2, 4, 7)','Σm(0, 1, 2, 4)','Σm(7)'], a:0, ex:'兩個以上 1：011、101、110、111 → Σm(3, 5, 6, 7) = AB + BC + AC（多數決電路）。'},
+  {id:'4r', ch:4, sec:'4-2 由文字敘述', q:'「當 A = 1 且 B = 0，或 C = 1 時，輸出為 1」，F(A, B, C) = ？', o:['Σm(4, 5, 7)','Σm(1, 3, 5, 7)','Σm(0, 2, 6)','Σm(1, 3, 4, 5, 7)'], a:3, ex:'F = AB′ + C；AB′ → m4、m5；C → m1、m3、m5、m7 → Σm(1, 3, 4, 5, 7)。'},
+  {id:'4s', ch:4, sec:'4-2 由真值表', q:'2 變數真值表：00 → 1、01 → 0、10 → 0、11 → 1，F 為？', o:['A ⊕ B','A′B′ + AB（XNOR）','A + B','AB'], a:1, ex:'F = 1 在 00、11 → A′B′ + AB = A ⊙ B（兩者相等才 1）。'},
+  {id:'4t', ch:4, sec:'4-2 由真值表', q:'2 變數函數 F(A, B) = ΠM(0)，等於？', o:['A + B','AB','A′B′','A ⊕ B'], a:0, ex:'只有 00 輸出 0 → 有 1 就 1 → OR：M0 = A + B。'},
+  {id:'4u', ch:4, sec:'4-2 由文字敘述', q:'保險箱：A 一定要按，B、C 至少按一個才打開。F 為？', o:['Σm(3, 5, 6, 7)','Σm(5, 6, 7)','Σm(4, 5, 6, 7)','Σm(1, 2, 3)'], a:1, ex:'A = 1 且 (B, C) ≠ 00 → 101、110、111 → Σm(5, 6, 7) = A(B + C)。'},
+  {id:'4v', ch:4, sec:'4-2 由真值表', q:'三變數真值表中 F = 0 的列為 000、011、110，則 POS 標準式為？', o:['(A′ + B′ + C′)(A′ + B + C)(A + B + C′)','(A + B + C)(A + B′ + C′)(A′ + B′ + C)','A′B′C′ + A′BC + ABC′','(A + B + C)(A′ + B + C)(A + B′ + C)'], a:1, ex:'ΠM(0, 3, 6)：000 → A + B + C；011 → A + B′ + C′；110 → A′ + B′ + C。'},
+];
+
+const CH_NAME = {1:'Ch1 基本概念', 2:'Ch2 邏輯閘', 3:'Ch3 布林代數', 4:'Ch4 布林代數式'};
+const LETTERS = ['A','B','C','D'];
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+
+let wrongBook = new Set(store.get('dl-wrong', []).filter(id => Q.some(q => q.id === id)));
+let state = {
+  scope: store.get('dl-scope', 'all'),
+  shuffle: store.get('dl-shuffle', false),
+  order: [],
+  idx: 0,
+  answers: {},
+  perm: {},
+  done: false,
+};
+
+const byId = id => Q.find(q => q.id === id);
+const $ = id => document.getElementById(id);
+
+function pool(scope) {
+  if (scope === 'wrong') return Q.filter(q => wrongBook.has(q.id));
+  if (scope === 'all') return Q.slice();
+  return Q.filter(q => q.ch === Number(scope));
+}
+function shuffled(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function makePerm(q) {
+  if (!q.k) return shuffled([0, 1, 2, 3]);
+  return shuffled([0, 1, 2]).concat(3);
+}
+const permOf = id => (state.perm && state.perm[id]) || [0, 1, 2, 3];
+const shown = (id, orig) => LETTERS[permOf(id).indexOf(orig)];
+function startRound(scope, ids) {
+  if (scope === 'wrong' && wrongBook.size === 0) scope = 'all';
+  state.scope = scope;
+  store.set('dl-scope', scope);
+  let list = ids ? ids.map(byId).filter(Boolean) : pool(scope);
+  if (state.shuffle && !ids) list = shuffled(list);
+  state.order = list.map(q => q.id);
+  state.perm = {};
+  list.forEach(q => { state.perm[q.id] = state.shuffle ? makePerm(q) : [0, 1, 2, 3]; });
+  state.idx = 0;
+  state.answers = {};
+  state.done = false;
+  render(true);
+}
+
+function renderControls() {
+  const counts = {all: Q.length, 1: 0, 2: 0, 3: 0, 4: 0};
+  Q.forEach(q => counts[q.ch]++);
+  const items = [['all','全部',counts.all],['1',CH_NAME[1],counts[1]],['2',CH_NAME[2],counts[2]],['3',CH_NAME[3],counts[3]],['4',CH_NAME[4],counts[4]]];
+  let html = items.map(([k, label, n]) =>
+    `<button class="chip" id="scope-${k}" data-scope="${k}" aria-pressed="${state.scope === k}">${label}<span class="n">${n}</span></button>`).join('');
+  html += `<button class="chip wrongbook" id="scope-wrong" data-scope="wrong" aria-pressed="${state.scope === 'wrong'}" ${wrongBook.size ? '' : 'disabled'}>錯題本<span class="n">${wrongBook.size}</span></button>`;
+  html += `<span class="spacer"></span><label class="toggle" for="shuffle"><input type="checkbox" id="shuffle" ${state.shuffle ? 'checked' : ''}>隨機（題目＋選項）</label>`;
+  $('controls').innerHTML = html;
+  $('controls').querySelectorAll('[data-scope]').forEach(b => b.addEventListener('click', () => startRound(b.dataset.scope)));
+  $('shuffle').addEventListener('change', e => { state.shuffle = e.target.checked; store.set('dl-shuffle', state.shuffle); startRound(state.scope); });
+}
+
+function tally() {
+  let ok = 0, bad = 0;
+  state.order.forEach(id => { if (id in state.answers) (state.answers[id] === byId(id).a ? ok++ : bad++); });
+  return {ok, bad, left: state.order.length - ok - bad};
+}
+
+function renderStrip() {
+  const t = tally();
+  $('score').innerHTML = `<b>✓ ${t.ok}</b>　<i>✗ ${t.bad}</i>　剩 ${t.left}`;
+  $('cells').innerHTML = state.order.map((id, i) => {
+    const q = byId(id);
+    let cls = 'cell';
+    if (id in state.answers) cls += state.answers[id] === q.a ? ' ok' : ' bad';
+    if (!state.done && i === state.idx) cls += ' cur';
+    return `<button class="${cls}" data-i="${i}" aria-label="第 ${i + 1} 題">${i + 1}</button>`;
+  }).join('');
+  $('cells').querySelectorAll('.cell').forEach(c => c.addEventListener('click', () => {
+    state.idx = Number(c.dataset.i); state.done = false; render(true);
+  }));
+}
+
+function renderQuestion(animate) {
+  const id = state.order[state.idx];
+  const q = byId(id);
+  const picked = state.answers[id];
+  const answered = picked !== undefined;
+  const opts = permOf(id).map((i, pos) => {
+    const txt = q.o[i];
+    let cls = 'opt', mark = '';
+    if (answered) {
+      if (i === q.a) { cls += ' right'; mark = '✓'; }
+      else if (i === picked) { cls += ' wrong'; mark = '✗'; }
+      else cls += ' dim';
+    }
+    return `<li><button class="${cls}" id="opt-${pos}" data-i="${i}" ${answered ? 'disabled' : ''}>
+      <span class="letter">(${LETTERS[pos]})</span><span class="txt">${txt}</span><span class="mark" aria-hidden="true">${mark}</span></button></li>`;
+  }).join('');
+  const correct = answered && picked === q.a;
+  const ex = answered ? `<div class="ex"><span class="jie" aria-hidden="true">解</span><p>
+      <span class="verdict ${correct ? 'ok' : 'bad'}">${correct ? '答對了' : '答錯了，正解是 (' + shown(id, q.a) + ')'}</span>${q.ex}</p></div>` : '';
+  const last = state.idx === state.order.length - 1;
+  const t = tally();
+  const nextLabel = last ? (t.left === 0 ? '看結果' : '看結果（還有題目沒寫）') : '下一題';
+  $('sheet').innerHTML = `
+    <div class="meta"><span class="tag">${CH_NAME[q.ch]}</span><span>${q.sec}</span>${q.src ? `<span>${q.src}</span>` : ''}<span>第 ${state.idx + 1} / ${state.order.length} 題</span></div>
+    <p class="qtext">${q.q}</p>
+    <ul class="opts">${opts}</ul>
+    ${ex}
+    <div class="nav">
+      <button class="btn" id="prev" ${state.idx === 0 ? 'disabled' : ''}>上一題</button>
+      <span class="hint">按 <kbd>1</kbd>–<kbd>4</kbd> 作答，<kbd>Enter</kbd> 下一題</span>
+      <button class="btn primary" id="next">${nextLabel}</button>
+    </div>`;
+  if (animate) { $('sheet').classList.remove('enter'); void $('sheet').offsetWidth; $('sheet').classList.add('enter'); }
+  $('sheet').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => answer(Number(b.dataset.i))));
+  $('prev').addEventListener('click', () => go(-1));
+  $('next').addEventListener('click', () => go(1));
+}
+
+function answer(i) {
+  const id = state.order[state.idx];
+  if (state.done || id in state.answers) return;
+  state.answers[id] = i;
+  if (i === byId(id).a) wrongBook.delete(id); else wrongBook.add(id);
+  store.set('dl-wrong', [...wrongBook]);
+  render(false);
+  const n = $('next'); if (n) n.focus({preventScroll: true});
+}
+
+function go(step) {
+  if (state.done) return;
+  const ni = state.idx + step;
+  if (ni < 0) return;
+  if (ni >= state.order.length) { state.done = true; render(true); return; }
+  state.idx = ni;
+  render(true);
+}
+
+function renderResult() {
+  const t = tally();
+  const total = state.order.length;
+  const per = {};
+  state.order.forEach(id => {
+    const q = byId(id);
+    per[q.ch] = per[q.ch] || {ok: 0, n: 0};
+    per[q.ch].n++;
+    if (state.answers[id] === q.a) per[q.ch].ok++;
+  });
+  const bars = Object.keys(per).sort().map(ch => {
+    const p = per[ch], pct = Math.round(p.ok / p.n * 100);
+    return `<div class="bar-row"><span>Ch${ch}</span><div class="bar"><span style="width:${pct}%"></span></div><span class="v">${p.ok}/${p.n}</span></div>`;
+  }).join('');
+  const wrongIds = state.order.filter(id => id in state.answers && state.answers[id] !== byId(id).a);
+  const skipped = state.order.filter(id => !(id in state.answers));
+  const list = wrongIds.map(id => {
+    const q = byId(id);
+    return `<li><span class="q">${q.q}</span><span class="a">你選 <s>(${shown(id, state.answers[id])}) ${q.o[state.answers[id]]}</s>　正解 <b>(${shown(id, q.a)}) ${q.o[q.a]}</b></span><span class="a">${q.ex}</span></li>`;
+  }).join('');
+  $('sheet').innerHTML = `
+    <div class="result-top"><span class="big">${t.ok}<small> / ${total}</small></span>
+      <span class="sub">${t.left ? `還有 ${t.left} 題沒寫・` : ''}正確率 ${total ? Math.round(t.ok / total * 100) : 0}%</span></div>
+    <div class="bars">${bars}</div>
+    <h2>這一輪答錯的題目</h2>
+    ${wrongIds.length ? `<ul class="wrong-list">${list}</ul>` : `<p class="empty">${t.ok ? '全部答對，可以換一個範圍或開隨機再練一次。' : '這一輪還沒有作答。'}</p>`}
+    <div class="nav">
+      <button class="btn" id="again">重新開始這個範圍</button>
+      ${skipped.length ? `<button class="btn" id="skipped">寫沒寫完的 ${skipped.length} 題</button>` : ''}
+      <button class="btn primary" id="redo" ${wrongIds.length ? '' : 'disabled'}>只練這輪錯題</button>
+    </div>`;
+  $('again').addEventListener('click', () => startRound(state.scope));
+  $('redo').addEventListener('click', () => startRound(state.scope, wrongIds));
+  if (skipped.length) $('skipped').addEventListener('click', () => startRound(state.scope, skipped));
+}
+
+function render(animate) {
+  renderControls();
+  renderStrip();
+  if (state.done) renderResult(); else renderQuestion(animate);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target.tagName === 'INPUT') return;
+  if (!state.done && /^[1-4]$/.test(e.key)) { answer(permOf(state.order[state.idx])[Number(e.key) - 1]); e.preventDefault(); }
+  else if (!state.done && e.key === 'Enter' && e.target.tagName !== 'BUTTON') { go(1); e.preventDefault(); }
+  else if (!state.done && e.key === 'ArrowRight') go(1);
+  else if (!state.done && e.key === 'ArrowLeft') go(-1);
+});
+
+function boot(data) {
+  if (data && data.order && data.order.every(byId)) {
+    Object.assign(state, data);
+    render(false);
+  } else {
+    startRound(['all','1','2','3','4','wrong'].includes(state.scope) ? state.scope : 'all');
+  }
+}
+boot({});
+</script>
+</body>
+</html>

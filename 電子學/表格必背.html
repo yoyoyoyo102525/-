@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>電子學表格必背</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=STIX+Two+Text:ital@0;1&display=swap">
+<style>
+/* Layout: one study-sheet column on cool graph paper; sticky mode bar; each table is a card with its mnemonic underneath. Blue pen = answers, red pen = revealed in practice. */
+:root {
+  --paper: #e9eef3;
+  --grid: rgba(60, 96, 140, 0.07);
+  --sheet: #fbfcfd;
+  --ink: #1b2a42;
+  --muted: #5a6a7f;
+  --rule: #d2dbe5;
+  --head: #e3eaf3;
+  --blue: #1f4fd1;
+  --blue-soft: rgba(31, 79, 209, 0.08);
+  --red: #cf3027;
+  --red-soft: rgba(207, 48, 39, 0.07);
+  --amber-soft: rgba(214, 150, 20, 0.12);
+  --chip: #dfe6ee;
+  --shadow: 0 1px 0 rgba(27, 42, 66, 0.06), 0 8px 24px -14px rgba(27, 42, 66, 0.25);
+  --f-display: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "DFKai-SB", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-math: "STIX Two Text", "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0;
+    --muted: #94a3b6; --rule: #2c3644; --head: #212a37; --blue: #8fadff; --blue-soft: rgba(143, 173, 255, 0.1);
+    --red: #ff7d70; --red-soft: rgba(255, 125, 112, 0.09); --amber-soft: rgba(240, 180, 60, 0.12); --chip: #232c38;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 26px -16px rgba(0, 0, 0, 0.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0;
+  --muted: #94a3b6; --rule: #2c3644; --head: #212a37; --blue: #8fadff; --blue-soft: rgba(143, 173, 255, 0.1);
+  --red: #ff7d70; --red-soft: rgba(255, 125, 112, 0.09); --amber-soft: rgba(240, 180, 60, 0.12); --chip: #232c38;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 26px -16px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 72px; }
+body {
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.65;
+  padding-inline: 16px;
+  padding-block: 28px 64px;
+}
+.wrap { max-width: 860px; margin-inline: auto; display: grid; gap: 18px; }
+header { display: grid; gap: 4px; }
+h1 { font: 700 clamp(1.9rem, 6vw, 2.5rem)/1.15 var(--f-display); margin: 0; text-wrap: balance; }
+.sub, .howto { color: var(--muted); font-size: 0.92rem; margin: 0; }
+
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between;
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px;
+  padding: 8px 10px; box-shadow: var(--shadow);
+}
+.modes { display: flex; flex-wrap: wrap; gap: 6px; }
+.mode {
+  font: 500 0.92rem/1 var(--f-body); color: var(--ink); background: var(--chip);
+  border: 0; border-radius: 999px; padding: 10px 14px; cursor: pointer;
+}
+.mode[aria-pressed="true"] { background: var(--ink); color: var(--sheet); }
+.count { font-size: 0.9rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+.count b { color: var(--red); }
+
+.toc { display: flex; flex-wrap: wrap; gap: 6px; }
+.toc a { font-size: 0.85rem; color: var(--ink); text-decoration: none; border: 1px solid var(--rule); background: var(--sheet); border-radius: 6px; padding: 4px 10px; }
+.toc a:hover { border-color: var(--ink); }
+
+.card {
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; box-shadow: var(--shadow);
+  padding: 18px clamp(14px, 3.5vw, 26px) 20px; display: grid; gap: 14px; min-width: 0;
+}
+.card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.card-head h2 { font: 700 1.3rem/1.3 var(--f-display); margin: 0; text-wrap: balance; }
+.tag { font-size: 0.78rem; letter-spacing: 0.06em; color: var(--blue); background: var(--blue-soft); padding: 2px 8px; border-radius: 4px; }
+.n { margin-left: auto; font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bonus-title { font: 700 1.2rem/1.3 var(--f-display); margin: 18px 0 0; color: var(--muted); }
+.card.bonus { border-style: dashed; box-shadow: none; }
+
+.tw { overflow-x: auto; min-width: 0; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 0.96rem; }
+th, td { border: 1px solid var(--rule); padding: 10px 10px; text-align: center; vertical-align: middle; }
+thead th { background: var(--head); font-weight: 700; font-size: 0.88rem; white-space: nowrap; }
+tbody th { background: var(--head); font-weight: 700; text-align: left; white-space: nowrap; }
+td.a { color: var(--blue); font-weight: 500; position: relative; }
+td.m, thead th { font-family: var(--f-math), var(--f-body); }
+td.m { font-size: 1.08rem; white-space: nowrap; }
+thead th { font-family: var(--f-body); }
+sub { font-size: 0.7em; }
+.fr { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15; margin: 0 2px; }
+.fr > span:first-child { border-bottom: 1.2px solid currentColor; padding: 0 3px 1px; }
+.fr > span:last-child { padding: 1px 3px 0; }
+
+/* practice */
+td.a.hid { cursor: pointer; background: var(--amber-soft); }
+td.a.hid:not(.open) .v { visibility: hidden; }
+td.a.hid:not(.open)::after {
+  content: "？"; position: absolute; inset: 0; display: grid; place-items: center;
+  color: var(--muted); font: 700 1.1rem/1 var(--f-display);
+}
+td.a.hid.open { background: var(--red-soft); color: var(--red); }
+td.a.hid:hover:not(.open) { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+.tips { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; border-top: 1px dashed var(--rule); padding-top: 12px; }
+.tips-label { font: 700 0.95rem/1.6 var(--f-display); color: var(--sheet); background: var(--red); border-radius: 6px; padding: 1px 8px; white-space: nowrap; }
+.tips ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; min-width: 0; }
+.tips li { overflow-wrap: anywhere; }
+.tips b { color: var(--red); }
+
+button:focus-visible, td:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+@media (max-width: 480px) {
+  .tips { grid-template-columns: 1fr; }
+  .tips-label { justify-self: start; }
+  .n { margin-left: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  td.a, .mode { transition: background-color .15s, color .15s; }
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>電子學表格必背</h1>
+    <p class="sub">段考表格填空 78 格・39 分｜課本「本章摘要」6 張表，主表共 72 格（合併格算一格），另附 2 張加碼表</p>
+  </header>
+  <div class="bar" role="toolbar" aria-label="練習模式">
+    <div class="modes">
+      <button class="mode" id="m-show" data-m="show" aria-pressed="true">看答案</button>
+      <button class="mode" id="m-hide" data-m="hide" aria-pressed="false">全部遮住</button>
+      <button class="mode" id="m-half" data-m="half" aria-pressed="false">隨機遮一半</button>
+    </div>
+    <span class="count" id="count"></span>
+  </div>
+  <p class="howto">按「全部遮住」或「隨機遮一半」開始練習，先在心裡默念答案，再點格子對答案。</p>
+  <nav class="toc" aria-label="表格目錄"><a href="#wave">波形的有效值與平均值</a><a href="#sige">矽製與鍺製 PN 二</a><a href="#rect">整流電路表</a><a href="#filt">整流濾波電路表</a><a href="#mode">工作模式</a><a href="#conf">放大電路組態表</a></nav>
+  <section class="card" id="wave">
+  <div class="card-head"><span class="tag">Ch1 摘要 14</span><h2>基本交流波形的有效值與平均值比較表</h2><span class="n">9 格</span></div>
+  <div class="tw"><table><thead><tr><th scope="col">波形種類</th><th scope="col">最大值</th><th scope="col">有效值 (V<sub>rms</sub>)</th><th scope="col">正半週平均值 (V<sub>av</sub>)</th></tr></thead><tbody><tr><th scope="row">正弦波</th><td class="a m"><span class="v">V<sub>m</sub></span></td><td class="a m"><span class="v">0.707V<sub>m</sub>　=　<span class="fr"><span>V<sub>m</sub></span><span>√2</span></span></span></td><td class="a m"><span class="v">0.636V<sub>m</sub>　=　<span class="fr"><span>2V<sub>m</sub></span><span>π</span></span></span></td></tr><tr><th scope="row">方波</th><td class="a m"><span class="v">V<sub>m</sub></span></td><td class="a m"><span class="v">V<sub>m</sub></span></td><td class="a m"><span class="v">V<sub>m</sub></span></td></tr><tr><th scope="row">三角波</th><td class="a m"><span class="v">V<sub>m</sub></span></td><td class="a m"><span class="v"><span class="fr"><span>V<sub>m</sub></span><span>√3</span></span>　=　0.577V<sub>m</sub></span></td><td class="a m"><span class="v"><span class="fr"><span>V<sub>m</sub></span><span>2</span></span>　=　0.5V<sub>m</sub></span></td></tr></tbody></table></div>
+  <div class="tips"><span class="tips-label">怎麼記</span><ul><li><b>方波</b>最好記：三格全部是 V<sub>m</sub>。</li><li><b>三角波</b>看分母：有效值除以 <b>√3</b>，平均值除以 <b>2</b>。</li><li><b>正弦波</b>：有效值 0.<b>7</b>07 比平均值 0.<b>6</b>36 大，7 在 6 前面。</li><li>三種波形都是「最大值 ≥ 有效值 ≥ 平均值」；只有方波三個相等。</li><li>分數和小數兩種寫法都背，題目可能要其中一種。</li></ul></div>
+</section><section class="card" id="sige">
+  <div class="card-head"><span class="tag">Ch2 摘要 17</span><h2>矽製與鍺製 PN 二極體差異表</h2><span class="n">10 格</span></div>
+  <div class="tw"><table><thead><tr><th scope="col">材料</th><th scope="col">矽二極體</th><th scope="col">鍺二極體</th></tr></thead><tbody><tr><th scope="row">障壁電壓</th><td class="a"><span class="v">0.6 ～ 0.7 V</span></td><td class="a"><span class="v">0.2 ～ 0.3 V</span></td></tr><tr><th scope="row">逆向飽和漏電流</th><td class="a"><span class="v">約 nA 大小</span></td><td class="a"><span class="v">約 mA 大小</span></td></tr><tr><th scope="row">逆向崩潰電壓</th><td class="a"><span class="v">約數百伏特（例：−250 V）</span></td><td class="a"><span class="v">約數十伏特（例：−50 V）</span></td></tr><tr><th scope="row">溫度特性：障壁電壓</th><td class="a"><span class="v">每增加 1 °C 下降 2.5 mV</span></td><td class="a"><span class="v">每增加 1 °C 下降 1 mV</span></td></tr><tr><th scope="row">溫度特性：逆向飽和漏電流</th><td class="a"><span class="v">每增加 10 °C 增加 1 倍</span></td><td class="a"><span class="v">每增加 6 °C 增加 1 倍</span></td></tr></tbody></table></div>
+  <div class="tips"><span class="tips-label">怎麼記</span><ul><li>直著背一排數字：<b>矽 0.7、nA、數百、2.5、10</b>；<b>鍺 0.3、mA、數十、1、6</b>。</li><li><b>矽比較強</b>：障壁比較高、漏電比較小、耐壓比較高、漏電流要升 10 °C 才加倍（鍺 6 °C 就加倍）。</li><li>鍺的漏電流：課本 p.46 寫 μA，<b>摘要表寫 mA</b>。填這張表照摘要寫 <b>mA</b>。</li></ul></div>
+</section><section class="card" id="rect">
+  <div class="card-head"><span class="tag">Ch2 摘要 33</span><h2>整流電路表</h2><span class="n">14 格</span></div>
+  <div class="tw"><table><thead><tr><th scope="col">電路類型</th><th scope="col">二極體數量</th><th scope="col">PIV</th><th scope="col">f<sub>o</sub></th><th scope="col">V<sub>o(rms)</sub></th><th scope="col">V<sub>o(av)</sub></th><th scope="col">漣波百分比</th></tr></thead><tbody><tr><th scope="row">半波整流</th><td class="a"><span class="v">1 個</span></td><td class="a m"><span class="v">V<sub>m</sub></span></td><td class="a m"><span class="v">f<sub>i</sub></span></td><td class="a m"><span class="v"><span class="fr"><span>V<sub>m</sub></span><span>2</span></span></span></td><td class="a m"><span class="v"><span class="fr"><span>V<sub>m</sub></span><span>π</span></span></span></td><td class="a"><span class="v">121%</span></td></tr><tr><th scope="row">中心抽頭式全波整流</th><td class="a"><span class="v">2 個</span></td><td class="a m"><span class="v">2V<sub>m</sub></span></td><td class="a m" rowspan="2"><span class="v">2f<sub>i</sub></span></td><td class="a m" rowspan="2"><span class="v"><span class="fr"><span>V<sub>m</sub></span><span>√2</span></span></span></td><td class="a m" rowspan="2"><span class="v"><span class="fr"><span>2V<sub>m</sub></span><span>π</span></span></span></td><td class="a" rowspan="2"><span class="v">48%</span></td></tr><tr><th scope="row">橋式全波整流</th><td class="a"><span class="v">4 個</span></td><td class="a m"><span class="v">V<sub>m</sub></span></td></tr></tbody></table></div>
+  <div class="tips"><span class="tips-label">怎麼記</span><ul><li>二極體數量 <b>1、2、4</b>。</li><li>PIV：<b>只有中心抽頭是 2V<sub>m</sub></b>，半波和橋式都是 V<sub>m</sub>。</li><li>兩種全波只差「數量」和「PIV」，後面四格完全一樣（課本是合併格）。</li><li>全波是半波的兩倍：f<sub>o</sub> 從 f<sub>i</sub> 變 2f<sub>i</sub>、平均值從 V<sub>m</sub>/π 變 2V<sub>m</sub>/π；有效值從 V<sub>m</sub>/2 變 V<sub>m</sub>/√2。</li><li>漣波百分比唸成「<b>一二一、四八</b>」：半波 121%、全波 48%。</li></ul></div>
+</section><section class="card" id="filt">
+  <div class="card-head"><span class="tag">Ch2 摘要 34</span><h2>整流濾波電路表</h2><span class="n">11 格</span></div>
+  <div class="tw"><table><thead><tr><th scope="col">電路類型</th><th scope="col">PIV</th><th scope="col">f<sub>o</sub></th><th scope="col">漣波有效值 V<sub>r(rms)</sub></th><th scope="col">漣波因數 r</th><th scope="col">r（f<sub>i</sub> = 60 Hz）</th></tr></thead><tbody><tr><th scope="row">半波整流濾波</th><td class="a m"><span class="v">2V<sub>m</sub></span></td><td class="a m"><span class="v">f<sub>i</sub></span></td><td class="a m"><span class="v"><span class="fr"><span>V<sub>m</sub></span><span>2√3 R<sub>L</sub>Cf<sub>i</sub></span></span></span></td><td class="a m"><span class="v"><span class="fr"><span>1</span><span>2√3 R<sub>L</sub>Cf<sub>i</sub></span></span></span></td><td class="a m"><span class="v"><span class="fr"><span>0.0048</span><span>R<sub>L</sub>C</span></span></span></td></tr><tr><th scope="row">中心抽頭全波整流濾波</th><td class="a m"><span class="v">2V<sub>m</sub></span></td><td class="a m" rowspan="2"><span class="v">2f<sub>i</sub></span></td><td class="a m" rowspan="2"><span class="v"><span class="fr"><span>V<sub>m</sub></span><span>4√3 R<sub>L</sub>Cf<sub>i</sub></span></span></span></td><td class="a m" rowspan="2"><span class="v"><span class="fr"><span>1</span><span>4√3 R<sub>L</sub>Cf<sub>i</sub></span></span></span></td><td class="a m" rowspan="2"><span class="v"><span class="fr"><span>0.0024</span><span>R<sub>L</sub>C</span></span></span></td></tr><tr><th scope="row">橋式全波整流濾波</th><td class="a m"><span class="v">V<sub>m</sub></span></td></tr></tbody></table></div>
+  <div class="tips"><span class="tips-label">怎麼記</span><ul><li>加了電容以後，<b>半波的 PIV 從 V<sub>m</sub> 變成 2V<sub>m</sub></b>；中心抽頭還是 2V<sub>m</sub>，<b>只剩橋式是 V<sub>m</sub></b>。</li><li>全波的分母 <b>4√3</b> 是半波 <b>2√3</b> 的兩倍（因為 f<sub>o</sub> = 2f<sub>i</sub>），所以 r 剛好減半：<b>0.0048 → 0.0024</b>。</li><li>「漣波有效值」那格 = 「漣波因數」那格 × V<sub>m</sub>（分子 1 換成 V<sub>m</sub>）。</li><li>0.0048 是 R<sub>L</sub> 用 Ω、C 用 F；如果 R<sub>L</sub> 用 kΩ、C 用 μF，就是 <b>4.8</b> 和 <b>2.4</b>。</li></ul></div>
+</section><section class="card" id="mode">
+  <div class="card-head"><span class="tag">Ch3 摘要 8</span><h2>電晶體工作模式</h2><span class="n">16 格</span></div>
+  <div class="tw"><table><thead><tr><th scope="col">工作模式</th><th scope="col">B-C 接面</th><th scope="col">B-E 接面</th><th scope="col">NPN 電晶體</th><th scope="col">PNP 電晶體</th></tr></thead><tbody><tr><th scope="row">順向主動區</th><td class="a"><span class="v">逆向偏壓</span></td><td class="a"><span class="v">順向偏壓</span></td><td class="a m"><span class="v">V<sub>C</sub> > V<sub>B</sub> > V<sub>E</sub></span></td><td class="a m"><span class="v">V<sub>C</sub> < V<sub>B</sub> < V<sub>E</sub></span></td></tr><tr><th scope="row">飽和區</th><td class="a"><span class="v">順向偏壓</span></td><td class="a"><span class="v">順向偏壓</span></td><td class="a m"><span class="v">V<sub>B</sub> > V<sub>C</sub> > V<sub>E</sub></span></td><td class="a m"><span class="v">V<sub>B</sub> < V<sub>C</sub> < V<sub>E</sub></span></td></tr><tr><th scope="row">截止區</th><td class="a"><span class="v">逆向偏壓</span></td><td class="a"><span class="v">逆向偏壓</span></td><td class="a m"><span class="v">V<sub>C</sub> > V<sub>E</sub> > V<sub>B</sub></span></td><td class="a m"><span class="v">V<sub>C</sub> < V<sub>E</sub> < V<sub>B</sub></span></td></tr><tr><th scope="row">逆向主動區</th><td class="a"><span class="v">順向偏壓</span></td><td class="a"><span class="v">逆向偏壓</span></td><td class="a m"><span class="v">V<sub>E</sub> > V<sub>B</sub> > V<sub>C</sub></span></td><td class="a m"><span class="v">V<sub>E</sub> < V<sub>B</sub> < V<sub>C</sub></span></td></tr></tbody></table></div>
+  <div class="tips"><span class="tips-label">怎麼記</span><ul><li>⚠️ 這張表是 <b>B-C 在前、B-E 在後</b>，跟平常講「射順集逆」的順序相反。順向主動區要填「<b>逆向、順向</b>」。</li><li>偏壓：飽和「兩個順」、截止「兩個逆」、逆向主動跟順向主動相反。</li><li>NPN：主動區照字母 <b>C &gt; B &gt; E</b>；飽和 <b>B 最大</b>；截止 <b>B 最小</b>；逆向主動是主動倒過來 <b>E &gt; B &gt; C</b>。</li><li><b>PNP = 把 NPN 的「&gt;」全部改成「&lt;」</b>，字母順序完全不動。</li></ul></div>
+</section><section class="card" id="conf">
+  <div class="card-head"><span class="tag">Ch3 摘要 13</span><h2>電晶體放大電路組態表</h2><span class="n">12 格</span></div>
+  <div class="tw"><table><thead><tr><th scope="col">工作組態</th><th scope="col">輸入端</th><th scope="col">共用端</th><th scope="col">輸出端</th><th scope="col">電流增益比</th></tr></thead><tbody><tr><th scope="row">共基極 (CB)</th><td class="a"><span class="v">E 極</span></td><td class="a"><span class="v">B 極</span></td><td class="a"><span class="v">C 極</span></td><td class="a m"><span class="v">α = <span class="fr"><span>I<sub>C</sub></span><span>I<sub>E</sub></span></span></span></td></tr><tr><th scope="row">共射極 (CE)</th><td class="a"><span class="v">B 極</span></td><td class="a"><span class="v">E 極</span></td><td class="a"><span class="v">C 極</span></td><td class="a m"><span class="v">β = <span class="fr"><span>I<sub>C</sub></span><span>I<sub>B</sub></span></span></span></td></tr><tr><th scope="row">共集極 (CC)</th><td class="a"><span class="v">B 極</span></td><td class="a"><span class="v">C 極</span></td><td class="a"><span class="v">E 極</span></td><td class="a m"><span class="v">γ = <span class="fr"><span>I<sub>E</sub></span><span>I<sub>B</sub></span></span></span></td></tr></tbody></table></div>
+  <div class="tips"><span class="tips-label">怎麼記</span><ul><li><b>共用端 = 名字的第二個字母</b>：CB 共 B、CE 共 E、CC 共 C。</li><li>剩下兩極用「<b>C 不能當輸入、B 不能當輸出</b>」排：CB → E 入 C 出；CE → B 入 C 出；CC → B 入 E 出。</li><li><b>電流增益 = 輸出電流 ÷ 輸入電流</b>：CB 是 I<sub>C</sub>/I<sub>E</sub>、CE 是 I<sub>C</sub>/I<sub>B</sub>、CC 是 I<sub>E</sub>/I<sub>B</sub>。</li><li>順便背（摘要 10）：γ = 1 + β、α = β/(1 + β)、β = α/(1 − α)、γ = 1/(1 − α)；大小 γ &gt; β &gt; α。</li></ul></div>
+</section>
+  <h2 class="bonus-title">加碼：可能也會出的表</h2>
+  <section class="card bonus" id="ic">
+  <div class="card-head"><span class="tag">Ch1 加碼</span><h2>積體電路分類</h2><span class="n">10 格</span></div>
+  <div class="tw"><table><thead><tr><th scope="col">種類</th><th scope="col">零件數量</th><th scope="col">邏輯閘數量</th></tr></thead><tbody><tr><th scope="row">SSI 小型</th><td class="a"><span class="v">100 個以下</span></td><td class="a"><span class="v">12 個以下</span></td></tr><tr><th scope="row">MSI 中型</th><td class="a"><span class="v">100 ～ 1k 個</span></td><td class="a"><span class="v">12 ～ 100 個</span></td></tr><tr><th scope="row">LSI 大型</th><td class="a"><span class="v">1k ～ 10k 個</span></td><td class="a"><span class="v">100 ～ 1000 個</span></td></tr><tr><th scope="row">VLSI 超大型</th><td class="a"><span class="v">10k ～ 100k 個</span></td><td class="a"><span class="v">1000 ～ 10000 個</span></td></tr><tr><th scope="row">ULSI 極大型</th><td class="a"><span class="v">100k 個以上</span></td><td class="a"><span class="v">10000 個以上</span></td></tr></tbody></table></div>
+  <div class="tips"><span class="tips-label">怎麼記</span><ul><li>零件數：100、1k、10k、100k，<b>每級乘 10</b>。</li><li>邏輯閘：<b>12</b>、100、1000、10000（只有第一個是 12，不是 10）。</li></ul></div>
+</section><section class="card bonus" id="led">
+  <div class="card-head"><span class="tag">Ch2 表 2-1・加碼</span><h2>LED 材料與顏色</h2><span class="n">15 格</span></div>
+  <div class="tw"><table><thead><tr><th scope="col">半導體材料</th><th scope="col">光顏色</th><th scope="col">切入電壓</th><th scope="col">波長</th></tr></thead><tbody><tr><th scope="row">砷化鎵 GaAs</th><td class="a"><span class="v">紅外線（不可見光）</span></td><td class="a"><span class="v">≈ 1 ～ 1.9 V</span></td><td class="a m"><span class="v">> 760 nm</span></td></tr><tr><th scope="row">鋁砷化鎵 AlGaAs</th><td class="a"><span class="v">紅</span></td><td class="a"><span class="v">≈ 1.6 ～ 2 V</span></td><td class="a"><span class="v">760 ～ 610 nm</span></td></tr><tr><th scope="row">砷化鎵磷 GaAsP</th><td class="a"><span class="v">黃</span></td><td class="a"><span class="v">≈ 2.1 V</span></td><td class="a"><span class="v">590 ～ 570 nm</span></td></tr><tr><th scope="row">磷化鎵 GaP</th><td class="a"><span class="v">綠</span></td><td class="a"><span class="v">≈ 2 ～ 3 V</span></td><td class="a"><span class="v">570 ～ 500 nm</span></td></tr><tr><th scope="row">碳化矽 SiC</th><td class="a"><span class="v">藍</span></td><td class="a"><span class="v">≈ 3 ～ 5 V</span></td><td class="a"><span class="v">500 ～ 450 nm</span></td></tr></tbody></table></div>
+  <div class="tips"><span class="tips-label">怎麼記</span><ul><li>顏色照彩虹排：<b>紅外 → 紅 → 黃 → 綠 → 藍</b>，波長越來越短、切入電壓越來越大。</li><li>材料：砷化鎵是紅外線，<b>加鋁變紅、加磷變黃</b>，磷化鎵綠，碳化矽藍。</li></ul></div>
+</section>
+</div>
+<script>
+const cells = [...document.querySelectorAll('td.a')];
+const countEl = document.getElementById('count');
+let mode = 'show';
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function setMode(m) {
+  mode = m;
+  const hideSet = new Set(m === 'hide' ? cells : m === 'half' ? shuffle(cells.slice()).slice(0, Math.ceil(cells.length / 2)) : []);
+  cells.forEach(c => {
+    const h = hideSet.has(c);
+    c.classList.toggle('hid', h);
+    c.classList.remove('open');
+    if (h) { c.tabIndex = 0; c.setAttribute('role', 'button'); c.setAttribute('aria-label', '點一下看答案'); }
+    else { c.removeAttribute('tabindex'); c.removeAttribute('role'); c.removeAttribute('aria-label'); }
+  });
+  document.querySelectorAll('.mode').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
+  update();
+}
+function update() {
+  if (mode === 'show') { countEl.textContent = `共 ${cells.length} 格`; return; }
+  const hid = cells.filter(c => c.classList.contains('hid'));
+  const open = hid.filter(c => c.classList.contains('open')).length;
+  countEl.innerHTML = `已翻開 <b>${open}</b> / ${hid.length} 格`;
+}
+cells.forEach(c => {
+  const flip = () => {
+    if (!c.classList.contains('hid')) return;
+    c.classList.toggle('open');
+    c.setAttribute('aria-label', c.classList.contains('open') ? '再點一下遮住' : '點一下看答案');
+    update();
+  };
+  c.addEventListener('click', flip);
+  c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+});
+document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
+setMode('show');
+
+</script>
+</body>
+</html>

@@ -12,9 +12,15 @@
 - Ch2 二極體及應用電路
 - Ch3 雙極性接面電晶體（講義到 3-3-1；教師手冊有 p.131 之後的偏壓電路題，題庫標成「3-3 偏壓（p.131 後）」）
 
+## 網站連結
+
+- **表格必背**：https://claude.ai/artifact/F1Nv5TPZq7SsV7SUtdrjeD
+- **段考題庫**：https://claude.ai/artifact/7MRKh91FGey2pv21aMfpBN
+- 每個網站要先打開分享，別人才看得到。
+
 ## 互動測驗怎麼開
 
-- **線上版**：https://claude.ai/artifact/7MRKh91FGey2pv21aMfpBN （只有本人和被分享的人能開）
+- **線上版**：https://claude.ai/artifact/7MRKh91FGey2pv21aMfpBN
 - **離線版**：下載 `電子學段考題庫.html`，用瀏覽器打開就能用。字型要連網才會載入，沒網路時會改用系統字型。
 
 ## 測驗功能

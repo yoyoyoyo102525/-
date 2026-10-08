@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>電子學段考複習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column on cool graph paper; sticky chapter chips; each chapter is a card. Blue = answers/links, red = warnings and stars. */
+:root {
+  --paper: #e9eef3; --grid: rgba(60, 96, 140, 0.07); --sheet: #fbfcfd; --ink: #1b2a42; --muted: #5a6a7f;
+  --rule: #d2dbe5; --head: #e3eaf3; --blue: #1f4fd1; --blue-soft: rgba(31, 79, 209, 0.08); --red: #cf3027;
+  --chip: #dfe6ee; --code: #eef2f7;
+  --shadow: 0 1px 0 rgba(27, 42, 66, 0.06), 0 8px 24px -14px rgba(27, 42, 66, 0.25);
+  --f-display: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "DFKai-SB", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0; --muted: #94a3b6;
+    --rule: #2c3644; --head: #212a37; --blue: #8fadff; --blue-soft: rgba(143, 173, 255, 0.1); --red: #ff7d70;
+    --chip: #232c38; --code: #141a22; --shadow: 0 1px 0 rgba(0,0,0,.3), 0 10px 26px -16px rgba(0,0,0,.7); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0; --muted: #94a3b6;
+  --rule: #2c3644; --head: #212a37; --blue: #8fadff; --blue-soft: rgba(143, 173, 255, 0.1); --red: #ff7d70;
+  --chip: #232c38; --code: #141a22; --shadow: 0 1px 0 rgba(0,0,0,.3), 0 10px 26px -16px rgba(0,0,0,.7); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 64px; }
+body {
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px; color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.75;
+  padding-inline: 16px; padding-block: 28px 64px;
+}
+.wrap { max-width: 860px; margin-inline: auto; display: grid; gap: 16px; }
+header { display: grid; gap: 8px; }
+h1 { font: 700 clamp(1.9rem, 6vw, 2.5rem)/1.15 var(--f-display); margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); font-size: .92rem; margin: 0; }
+.scope { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 10px 16px; font-size: .92rem; }
+.scope p, .scope ul { margin: 4px 0; }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { font-size: .92rem; font-weight: 500; text-decoration: none; color: var(--ink); border: 1.5px solid var(--rule); background: var(--sheet); border-radius: 8px; padding: 8px 14px; }
+.btn.primary { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+.toc {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; gap: 6px; overflow-x: auto;
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 8px; box-shadow: var(--shadow);
+  scrollbar-width: thin;
+}
+.toc a { flex: none; font-size: .86rem; color: var(--ink); text-decoration: none; background: var(--chip); border-radius: 999px; padding: 6px 12px; white-space: nowrap; }
+.toc a:hover { background: var(--ink); color: var(--sheet); }
+main { display: grid; gap: 16px; min-width: 0; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; box-shadow: var(--shadow); padding: 4px clamp(14px, 3.5vw, 28px) 18px; min-width: 0; }
+.card > * { max-width: 100%; }
+h2 { font: 700 1.5rem/1.3 var(--f-display); margin: 18px 0 8px; text-wrap: balance; }
+h3 { font: 700 1.15rem/1.4 var(--f-display); margin: 22px 0 6px; padding-top: 12px; border-top: 1px dashed var(--rule); text-wrap: balance; }
+h4 { font-size: 1rem; margin: 16px 0 4px; }
+h2 + h3 { border-top: 0; padding-top: 0; }
+p { margin: 8px 0; overflow-wrap: anywhere; }
+ul, ol { padding-left: 1.3em; margin: 6px 0; }
+li { margin: 2px 0; overflow-wrap: anywhere; }
+strong { color: var(--red); font-weight: 700; }
+a { color: var(--blue); }
+blockquote { margin: 10px 0; padding: 6px 14px; border-left: 3px solid var(--blue); background: var(--blue-soft); border-radius: 0 8px 8px 0; }
+code { font-family: var(--f-mono); font-size: .88em; background: var(--code); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code); border: 1px solid var(--rule); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.6; }
+pre code { background: none; padding: 0; font-size: .86rem; }
+.tw { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: .94rem; font-variant-numeric: tabular-nums; }
+th, td { border: 1px solid var(--rule); padding: 7px 10px; text-align: left; vertical-align: top; }
+thead th { background: var(--head); white-space: nowrap; }
+tbody td:first-child { white-space: nowrap; }
+details { border: 1px solid var(--rule); border-radius: 8px; padding: 6px 12px; margin: 6px 0 14px; background: var(--paper); }
+summary { cursor: pointer; color: var(--blue); font-weight: 500; }
+details[open] summary { margin-bottom: 4px; }
+sub { font-size: .72em; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+td, th { min-width: 4.5em; }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>電子學段考複習</h1>
+    <p class="sub">Ch1 概論・Ch2 二極體及應用電路・Ch3 雙極性接面電晶體｜總整理</p>
+    <div class="scope"><p>考試範圍（依你給的講義）：</p>
+<ul><li>Ch1 全章（p.1–28）</li><li>Ch2 全章（p.29–106，含 2-6 稽納穩壓電路與自我評量）</li><li>Ch3 p.107–130（3-1、3-2、3-3-1 輸入工作點）</li></ul>
+<p>標 ⭐ 的是課本螢光筆或老師打星號的地方，最可能考。</p></div>
+    <div class="jump">
+      <a class="btn primary" href="https://claude.ai/artifact/F1Nv5TPZq7SsV7SUtdrjeD" target="_blank" rel="noopener">要背的：表格必背 ↗</a>
+      <a class="btn" href="https://claude.ai/artifact/7MRKh91FGey2pv21aMfpBN" target="_blank" rel="noopener">練習：段考題庫 ↗</a>
+    </div>
+  </header>
+  <nav class="toc" aria-label="章節"><a href="#921-第一次小考詳解--出題規律">第一次小考</a><a href="#105-第二次小考重點">第二次小考</a><a href="#ch1-概論">Ch1 概論</a><a href="#ch2-二極體及應用電路">Ch2 二極體</a><a href="#ch3-雙極性接面電晶體-bjt">Ch3 BJT</a><a href="#公式卡考前-5-分鐘看這裡">公式卡</a><a href="#課本題目答案核對">課本答案核對</a><a href="#教師手冊補充鍛鍊本統測ch3-後半">教師手冊補充</a><a href="#隨堂測驗卷補充科友-第59回">測驗卷補充</a><a href="#自我測驗附詳解">自我測驗</a></nav>
+  <main><section class="card"><h2 id="921-第一次小考詳解--出題規律">9/21 第一次小考詳解 ＆ 出題規律</h2>
+<h3 id="-出題規律小考-10-題全部是課本的範例和立即練習">🔑 出題規律：小考 10 題全部是課本的「範例」和「立即練習」</h3>
+<div class="tw"><table><thead><tr><th>小考</th><th>課本出處</th></tr></thead><tbody><tr><td>1</td><td>範例 1-3 ＋ 立即練習 1-3</td></tr><tr><td>2</td><td>立即練習 1-4</td></tr><tr><td>3</td><td>立即練習 1-5</td></tr><tr><td>4</td><td>立即練習 1-6</td></tr><tr><td>5</td><td>立即練習 1-7</td></tr><tr><td>6</td><td>立即練習 1-8（<strong>數字改過！</strong>）</td></tr><tr><td>7</td><td>立即練習 1-9</td></tr><tr><td>8</td><td>範例 2-1</td></tr><tr><td>9</td><td>範例 2-2</td></tr><tr><td>10</td><td>立即練習 2-6 (1)</td></tr></tbody></table></div>
+<p><strong>段考很可能也照這個模式出 → 把每一章的「範例＋立即練習」練到不看答案也會算。</strong> 下面有立即練習的總整理。</p>
+<h3 id="小考詳解">小考詳解</h3>
+<p><strong>1.</strong> f = 100 Hz、Vm = 10 V → ω = 2π × 100 = 628</p>
+<ul><li>瞬時式：<strong>v(t) = 10 sin(628t) V</strong></li><li>T = 10 ms，7.5 ms = ¾T → 270° → v = 10 × sin 270° = <strong>−10 V</strong></li></ul>
+<p><strong>2.</strong> v(t) = 5 sin(314t + 60°)，t = 10 ms</p>
+<ul><li>f = 50 Hz、T = 20 ms，10 ms = ½T → 180°</li><li>5 × sin(180° + 60°) = 5 × sin 240° = 5 × (−√3/2) ≈ <strong>−4.33 V</strong></li></ul>
+<p><strong>3.</strong> T = 7 + 3 = 10 ms → <strong>f = 100 Hz</strong>；D = 7/10 = <strong>70%</strong></p>
+<p><strong>4.</strong> 鋸齒波週期 10 ms → <strong>f = 100 Hz</strong></p>
+<ul><li>正斜率：0 → 6 V 花 6 ms → m = <strong>1 V/ms</strong></li><li>13 ms = 下一個週期的第 3 ms（10 ms 時剛好回到 0 V）→ v = 0 + 1 × 3 = <strong>3 V</strong></li></ul>
+<p><strong>5.</strong> 0–2 s 方波 2 V、2–4 s 三角波峰值 4 V，T = 4 s</p>
+<ul><li>Vrms = √{[2² × 2 + (4/√3)² × 2] / 4} = √[(8 + 32/3)/4] = √(14/3) ≈ <strong>2.16 V</strong></li></ul>
+<p><strong>6.</strong> ⚠️ <strong>陷阱題：小考寫的是 v(t) = 2 + √2 sin ωt，不是課本的 2 + 2√2 sin ωt</strong></p>
+<ul><li>交流有效值 = √2/√2 = <strong>1 V</strong></li><li>Vrms = √(2² + 1²) = √5 ≈ <strong>2.24 V</strong></li><li>如果直接背課本答案 2√2 V 就錯了！（課本 2 + 2√2 sin ωt 才是 √(4 + 4) = 2√2）</li></ul>
+<p><strong>7.</strong> 峰值 4 V 的全波整流波形</p>
+<ul><li>Vrms = 4/√2 = 2√2 ≈ <strong>2.83 V</strong></li><li>Vav = 2 × 4/π ≈ 0.636 × 4 ≈ <strong>2.544 V</strong></li></ul>
+<p><strong>8.</strong> 受體（三價）→ 電洞濃度 ≈ 雜質濃度</p>
+<ul><li>p = 5×10²² / 10⁸ = <strong>5×10¹⁴ /cm³</strong></li><li>n = nᵢ²/p = 2.25×10²⁰ / 5×10¹⁴ = <strong>4.5×10⁵ /cm³</strong></li></ul>
+<p><strong>9.</strong> 25 °C → 65 °C，升了 40 °C</p>
+<ul><li>I_S = 2 nA × 2⁴ = <strong>32 nA</strong></li><li>Vt = 0.7 − 2.5 mV × 40 = 0.7 − 0.1 = <strong>0.6 V</strong></li></ul>
+<p><strong>10.</strong> 先拿掉稽納：V_th = 12 × 10/(5 + 10) = 8 V ≥ 5 V → 崩潰，V_R2 = 5 V</p>
+<ul><li>I_R1 = (12 − 5)/5k = <strong>1.4 mA</strong></li><li>I_R2 = 5/10k = <strong>0.5 mA</strong></li><li>I_Z = 1.4 − 0.5 = <strong>0.9 mA</strong></li></ul>
+<h3 id="立即練習總整理答案以教師手冊為準">立即練習總整理（答案以教師手冊為準）</h3>
+<div class="tw"><table><thead><tr><th>題號</th><th>題目重點</th><th>答案</th></tr></thead><tbody><tr><td>1-1</td><td>LSI 零件、邏輯閘數</td><td>1000–10000 個、100–1000 個</td></tr><tr><td>1-2</td><td>純直流 vs 純交流</td><td>純直流振幅極性不變；純交流振幅極性都變</td></tr><tr><td>1-3</td><td>10 sin(628t)，t = 7.5 ms</td><td>−10 V</td></tr><tr><td>1-4</td><td>5 sin(314t + 60°)，t = 10 ms</td><td>−4.33 V</td></tr><tr><td>1-5</td><td>高 7 ms、低 3 ms</td><td>70%、100 Hz</td></tr><tr><td>1-6</td><td>鋸齒波頻率、13 ms 電壓</td><td>100 Hz、3 V</td></tr><tr><td>1-7</td><td>方波 2 V ＋ 三角波 4 V</td><td>√(14/3) ≈ 2.16 V</td></tr><tr><td>1-8</td><td>2 + 2√2 sin ωt</td><td>2√2 V</td></tr><tr><td>1-9</td><td>4 V 全波</td><td>Vrms 2√2 V、Vav 2.544 V</td></tr><tr><td>2-1</td><td>摻受體雜質</td><td>P 型</td></tr><tr><td>2-2</td><td>25 °C → 85 °C</td><td>128 nA、0.55 V</td></tr><tr><td>2-3</td><td>1.1–1.2 V、3–4 mA</td><td>r_d = 100 Ω</td></tr><tr><td>2-4</td><td>(1) 電流 (2) 二極體反接</td><td>2.26、0.07、2.19 mA；4 V、8 V</td></tr><tr><td>2-5</td><td>(1) Vo (2) Vt 0.6 V、內阻 200 Ω</td><td>0 V；0.846 mA、<strong>4.23 V</strong></td></tr><tr><td>2-6</td><td>(1) 電流 (2) 稽納反接</td><td>1.4、0.5、0.9 mA；11.3 V、0.7 V</td></tr><tr><td>2-7</td><td>(1) 5:1、150 W、30 V (2) 250 Ω、90 Ω</td><td>6 V、25 A、6 Ω、0.24 Ω；5 : 3</td></tr><tr><td>2-8</td><td>PIV、輸出頻率（Vm 10 V、100 Hz）</td><td>半波 10 V、100 Hz；全波（中抽）20 V、200 Hz</td></tr><tr><td>2-9</td><td>電表改全波</td><td>11.1 V</td></tr><tr><td>2-10</td><td>全波 Vac(rms)、r%</td><td>0.308Vm、48%</td></tr><tr><td>2-11</td><td>6 + 3√2 sin ωt 漣波</td><td>50%</td></tr><tr><td>2-12</td><td>E = 12 + 1 sin ωt</td><td>V_L = 5.2–5.6 V</td></tr><tr><td>2-13</td><td>V_RS = 5 V、V_RL = 25 V</td><td>VR% = 20%</td></tr><tr><td>3-1</td><td>PNP 3 V、6 V、9 V</td><td>工作區</td></tr><tr><td>3-2</td><td>相依源 40I</td><td>1 mA</td></tr><tr><td>3-3</td><td>α、γ</td><td>0.99、101</td></tr><tr><td>3-4</td><td>R_C 變大</td><td>Q 點往飽和區（p.131 後）</td></tr><tr><td>3-5</td><td>範例 3-5 R_C 改 5 kΩ</td><td>飽和，Q(0.2 V, 2.5 mA)（p.131 後）</td></tr><tr><td>3-6</td><td>I_CO 25 °C → 85 °C</td><td>變 2⁶ = 64 倍（手冊寫 1 μA → 64 μA）（p.131 後）</td></tr><tr><td>3-7</td><td>求 R_B、R_C</td><td>34 kΩ、459 Ω（p.131 後）</td></tr><tr><td>3-8</td><td>R_B 改 450 kΩ</td><td>Q(9.7 V, 1.98 mA)（p.131 後）</td></tr><tr><td>3-9</td><td>分壓偏壓 Q 點</td><td>Q(4 V, 3 mA)（p.131 後）</td></tr><tr><td>3-10</td><td>飽和時 R_C 最小</td><td>18 kΩ（p.131 後）</td></tr></tbody></table></div>
+
+</section><section class="card"><h2 id="105-第二次小考重點">10/5 第二次小考重點</h2>
+<p><strong>100 題選擇題，範圍 Ch1 全章、Ch2 全章、Ch3 到 3-2（特性曲線）。</strong> 沒有考 3-3 偏壓電路（p.131 之後），所以段考很可能也只考到 3-2。</p>
+<p>答案我全部驗算過，只有一題有問題：</p>
+<ul><li><strong>#55（LED 功率）</strong>：圖上電源印 <strong>9 V</strong>，但詳解用 <strong>5 V</strong> 算出 15 mW。用 9 V 算是 55 mW，沒有這個選項，所以是圖印錯，照 5 V 算。</li><li>詳解有幾個小筆誤，答案不受影響：#50 寫「−10 V」（圖是 −5 V）、#76 寫「5 Ω」（應為 5 kΩ）、#87 寫「I = 25 mA」（應為 2.5 mA）。</li></ul>
+<h3 id="課本沒有小考有考的內容-">課本沒有、小考有考的內容 ⭐</h3>
+<p><strong>發展史</strong></p>
+<ul><li>點接觸電晶體（1947，材料是<strong>鍺</strong>）：<strong>巴丁、卜拉登、蕭特力</strong></li><li><strong>基爾比</strong>：用鍺做出<strong>第一個 IC</strong>（1958）</li></ul>
+<p><strong>真空管與 IC 製程</strong></p>
+<ul><li>真空管缺點：體積大、容易發熱、壽命短（「有開關特性」不是缺點）</li><li>IC 製程：<strong>晶圓切片最先</strong> → 光罩、蝕刻 → 晶粒切割 → 打線 → 測試（販售不是製程）</li></ul>
+<p><strong>波形</strong></p>
+<ul><li>正弦波是<strong>基本組成波</strong>：不同頻率的正弦波可以組成任意波形</li><li>方波 C.F. = F.F. = 1；F.F. 最小的是方波</li><li>AC 110 V 指的是<strong>有效值</strong> 110 V</li><li>直流成分是負的也照樣平方：−2 + 2√2 sin ωt → Vrms = 2√2 V</li></ul>
+<p><strong>二極體、稽納</strong></p>
+<ul><li>熱電壓 <strong>V_T = kT/q</strong>，27 °C（300 K）時 ≈ <strong>26 mV</strong></li><li>崩潰電壓的溫度變化：<strong>稽納崩潰 → 溫度↑電壓↓</strong>；<strong>累增崩潰 → 溫度↑電壓↑</strong></li><li>稽納動態電阻：<strong>r_z = (V_Z − V_ZK) / (I_Z − I_ZK)</strong></li><li>兩顆稽納背對背串接：一顆順偏（理想 0 V）、一顆崩潰（V_Z）</li><li>理想稽納：順偏 0 V、逆向崩潰 V_Z</li><li>多顆二極體接到不同負電壓：<strong>接到越負的那顆先導通</strong>，用重疊定理算 Vo，再檢查其他顆是否逆偏</li></ul>
+<p><strong>LED、OLED</strong></p>
+<ul><li>遙控器用<strong>紅外線 LED</strong></li><li>LED 的光是<strong>散射光</strong>（不是聚合光）；發光原理<strong>不同於日光燈</strong></li><li><strong>能隙愈大 → 波長愈短</strong>；波長愈長 → 頻率愈低</li><li>OLED 優點：輕薄、色彩鮮豔、高對比、可彎曲；<strong>缺點：壽命短、會烙印</strong></li></ul>
+<p><strong>BJT</strong></p>
+<ul><li>判斷逆向主動：<strong>I_C = I_B + I_E</strong>（電流關係反過來）</li><li><strong>E 極</strong>既可當輸入（CB）也可當輸出（CC）</li><li>座標法判斷工作區（橫軸 V_BE、縱軸 V_BC）：<div class="tw"><table><thead><tr><th>象限</th><th>NPN</th><th>PNP</th></tr></thead><tbody><tr><td>第一（V_BE &gt; 0、V_BC &gt; 0）</td><td>飽和</td><td>截止</td></tr><tr><td>第二（V_BE &lt; 0、V_BC &gt; 0）</td><td>逆向主動</td><td>順向主動</td></tr><tr><td>第三（V_BE &lt; 0、V_BC &lt; 0）</td><td>截止</td><td>飽和</td></tr><tr><td>第四（V_BE &gt; 0、V_BC &lt; 0）</td><td>順向主動</td><td>逆向主動</td></tr></tbody></table></div></li></ul>
+<ul><li>PNP 的 CE 輸出特性曲線畫在<strong>第二象限</strong>（V_CE &lt; 0）</li><li>輸出曲線在主動區幾乎水平：<strong>V_CE 對 I_C 影響很小</strong></li></ul>
+
+</section><section class="card"><h2 id="ch1-概論">Ch1 概論</h2>
+<h3 id="1-1-電子元件發展三時期-">1-1 電子元件發展三時期 ⭐</h3>
+<div class="tw"><table><thead><tr><th>時期</th><th>代表</th><th>老師補充（速度）</th></tr></thead><tbody><tr><td>真空管時期</td><td>真空管</td><td>又大又笨重，速度 <strong>ms</strong></td></tr><tr><td>半導體時期</td><td>電晶體</td><td>速度 <strong>μs</strong></td></tr><tr><td>積體電路時期</td><td>IC 晶片</td><td>晶片化，速度 <strong>ns</strong></td></tr></tbody></table></div>
+<p><strong>歷史年表（人名 ↔ 事件 配對題常考）</strong></p>
+<div class="tw"><table><thead><tr><th>年</th><th>人物</th><th>事件</th></tr></thead><tbody><tr><td>1874</td><td>布勞恩</td><td>發現半導體具「單向傳導」能力</td></tr><tr><td>1876</td><td>—</td><td>發現硒具有光伏效應</td></tr><tr><td>1883</td><td>愛迪生</td><td>發現熱發射現象 → <strong>愛迪生效應</strong></td></tr><tr><td>1883</td><td>弗利茲</td><td>第一個實用的<strong>硒整流器</strong></td></tr><tr><td>1894</td><td>—</td><td>無線電報發明</td></tr><tr><td>1897</td><td>布勞恩</td><td>創造出<strong>第一個真空管</strong>（同年湯姆森證明電子存在）</td></tr><tr><td>1904</td><td>弗萊明</td><td>發明「<strong>熱離子閥</strong>」</td></tr><tr><td>1906</td><td>德福雷斯特</td><td>製作出<strong>真空三極管</strong></td></tr><tr><td>1906</td><td>皮卡德</td><td>第一顆<strong>貓鬚檢波器</strong></td></tr><tr><td>1920</td><td>西屋電氣</td><td>第一家無線電廣播電台 KDKA</td></tr><tr><td>1925</td><td>—</td><td>提出<strong>場效應電晶體 (FET)</strong> 專利</td></tr><tr><td>1930</td><td>—</td><td>開始建立半導體物理學理論</td></tr><tr><td>1936</td><td>蕭特基</td><td>以<strong>散粒效應</strong>解釋半導體整流現象</td></tr><tr><td>1946</td><td>—</td><td>第一座真空管計算機 <strong>ENIAC</strong></td></tr><tr><td>1947</td><td>巴丁等人</td><td><strong>點接觸型鍺電晶體</strong>（貝爾實驗室）</td></tr><tr><td>1958</td><td>—</td><td>積體電路專利提出（<strong>第一顆 IC</strong>）</td></tr><tr><td>1960</td><td>—</td><td><strong>MOSFET</strong> 設計專利</td></tr><tr><td>1965</td><td>—</td><td>開始生產 <strong>MSI</strong>（老師補充：第一顆 OPA，編號 741）</td></tr><tr><td>1970</td><td>—</td><td><strong>LSI</strong> 誕生</td></tr><tr><td>至今</td><td>—</td><td>VLSI、ULSI</td></tr></tbody></table></div>
+<p>另外：1895 年<strong>勞侖茲</strong>提出電具有「原子性」。</p>
+<h3 id="真空管-vs-半導體-">真空管 vs 半導體 ⭐</h3>
+<ul><li><strong>真空管</strong>：陰極要先<strong>加熱</strong>才能發射電子 → 材料易變質、易故障；玻璃管又大又重又易碎。<strong>優點：音頻響應好、適合大功率</strong> → 少數<strong>音響設備</strong>還在用。</li><li><strong>半導體</strong>：體積小、省電、成本低、不易損壞、中頻響應好 → 逐漸取代真空管。</li></ul>
+<h3 id="積體電路分類-必考">積體電路分類 ⭐⭐（必考）</h3>
+<div class="tw"><table><thead><tr><th>種類</th><th>零件（元件）數</th><th>邏輯閘數</th><th>老師補充：例子</th></tr></thead><tbody><tr><td>SSI 小型</td><td>&lt; 100</td><td>&lt; 12</td><td>基本閘 (74xx)、正反器</td></tr><tr><td>MSI 中型</td><td>100 ~ 1k</td><td>12 ~ 100</td><td>解碼器、多工器、ROM</td></tr><tr><td>LSI 大型</td><td>1k ~ 10k</td><td>100 ~ 1000</td><td>單晶片微處理器、RAM</td></tr><tr><td>VLSI 超大型</td><td>10k ~ 100k</td><td>1000 ~ 10000</td><td>Intel CPU、手機 CPU、DRAM</td></tr><tr><td>ULSI 極大型</td><td>&gt; 100k</td><td>&gt; 10000</td><td></td></tr></tbody></table></div>
+<ul><li>大小排序：<strong>ULSI &gt; VLSI &gt; LSI &gt; MSI &gt; SSI</strong></li><li>記法：零件數 <strong>10² → 10³ → 10⁴ → 10⁵</strong>；邏輯閘 <strong>12 → 10² → 10³ → 10⁴</strong></li><li>依電路屬性分：數位 IC（邏輯閘、正反器、微處理器）、類比 IC（感測器、類比運算）、混合訊號 IC（<strong>A/D、D/A 轉換器</strong>）</li><li>名詞：台灣叫「積體電路」，中國叫「集成電路」</li></ul>
+<h3 id="4c-與-3c-">4C 與 3C ⭐</h3>
+<ul><li><strong>4C（電子學技術）</strong>：元件 components、通訊 communication、計算 computation、控制 control<ul><li>元件 → 微小化、通訊 → 遠距化、計算 → 準確化、控制 → 精密化</li></ul></li><li><strong>3C</strong>：電腦、通訊、消費性電子（不要跟 4C 搞混！）</li></ul>
+<h3 id="1-2-基本波形-">1-2 基本波形 ⭐</h3>
+<div class="tw"><table><thead><tr><th>波形</th><th>振幅</th><th>極性</th></tr></thead><tbody><tr><td>純直流</td><td>不變</td><td>不變</td></tr><tr><td>脈動直流</td><td><strong>會變</strong></td><td>不變</td></tr><tr><td>交流</td><td>會變</td><td><strong>會變</strong></td></tr></tbody></table></div>
+<ul><li>交流分<strong>週期性</strong>（會重複）與<strong>非週期性</strong>（不規則，如雜訊）。</li><li><strong>純交流</strong>：一個週期的<strong>平均值 = 0</strong>，沒有直流成份。</li><li><strong>交直流混波</strong> = 直流成份 + 交流成份（如 v(t) = 5 + 5 sin ωt）。<ul><li>判斷技巧：<strong>最低點 &lt; 0 → 極性有變 → 屬於「交流電」</strong>；最低點 ≥ 0 → 脈動直流。</li></ul></li><li>基本交流波形：<strong>正弦波、方波、三角波</strong></li></ul>
+<h3 id="基本數值定義">基本數值定義</h3>
+<ul><li>Vm：最大值（峰值）</li><li>T：週期 (s)，f：頻率 (Hz)，<strong>f = 1/T</strong></li><li><strong>Vp-p = 2Vm</strong>（峰對峰值）</li><li>Veff = Vrms：<strong>有效值</strong>＝在電阻上產生相同平均功率的等效直流值</li><li>Vdc = Vav：<strong>直流值（平均值）</strong></li><li>音頻範圍：<strong>20 Hz ~ 20 kHz</strong></li></ul>
+<h3 id="正弦波-">正弦波 ⭐⭐</h3>
+<ul><li>瞬時式：<strong>v(t) = Vm sin(ωt + θ)</strong>，<strong>ω = 2πf = 2π/T</strong></li><li>超前波 +θ，落後波 −θ</li><li>常見 ω ↔ f：<strong>377 → 60 Hz</strong>、<strong>314 → 50 Hz</strong>、785 → 125 Hz、1000 → 159 Hz</li><li>計算瞬時值的步驟：先算 ωt 換成角度 → 加相位 → 查特殊角<ul><li>特殊角：sin30° = 1/2、sin45° = √2/2、sin60° = √3/2、sin150° = 1/2、sin240° = −√3/2、sin270° = −1</li><li>小技巧：t 是 T 的幾分之幾，角度就是 360° 的幾分之幾（t = ¾T → 270°）</li></ul></li></ul>
+<h3 id="方波與脈波-">方波與脈波 ⭐</h3>
+<ul><li>方波：工作週期 <strong>50%</strong>（T₁ = T₂）</li><li><strong>前緣（正緣）</strong>：Lo → Hi；<strong>後緣（負緣）</strong>：Hi → Lo</li><li><strong>窄脈波</strong>：T₁ &lt; T₂（高準位時間較短）；<strong>寬脈波</strong>：T₁ &gt; T₂</li><li>PW（脈波寬度）＝高準位時間；SW（空間寬度）＝低準位時間</li><li><strong>T = PW + SW</strong>，<strong>工作週期 D = PW / T × 100%</strong></li><li>若低準位 = 0：<strong>Vav = Vm × D</strong></li></ul>
+<h3 id="三角波與鋸齒波">三角波與鋸齒波</h3>
+<ul><li>三角波：正、負斜率<strong>大小相等</strong></li><li>鋸齒波：正、負斜率<strong>大小不相等</strong>（分正向 / 負向鋸齒波）</li><li>斜率 m = ΔV / Δt（單位常用 V/ms）</li></ul>
+<h3 id="有效值與平均值-計算題主力">有效值與平均值 ⭐⭐⭐（計算題主力）</h3>
+<div class="tw"><table><thead><tr><th>波形</th><th>最大值</th><th>有效值 Vrms</th><th>正半週平均 Vav</th><th>波峰因數 C.F. = Vm/Vrms</th><th>波形因數 F.F. = Vrms/Vav</th></tr></thead><tbody><tr><td>正弦波</td><td>Vm</td><td>Vm/√2 = <strong>0.707Vm</strong></td><td>2Vm/π = <strong>0.636Vm</strong></td><td>√2 = <strong>1.414</strong></td><td>≈ <strong>1.11</strong></td></tr><tr><td>方波</td><td>Vm</td><td><strong>Vm</strong></td><td><strong>Vm</strong></td><td><strong>1</strong></td><td><strong>1</strong></td></tr><tr><td>三角波</td><td>Vm</td><td>Vm/√3 = <strong>0.577Vm</strong></td><td>Vm/2 = <strong>0.5Vm</strong></td><td>√3 = <strong>1.732</strong></td><td>≈ <strong>1.154</strong></td></tr><tr><td>純直流</td><td>Vm</td><td>Vm</td><td>Vm</td><td>1</td><td>1</td></tr></tbody></table></div>
+<ul><li><strong>C.F. 波峰因數</strong>：判別電源電路系統優劣；<strong>F.F. 波形因數</strong>：儀器數值換算</li><li>正弦波：Vav = 0.9 Vrms、Vrms = 1.11 Vav</li><li><strong>半波</strong>（只有半個週期有正弦）：Vrms = Vm/2，Vav = Vm/π = 0.318Vm</li><li><strong>全波</strong>（每半週都是正的）：Vrms = Vm/√2，Vav = 2Vm/π</li></ul>
+<p><strong>比大小（常考陷阱）</strong> ⭐</p>
+<ul><li><strong>相同峰值</strong> → 有效值（功率）：<strong>方 &gt; 正 &gt; 三</strong></li><li><strong>相同有效值</strong> → 功率<strong>一樣大</strong></li><li><strong>相同平均值</strong> → 有效值（功率）：<strong>三 &gt; 正 &gt; 方</strong>（因為 F.F. 三角波最大）</li></ul>
+<p><strong>分段週期波形的 Vrms</strong>（每一段先求自己的有效值再平方乘時間）：</p>
+<pre><code>Vrms = √[ (Vrms1² × Δt1 + Vrms2² × Δt2 + …) / T ]
+Vav  = (波形面積和) / T      ← 面積有正有負要相減</code></pre>
+<p><strong>交直流混波</strong>：<code>Vrms = √( Vdc² + Vac(rms)² )</code>，平均值 = 直流項</p>
+<ul><li>例：v = 4 + 3√2 sin ωt → Vrms = √(4² + 3²) = <strong>5 V</strong>，Vav = 4 V</li></ul>
+<p><strong>兩個同頻率正弦相加</strong>（Vm 相同時）：相位差 60° → ×√3；90° → ×√2；120° → ×1；新相角取平均。</p>
+
+</section><section class="card"><h2 id="ch2-二極體及應用電路">Ch2 二極體及應用電路</h2>
+<h3 id="2-1-半導體材料-">2-1 半導體材料 ⭐</h3>
+<ul><li>半導體：導電性介於<strong>導體與絕緣體</strong>之間；常溫下幾乎絕緣，要加電壓才導通 → 導電性<strong>可以控制</strong>。</li><li><strong>元素半導體</strong>：矽 Si、鍺 Ge（<strong>四價</strong>）；<strong>化合物半導體</strong>：砷化鎵 GaAs、氮化鎵 GaN（III-V 價）、硫化鎘 CdS（II-VI 價）</li></ul>
+<div class="tw"><table><thead><tr><th>世代（老師補充）</th><th>材料</th><th>能隙</th><th>特色</th></tr></thead><tbody><tr><td>第一代</td><td>矽 Si</td><td>1.1 eV</td><td>最常用</td></tr><tr><td>第二代</td><td>砷化鎵 GaAs</td><td>1.43 eV</td><td>電子移動率快 → 高頻、高功率電晶體</td></tr><tr><td>第三代</td><td>碳化矽 SiC、氮化鎵 GaN</td><td>3.2、3.4 eV</td><td><strong>寬能隙</strong>；耐高溫、高壓、高電流，高頻也穩定 → 電動車、5G、軍用雷達</td></tr></tbody></table></div>
+<ul><li>電子分類：<strong>束縛電子</strong>（內層，被原子核綁住）、<strong>價電子</strong>（最外層）、<strong>自由電子</strong></li><li>電子層：K、L、M、N 最多 2、8、18、32 個（2n²）；矽 = 2 + 8 + <strong>4</strong></li><li>能量單位：<strong>電子伏特 eV</strong></li><li>能隙 Eg = Ec − Ev（傳導帶 − 價電帶，中間叫<strong>禁止帶</strong>）</li></ul>
+<div class="tw"><table><thead><tr><th>種類</th><th>能隙</th><th>例子</th></tr></thead><tbody><tr><td>導體</td><td>≤ 0 eV</td><td>金、銀、銅</td></tr><tr><td>半導體</td><td>≈ 1 eV</td><td><strong>矽 1.12 eV、鍺 0.66 eV</strong> ⭐</td></tr><tr><td>絕緣體</td><td>≥ 9 eV</td><td>木頭、玻璃</td></tr></tbody></table></div>
+<ul><li><strong>共價鍵</strong>：相鄰原子共用一組電子對（八隅體學說：最外層 8 個電子最穩定）；矽、鍺為<strong>鑽石型</strong>晶體結構</li><li>0 K：共價鍵不被破壞 → 不導電；室溫 300 K（27 °C）：共價鍵可能斷裂 → 產生電子電洞對</li></ul>
+<h3 id="本質-vs-外質半導體-">本質 vs 外質半導體 ⭐⭐</h3>
+<ul><li><strong>本質半導體</strong>：純矽 / 純鍺，<strong>沒有摻雜</strong>，導電性極差；溫度上升 → 共價鍵斷裂 → 產生<strong>電子電洞對</strong></li><li>質量作用定律：<strong>nᵢ² = n × p</strong>；本質半導體 <strong>nᵢ = n = p</strong></li><li>熱平衡時半導體呈<strong>電中性</strong></li><li>一般說的「電流」指的是<strong>電洞流</strong>（與電子流方向相反）</li><li><strong>外質半導體</strong>（雜質半導體）：<strong>摻雜 (doping)</strong> 提高導電性，比例約 <strong>矽 : 雜質 = 10⁸ : 1</strong><ul><li>摻雜後仍是<strong>電中性</strong>（雜質原子本身是電中性的）⭐</li><li>摻雜 ↑ → 電阻 ↓、導電能力 ↑、耐壓 ↓</li></ul></li></ul>
+<div class="tw"><table><thead><tr><th></th><th>P 型</th><th>N 型</th></tr></thead><tbody><tr><td>摻雜</td><td><strong>三價</strong>：硼 B、鋁 Al、鎵 Ga、銦 In</td><td><strong>五價</strong>：磷 P、砷 As、銻 Sb、鉍 Bi</td></tr><tr><td>結果</td><td>共價鍵多一個<strong>空位</strong>（電洞）</td><td>多一個不受束縛的<strong>電子</strong></td></tr><tr><td>多數載子</td><td><strong>電洞</strong></td><td><strong>電子</strong></td></tr><tr><td>少數載子</td><td>電子</td><td>電洞</td></tr><tr><td>雜質名稱</td><td><strong>受體</strong> acceptor（接受電子）</td><td><strong>施體</strong> donor（施放電子）</td></tr></tbody></table></div>
+<p>記法：<strong>P 三受洞、N 五施電</strong>。</p>
+<p><strong>溫度係數</strong>（老師補充）</p>
+<ul><li><strong>正溫度係數</strong>：T↑ → R↑（金屬導體、高摻雜半導體；課本：外質半導體變成正溫度係數材料）</li><li><strong>負溫度係數</strong>：T↑ → R↓（本質 / 低摻雜半導體、絕緣體；因為電子電洞對變多）</li></ul>
+<h3 id="2-2-p-n-接面二極體-">2-2 P-N 接面二極體 ⭐⭐</h3>
+<ul><li>特性：<strong>整流、檢波、單向導通</strong>（<strong>不能放大</strong>）</li><li>符號：A（陽極，P 型）→ K（陰極，N 型），箭頭 = 電流方向</li><li><strong>擴散電流 I_F</strong>：多數載子因<strong>濃度差</strong>移動，P → N</li><li><strong>漂移電流 I_S</strong>：少數載子受空乏區<strong>電場</strong>影響，N → P</li><li><strong>空乏區</strong>：接面附近沒有可移動載子；P 側帶負電、N 側帶正電；電場方向 <strong>N → P</strong></li><li>空乏區偏向<strong>摻雜濃度較低</strong>的一側（較寬）</li></ul>
+<div class="tw"><table><thead><tr><th>狀態</th><th>接法</th><th>空乏區</th><th>電流</th></tr></thead><tbody><tr><td>未偏壓</td><td>—</td><td>固定</td><td>I_F = I_S，I_D = 0</td></tr><tr><td><strong>順偏</strong></td><td><strong>P 接 +、N 接 −</strong></td><td><strong>變窄</strong></td><td>I_D = I_F − I_S（很大）→ 導通</td></tr><tr><td><strong>逆偏</strong></td><td>P 接 −、N 接 +</td><td><strong>變寬</strong></td><td>I_F = 0，I_D = −I_S（極小）→ 截止</td></tr><tr><td>崩潰</td><td>逆偏 &gt; V_BR</td><td>佈滿</td><td>電流暴增，可能燒毀（串電阻限流）</td></tr></tbody></table></div>
+<ul><li><strong>障壁電壓 / 切入電壓 Vt</strong>（膝點電壓）：<strong>鍺 0.2–0.3 V、矽 0.6–0.7 V</strong> ⭐</li><li>逆向飽和電流 I_S：<strong>矽 ≈ nA、鍺 ≈ μA</strong>；矽 V_BR 可達約 1000 V</li><li>矽：漏電流小、耐高溫、便宜；鍺：漏電流大</li><li>二極體電流公式：<strong>I_D = I_S (e^(V_D/ηV_T) − 1)</strong><ul><li>V_T 熱當電壓 ≈ <strong>25–26 mV</strong>；η：<strong>鍺 = 1、矽 = 2</strong></li></ul></li></ul>
+<h3 id="溫度特性-計算題">溫度特性 ⭐⭐（計算題）</h3>
+<pre><code>I_S(T2) = I_S(T1) × 2^[(T2 − T1)/10]      ← 每升 10°C，漏電流變 2 倍
+Vt(T2)  = Vt(T1) − 2.5mV × (T2 − T1)      ← 每升 1°C，切入電壓降 2.5 mV</code></pre>
+<ul><li>溫度 ↑ → 曲線往內（往 Y 軸）靠</li></ul>
+<h3 id="二極體電阻-">二極體電阻 ⭐</h3>
+<div class="tw"><table><thead><tr><th>名稱</th><th>公式</th><th>用途</th></tr></thead><tbody><tr><td>直流靜態電阻</td><td><strong>R_D = V_DQ / I_DQ</strong></td><td>直流</td></tr><tr><td>交流動態電阻</td><td><strong>r_d = ΔV_D / ΔI_D = ηV_T / I_DQ</strong></td><td>交流（曲線斜率的倒數）</td></tr><tr><td>順向導通電阻</td><td><strong>R_F = (V_DQ − Vt) / I_DQ</strong></td><td>近似模型</td></tr></tbody></table></div>
+<h3 id="二極體電容-">二極體電容 ⭐</h3>
+<div class="tw"><table><thead><tr><th></th><th>空乏電容（過渡電容、接面電容） C_T</th><th>擴散電容（儲存電容） C_D</th></tr></thead><tbody><tr><td>公式</td><td><strong>C_T = ε A / W</strong></td><td><strong>C_D = τ I_F / (ηV_T)</strong></td></tr><tr><td>大小</td><td>pF</td><td>μF</td></tr><tr><td>關係</td><td>與空乏區寬度 <strong>W 成反比</strong>；逆偏 ↑ → W ↑ → <strong>C_T ↓</strong></td><td>與擴散電流 <strong>成正比</strong>；與平均壽命 τ 成正比；順偏 ↑ → <strong>C_D ↑</strong></td></tr></tbody></table></div>
+<ul><li>順偏：<strong>C_F = C_T + C_D</strong>；逆偏：<strong>C_R = C_T</strong></li><li>逆偏時<strong>沒有</strong>擴散電容</li></ul>
+<h3 id="二極體等效模型-">二極體等效模型 ⭐⭐</h3>
+<div class="tw"><table><thead><tr><th>模型</th><th>順偏</th><th>逆偏</th></tr></thead><tbody><tr><td>理想</td><td>V_D ≥ 0 → <strong>短路</strong></td><td><strong>開路</strong></td></tr><tr><td>定電壓</td><td>V_D ≥ Vt → <strong>電池 Vt</strong></td><td>開路</td></tr><tr><td>近似（線性）</td><td><strong>電池 Vt 串 R_F</strong></td><td>開路</td></tr></tbody></table></div>
+<p><strong>解題步驟（老師：重要題型！）</strong> ⭐⭐⭐</p>
+<ol><li>先把二極體<strong>拿掉（開路）</strong></li><li>算二極體兩端的開路電壓 V_th（通常用分壓）</li><li>V_th ≥ Vt → 二極體導通，換成 Vt 電池（或 Vt + R_F）再算；V_th &lt; Vt → 二極體開路</li></ol>
+<p><strong>多顆二極體（OR 閘型）</strong>：假設所有 ON/OFF 組合，只有一組不矛盾。陽極接在一起時，<strong>輸入最高的那顆導通</strong>；陰極接在一起（往下拉）時，<strong>電位最低的那顆導通</strong>。</p>
+<h3 id="2-3-稽納二極體-">2-3 稽納二極體 ⭐⭐</h3>
+<ul><li><strong>高摻雜</strong>（約 10⁵ : 1），工作在<strong>逆向偏壓</strong>，用途：<strong>穩壓</strong></li><li>順偏時跟一般二極體一樣（0.7 V）</li><li>逆偏 |E| ≥ V_Z → 當作<strong>定電壓源 V_Z</strong>（近似模型再串 R_Z）；|E| &lt; V_Z → <strong>開路</strong></li><li>符號：K 端有「Z 字」折線</li></ul>
+<div class="tw"><table><thead><tr><th></th><th>稽納崩潰</th><th>累增崩潰</th></tr></thead><tbody><tr><td>電壓</td><td><strong>&lt; 6 V</strong></td><td><strong>&gt; 6 V</strong></td></tr><tr><td>濃度 / 空乏區</td><td>濃度高、空乏區<strong>窄</strong></td><td>濃度低、空乏區<strong>寬</strong></td></tr><tr><td>原因</td><td><strong>電場</strong>效應</td><td><strong>熱擾動</strong>、載子撞擊</td></tr><tr><td>溫度係數</td><td><strong>負</strong>（崩潰電壓隨溫度上升而減少）</td><td><strong>正</strong></td></tr><tr><td>可逆？</td><td><strong>可逆</strong></td><td><strong>不可逆</strong></td></tr></tbody></table></div>
+<ul><li><strong>I_ZK 膝點電流</strong>：稽納崩潰的<strong>最小</strong>電流；<strong>I_ZM</strong> 最大電流 = <strong>P_Z / V_Z</strong></li><li>V_Z 一般約 3–5 V，最高可到 100 V</li><li>解題方法同一般二極體：先拿掉稽納 → 算開路電壓 → ≥ V_Z 就換成 V_Z 電池</li><li>負載範圍題：I = I_Z + I_L；I_Z ≤ I_ZM → 求 R_L 最大；I_Z ≥ 0（或 I_ZK）→ 求 R_L 最小</li></ul>
+<h3 id="2-4-發光二極體-led-">2-4 發光二極體 LED ⭐</h3>
+<ul><li>工作在<strong>順向偏壓</strong>；<strong>電流越大越亮</strong>（電流與發光強度成正比）</li><li>優點：消耗功率低、工作溫度低、壽命長、耐摔、切換速度快；<strong>冷性發光</strong></li><li>發光原理：電子電洞<strong>復合</strong>時，多餘能量以<strong>光子</strong>釋放（輻射復合）；以聲子釋放則不發光</li><li><strong>直接能隙</strong>（GaAs、GaN）→ 發光效率<strong>高</strong>，做 LED；<strong>間接能隙</strong>（Si、Ge）→ 發光效率<strong>低</strong></li><li>顏色由<strong>材料</strong>決定</li></ul>
+<div class="tw"><table><thead><tr><th>材料</th><th>顏色</th><th>切入電壓</th><th>波長</th></tr></thead><tbody><tr><td>GaAs 砷化鎵</td><td>紅外線（不可見）</td><td>1–1.9 V</td><td>&gt; 760 nm</td></tr><tr><td>AlGaAs 鋁砷化鎵</td><td>紅</td><td>1.6–2 V</td><td>760–610 nm</td></tr><tr><td>GaAsP 砷化鎵磷</td><td>黃</td><td>2.1 V</td><td>590–570 nm</td></tr><tr><td>GaP 磷化鎵</td><td>綠</td><td>2–3 V</td><td>570–500 nm</td></tr><tr><td>SiC 碳化矽</td><td>藍</td><td>3–5 V</td><td>500–450 nm</td></tr></tbody></table></div>
+<ul><li>常用 LED 切入電壓 <strong>1.7–3.3 V</strong>；逆向崩潰電壓 <strong>5–10 V</strong>（比一般二極體小）</li><li>可見光 <strong>380–760 nm</strong>，人眼對 <strong>555 nm</strong> 最靈敏；紅外線 760 nm–1 mm（遙控器）；紫外線 &lt; 380 nm</li><li>符號：箭頭<strong>往外射出</strong>（光電二極體是箭頭往內）</li><li>限流電阻：<strong>R = (E − n·V_F) / I_F</strong></li></ul>
+<h3 id="2-5-整流濾波電路-">2-5 整流濾波電路 ⭐⭐⭐</h3>
+<p><strong>電源方塊</strong>：110V/60Hz → <strong>變壓器</strong>（降壓）→ <strong>整流</strong>（變脈動直流）→ <strong>濾波</strong>（漣波變小）→ <strong>穩壓</strong>（純直流）</p>
+<p><strong>變壓器</strong>（理想，P₁ = P₂，效率 100%）</p>
+<pre><code>V1/V2 = N1/N2          （電壓與匝數成正比）
+I2/I1 = N1/N2          （電流與匝數成反比）
+R1/R2 = (N1/N2)²       （阻抗與匝數平方成正比）
+最大功率轉移：R_S = R1</code></pre>
+<p><strong>整流電路比較表</strong> ⭐⭐⭐（必背）</p>
+<div class="tw"><table><thead><tr><th>電路</th><th>二極體數</th><th>每顆 PIV</th><th>f_o</th><th>Vo(rms)</th><th>Vo(av)</th></tr></thead><tbody><tr><td>半波</td><td>1</td><td><strong>Vm</strong></td><td><strong>f_i</strong></td><td><strong>Vm/2</strong></td><td><strong>Vm/π = 0.318Vm</strong></td></tr><tr><td>中心抽頭全波</td><td>2</td><td><strong>2Vm</strong></td><td><strong>2f_i</strong></td><td>Vm/√2</td><td>2Vm/π = 0.636Vm</td></tr><tr><td>橋式全波</td><td>4</td><td><strong>Vm</strong></td><td><strong>2f_i</strong></td><td>Vm/√2</td><td>2Vm/π = 0.636Vm</td></tr></tbody></table></div>
+<ul><li><strong>PIV 逆向峰值電壓</strong>：二極體需要的最小耐壓，|V_BR| &gt; |PIV|</li><li>半波：Vdc = 0.45 V_AC（rms）</li><li>橋式：D₁D₃ 管正半週、D₂D₄ 管負半週；對邊二極體方向要一致</li><li><strong>加了電容濾波後的 PIV</strong>：半波 <strong>2Vm</strong>、中心抽頭 2Vm、橋式 Vm</li></ul>
+<p><strong>電表題（範例 2-9）</strong>：表頭讀平均值、刻度用有效值顯示（正弦波設計）</p>
+<ul><li>半波整流：倍率 = 0.707/0.318 ≈ <strong>2.22</strong> → 輸入 DC 10 V 顯示 <strong>22.2 V</strong></li><li>全波整流：倍率 = 0.707/0.636 ≈ <strong>1.11</strong> → 顯示 <strong>11.1 V</strong></li></ul>
+<h3 id="濾波與漣波-">濾波與漣波 ⭐⭐</h3>
+<ul><li>最常用的濾波元件是<strong>電容</strong>（電容越大，濾波效果越好）</li><li>純電容濾波：<strong>無負載時 Vo(dc) = Vm</strong>；接負載後產生漣波</li><li>動作：輸入 &gt; 電容電壓 → 二極體導通、電容<strong>快充</strong>；輸入 &lt; 電容電壓 → 二極體截止、電容對 R_L <strong>慢放</strong></li><li>RC ↑ → 放電慢 → 漣波 ↓</li></ul>
+<pre><code>漣波因數 r = Vr(rms) / Vo(dc)        （越小越好，理想 = 0）
+Vdc = Vm − Vr(p-p)/2
+Vr(rms) = Vr(p-p) / (2√3)             （漣波近似三角/鋸齒波）
+Vr(p-p) = Idc / (C × fo)               Idc = Vdc / R_L
+fo：半波 = f_i、全波 = 2f_i
+r = 1 / (2√3 R_L C fo)</code></pre>
+<ul><li>60 Hz 時（<strong>R_L 用 kΩ、C 用 μF</strong>）：<strong>半波 r ≈ 4.8/(R_L C)</strong>、<strong>全波 r ≈ 2.4/(R_L C)</strong></li><li>沒濾波的漣波：<strong>半波 Vr(rms) = 0.385Vm、r = 1.21（121%）</strong>；<strong>全波 Vr(rms) = 0.308Vm、r = 0.48（48%）</strong></li><li>混波 v = 6 + 3√2 sin ωt → Vr(rms) = 3，r = 3/6 = <strong>50%</strong></li><li>半波整流的 C.F. = 2、F.F. = 1.57、r = 1.21 → <strong>C.F. &gt; F.F. &gt; r</strong></li></ul>
+<p><strong>整流濾波電路表（f_i = 60 Hz，R_L 用 kΩ、C 用 μF）</strong></p>
+<div class="tw"><table><thead><tr><th>電路</th><th>PIV</th><th>f_o</th><th>Vr(rms)</th><th>r</th></tr></thead><tbody><tr><td>半波整流濾波</td><td>2Vm</td><td>60 Hz</td><td>4.8 Vdc / (R_L C)</td><td>4.8 / (R_L C)</td></tr><tr><td>中心抽頭全波濾波</td><td>2Vm</td><td>120 Hz</td><td>2.4 Vdc / (R_L C)</td><td>2.4 / (R_L C)</td></tr><tr><td>橋式全波濾波</td><td>Vm</td><td>120 Hz</td><td>2.4 Vdc / (R_L C)</td><td>2.4 / (R_L C)</td></tr></tbody></table></div>
+<h3 id="2-5-6-時間常數-r_l-c-與漣波">2-5-6 時間常數 R_L C 與漣波</h3>
+<ul><li>R_L C &lt; T（C 小）→ 放電快 → <strong>漣波大</strong></li><li>R_L C ≫ T（C 大）→ 漣波小</li><li><strong>R_L 開路（= ∞）</strong> → 電容不放電 → <strong>沒有漣波，Vo = Vm</strong>，r = 0（最理想）</li></ul>
+<h3 id="2-5-7-其他濾波電路-都是低通濾波器">2-5-7 其他濾波電路 ⭐（都是<strong>低通濾波器</strong>）</h3>
+<div class="tw"><table><thead><tr><th>濾波器</th><th>結構</th><th>適用</th><th>備註</th></tr></thead><tbody><tr><td>RC（π 型 CRC）</td><td>C₁ − R − C₂</td><td><strong>輕負載</strong>（R_L 大、電流小）</td><td>R 會分壓，直流電壓下降</td></tr><tr><td><strong>π 型</strong></td><td>C₁ − L − C₂</td><td>R_L 小也好</td><td><strong>效果最好</strong>（但成本高）；L 不會讓直流壓降</td></tr><tr><td>純電感</td><td>串一個 L</td><td><strong>重負載</strong>（R_L 小、電流大）</td><td><strong>只能接全波</strong>；Vdc 最高 0.636Vm</td></tr><tr><td>LC</td><td>L 串、C 並</td><td>重負載</td><td>只能接全波；Vdc 最高 0.636Vm</td></tr><tr><td>T 型（LCL）</td><td>L₁ − C − L₂</td><td>重負載</td><td>只能接全波</td></tr></tbody></table></div>
+<p>記法：<strong>有電阻 / 電容先接 → 輕負載；電感先接 → 重負載、只能全波</strong>。</p>
+<h3 id="2-6-稽納穩壓電路-">2-6 稽納穩壓電路 ⭐⭐</h3>
+<ul><li>在濾波電路輸出端<strong>並接稽納二極體</strong>（串 R_S 限流），得到更穩的直流</li><li>用<strong>重疊定理</strong>分成直流與交流分析，最後 <strong>V_L(總) = V_L(直流) + v_L(交流)</strong></li></ul>
+<p><strong>直流分析</strong>（稽納看成 V_Z 電池）</p>
+<ul><li>DC × R_L/(R_S + R_L) <strong>≥ V_Z</strong> → 稽納崩潰，<strong>V_L = V_Z</strong></li><li>否則稽納開路，<strong>V_L = DC × R_L/(R_S + R_L)</strong></li><li>若有內阻 r_Z：稽納 = V_Z 電池串 r_Z，用節點電壓法解</li></ul>
+<p><strong>交流分析</strong>（稽納看成電阻 r_Z = ΔV_Z / ΔI_Z）</p>
+<pre><code>v_L = AC × (R_L // r_Z) / [ r_S + (R_L // r_Z) ]</code></pre>
+<p><strong>範例 2-12 類型</strong>：E = 15 V、R = R_L = 30 Ω、V_Z = 5 V、r_Z = 10 Ω</p>
+<ul><li>節點：(V − 15)/30 + (V − 5)/10 + V/30 = 0 → <strong>V_L = 6 V</strong></li><li>I_Z = (6 − 5)/10 = 0.1 A；<strong>P_Z = V_Z I_Z + I_Z² r_Z = 0.5 + 0.1 = 0.6 W</strong></li><li>ΔE = 10 mV → ΔV_L = 10m × (30//10)/(30 + 30//10) = 10m × 7.5/37.5 = <strong>2 mV</strong></li></ul>
+<p><strong>電壓調整率 VR%</strong> ⭐⭐</p>
+<pre><code>VR% = (V_NL − V_FL) / V_FL × 100%</code></pre>
+<ul><li>V_NL 無載電壓（拿掉負載，R_L = ∞）；V_FL 滿載電壓（接上負載）</li><li><strong>越小越好，理想 VR% = 0</strong></li><li>也等於「電源內阻電壓 ÷ 負載電壓」</li><li>理想<strong>電壓源內阻 = 0</strong>；理想<strong>電流源內阻 = ∞</strong></li></ul>
+<p><strong>為什麼稽納多拿來當參考電壓，而不是穩壓元件？</strong> 可選的電壓值有限、最大電流太小容易燒毀（I_Z 太大 → P_Z 太大）、是被動元件，會受負載影響。</p>
+<h3 id="矽-vs-鍺二極體本章摘要表">矽 vs 鍺二極體（本章摘要表）⭐</h3>
+<div class="tw"><table><thead><tr><th></th><th>矽</th><th>鍺</th></tr></thead><tbody><tr><td>障壁電壓</td><td>0.6–0.7 V</td><td>0.2–0.3 V</td></tr><tr><td>逆向飽和電流</td><td>nA</td><td>μA～mA（課本 p.46 寫 μA，摘要寫 mA）</td></tr><tr><td>逆向崩潰電壓</td><td>數百伏（例：−250 V）</td><td>數十伏（例：−50 V）</td></tr><tr><td>障壁電壓溫度特性</td><td>每升 1 °C 降 <strong>2.5 mV</strong></td><td>每升 1 °C 降 <strong>1 mV</strong></td></tr><tr><td>漏電流溫度特性</td><td>每升 <strong>10 °C</strong> 變 2 倍</td><td>每升 <strong>6 °C</strong> 變 2 倍</td></tr></tbody></table></div>
+
+</section><section class="card"><h2 id="ch3-雙極性接面電晶體-bjt">Ch3 雙極性接面電晶體 (BJT)</h2>
+<h3 id="3-1-構造-">3-1 構造 ⭐</h3>
+<ul><li>BJT（bipolar junction transistor），<strong>主動元件</strong>，可做<strong>放大</strong>與<strong>開關</strong>；1947 年貝爾實驗室。</li><li>分 <strong>NPN</strong> 與 <strong>PNP</strong>，三極：<strong>射極 E、基極 B、集極 C</strong></li><li>兩個接面：<strong>J_E（B-E 接面）</strong>、<strong>J_C（B-C 接面）</strong></li><li>功能：<strong>E 發射</strong>多數載子、<strong>B 控制</strong>載子數量、<strong>C 收集</strong>載子</li><li>⭐ <strong>摻雜濃度：E &gt; B &gt; C</strong></li><li>⭐ <strong>寬度（體積）：C &gt; E &gt; B</strong>（B 約為整體的 1/150；C 最大，與外殼相接散熱用）</li><li>符號箭頭＝電流方向（P 指向 N）：NPN 箭頭朝外（B→E），PNP 箭頭朝內（E→B）</li><li>多數載子：NPN = 電子、PNP = 電洞</li><li>電流同時含電子流與電洞流 → 又稱<strong>雙載子元件</strong></li></ul>
+<h3 id="四種工作模式-一定考">四種工作模式 ⭐⭐⭐（一定考）</h3>
+<div class="tw"><table><thead><tr><th>模式</th><th>B-E 接面 J_E</th><th>B-C 接面 J_C</th><th>功能</th></tr></thead><tbody><tr><td><strong>順向主動區</strong>（作用區 / 工作區）</td><td><strong>順偏</strong></td><td><strong>逆偏</strong></td><td><strong>放大</strong></td></tr><tr><td><strong>飽和區</strong></td><td>順偏</td><td>順偏</td><td>開關 <strong>ON</strong></td></tr><tr><td><strong>截止區</strong></td><td>逆偏</td><td>逆偏</td><td>開關 <strong>OFF</strong></td></tr><tr><td>逆向主動區</td><td>逆偏</td><td>順偏</td><td>邏輯交換電路（增益下降）</td></tr></tbody></table></div>
+<p>口訣：<strong>「射順集逆 → 放大」</strong>；兩個都順 → 飽和；兩個都逆 → 截止。</p>
+<p><strong>電壓大小關係（NPN；PNP 全部反過來）</strong></p>
+<div class="tw"><table><thead><tr><th>模式</th><th>NPN</th><th>PNP</th></tr></thead><tbody><tr><td>主動區</td><td>V_C &gt; V_B &gt; V_E</td><td>V_E &gt; V_B &gt; V_C</td></tr><tr><td>飽和區（實際電路）</td><td>V_B &gt; V_C &gt; V_E</td><td>V_E &gt; V_C &gt; V_B</td></tr><tr><td>截止區（實際電路）</td><td>V_C &gt; V_E &gt; V_B</td><td>V_B &gt; V_E &gt; V_C</td></tr></tbody></table></div>
+<p><strong>判斷工作區的步驟（矽晶體）</strong>：</p>
+<ol><li>NPN 算 V_BE = V_B − V_E；PNP 算 V_EB = V_E − V_B。<strong>≥ 0.7 V → B-E 順偏</strong></li><li>NPN 算 V_BC = V_B − V_C；PNP 算 V_CB = V_C − V_B。<strong>&gt; 0.5 V → B-C 順偏</strong></li><li>查上表</li></ol>
+<p><strong>各區特性</strong></p>
+<ul><li>主動區：<strong>I_E = I_C + I_B</strong>，I_E &gt; I_C &gt; I_B（I_E ≈ I_C ≫ I_B）；<strong>I_C = βI_B = αI_E</strong>；V_CE &gt; 0.2 V</li><li>飽和區：<strong>V_CE(sat) ≈ 0.2 V</strong>（= V_CB(t) − V_EB(t) = −0.5 − (−0.7)），C-E 視為<strong>短路</strong>，I_C = I_C(sat) 由外部電路決定；I_B 越大 β_S 越小</li><li>截止區：I_E = I_C = I_B = 0，C-E 視為<strong>開路</strong>，V_CE ≈ V_CC</li><li>障壁電壓：<strong>V_BE(t) = 0.7 V</strong>、<strong>V_BC(t) = 0.5 V</strong></li></ul>
+<h3 id="獨立源-vs-相依源">獨立源 vs 相依源</h3>
+<ul><li><strong>獨立</strong>電源：不受迴路影響（圓形符號）</li><li><strong>相依</strong>電源：受其他電壓 / 電流控制（<strong>菱形</strong>符號）</li><li>解題：先求控制量（如 I），再代入相依源（如 2I、40I）</li></ul>
+<h3 id="電流增益-">電流增益 ⭐⭐⭐</h3>
+<pre><code>α = I_C / I_E      （&lt; 1，約 0.99）
+β = I_C / I_B      （幾十 ~ 幾百）
+γ = I_E / I_B
+
+γ = 1 + β = 1/(1 − α)
+α = β / (1 + β)
+β = α / (1 − α)
+I_E = (1 + β) I_B</code></pre>
+<h3 id="漏電流">漏電流</h3>
+<ul><li>I_CO（= I_CBO）：B-C 接面逆偏的漏電流（少數載子造成）</li><li><strong>I_CEO = (1 + β) I_CBO</strong>（B 開路時 C→E 的總漏電流）</li><li><strong>I_C = βI_B + I_CEO</strong>；I_E = (1 + β)I_B + I_CEO</li><li>NPN、PNP 漏電流方向與主電流方向一致</li></ul>
+<h3 id="功率">功率</h3>
+<ul><li><strong>P_Q = I_C × V_CE</strong> ⭐</li></ul>
+<h3 id="3-2-三種組態-">3-2 三種組態 ⭐⭐</h3>
+<div class="tw"><table><thead><tr><th>組態</th><th>輸入</th><th>共用</th><th>輸出</th><th>電流增益</th></tr></thead><tbody><tr><td>共基極 CB</td><td>E</td><td><strong>B</strong></td><td>C</td><td><strong>α</strong></td></tr><tr><td>共射極 CE</td><td>B</td><td><strong>E</strong></td><td>C</td><td><strong>β</strong></td></tr><tr><td>共集極 CC</td><td>B</td><td><strong>C</strong></td><td>E</td><td><strong>γ</strong></td></tr></tbody></table></div>
+<ul><li>⭐ <strong>C 極不能當輸入，B 極不能當輸出</strong></li><li>電流增益：<strong>CC &gt; CE &gt; CB</strong>（γ &gt; β &gt; α）</li><li>名稱看「共用端」是哪一極</li></ul>
+<p><strong>特性曲線（X 軸、Y 軸常考）</strong></p>
+<div class="tw"><table><thead><tr><th>組態</th><th>輸入曲線</th><th>輸出曲線</th><th>飽和分界</th></tr></thead><tbody><tr><td>CB</td><td>X：V_BE，Y：I_E</td><td>X：V_CB，Y：I_C（不同 I_E）</td><td>V_CB ≤ −0.5 V 飽和</td></tr><tr><td>CE</td><td>X：V_BE，Y：I_B</td><td>X：V_CE，Y：I_C（不同 I_B）</td><td>V_CE ≤ 0.2 V 飽和</td></tr><tr><td>CC</td><td>X：V_BE，Y：I_B</td><td>X：V_EC，Y：I_E（不同 I_B）</td><td>V_EC ≥ −0.2 V 飽和</td></tr></tbody></table></div>
+<ul><li>輸入曲線都像二極體：V_BE ≤ 0.7 V → 截止區</li></ul>
+<p><strong>迴路方程式</strong></p>
+<ul><li>CB：V_EE = V_BE + I_E R_E；V_CC + V_EE = I_C R_C + V_CE + I_E R_E</li><li>CE：<strong>V_BB = I_B R_B + V_BE</strong>；<strong>V_CC = I_C R_C + V_CE</strong> ⭐</li><li>CC：V_BB + V_EE = I_B R_B + V_BE + I_E R_E；V_EE = V_CE + I_E R_E</li></ul>
+<h3 id="3-3-直流偏壓">3-3 直流偏壓</h3>
+<ul><li>目的：替放大器找<strong>穩定的工作點 Q</strong>，讓電晶體<strong>維持在主動區</strong></li><li><strong>輸出工作點最重要</strong></li><li>輸入負載線兩點：(V_BB, 0) 與 (0, V_BB/R_B)</li></ul>
+
+</section><section class="card"><h2 id="公式卡考前-5-分鐘看這裡">公式卡（考前 5 分鐘看這裡）</h2>
+<pre><code>【Ch1】
+f = 1/T          ω = 2πf          Vp-p = 2Vm
+v(t) = Vm sin(ωt + θ)
+正弦  Vrms = 0.707Vm   Vav = 0.636Vm   CF = 1.414   FF = 1.11
+方波  Vrms = Vm        Vav = Vm        CF = 1       FF = 1
+三角  Vrms = 0.577Vm   Vav = 0.5Vm     CF = 1.732   FF = 1.154
+D = PW/T × 100%     T = PW + SW
+Vrms = √[Σ(Vrms_i² × Δt_i) / T]
+混波  Vrms = √(Vdc² + Vac_rms²)
+P = Vrms²/R = Irms² × R
+
+【Ch2】
+能隙  矽 1.12 eV   鍺 0.66 eV   導體 ≤ 0   絕緣體 ≥ 9 eV
+ni² = n × p        本質 ni = n = p
+P 型：三價（硼鋁鎵銦）受體、多數載子電洞
+N 型：五價（磷砷銻鉍）施體、多數載子電子
+切入電壓  矽 0.7 V   鍺 0.3 V   VT ≈ 26 mV   η：矽 2、鍺 1
+I_D = I_S (e^(V_D/ηV_T) − 1)
+I_S(T2) = I_S(T1) × 2^((T2−T1)/10)      Vt(T2) = Vt(T1) − 2.5mV×(T2−T1)
+R_D = V_DQ/I_DQ    r_d = ηV_T/I_DQ    R_F = (V_DQ − Vt)/I_DQ
+C_T = εA/W（逆偏↑ C_T↓）    C_D = τ I_F/(ηV_T)（順偏↑ C_D↑）
+二極體電路：先拿掉 → 算開路電壓 → ≥ Vt 才導通
+稽納：&lt; 6V 稽納崩潰（負溫度、可逆）  &gt; 6V 累增崩潰（正溫度、不可逆）
+I_ZM = P_Z / V_Z
+LED 限流  R = (E − nV_F) / I_F
+變壓器  V1/V2 = N1/N2 = I2/I1    R1/R2 = (N1/N2)²
+整流    半波  PIV Vm   fo = fi   Vrms Vm/2    Vav 0.318Vm   r 121%
+        中抽  PIV 2Vm  fo = 2fi  Vrms 0.707Vm Vav 0.636Vm  r 48%
+        橋式  PIV Vm   fo = 2fi
+加電容後 PIV：半波 2Vm、中抽 2Vm、橋式 Vm
+Vdc = Vm − Vr(p-p)/2     Vr(rms) = Vr(p-p)/(2√3)
+Vr(p-p) = Idc/(C × fo)   r = Vr(rms)/Vdc = 1/(2√3 R_L C fo)
+60Hz：半波 r = 4.8/(R_L C)   全波 r = 2.4/(R_L C)   （kΩ、μF）
+VR% = (V_NL − V_FL)/V_FL × 100%
+
+【Ch3】
+摻雜 E &gt; B &gt; C        寬度 C &gt; E &gt; B
+主動區：BE 順、BC 逆        飽和：都順        截止：都逆
+V_BE = 0.7 V    V_CE(sat) = 0.2 V
+I_E = I_C + I_B     I_C = βI_B = αI_E     I_E = (1+β)I_B
+γ = 1+β = 1/(1−α)     α = β/(1+β)     β = α/(1−α)
+I_CEO = (1+β)I_CBO     I_C = βI_B + I_CEO
+P = I_C × V_CE
+CB→α   CE→β   CC→γ     C 不當輸入、B 不當輸出
+CE：V_BB = I_B R_B + V_BE    V_CC = I_C R_C + V_CE</code></pre>
+
+</section><section class="card"><h2 id="課本題目答案核對">課本題目答案核對</h2>
+<p><strong>Ch1、Ch3</strong>：你筆記上的答案我<strong>全部驗算過，也和教師手冊對過，都是對的</strong> ✅（範例、立即練習、隨堂練習、自我評量填充 1–6、選擇 1–15、簡答 3–5）。</p>
+<p>小提醒：</p>
+<ul><li><strong>Ch1 自我評量選擇第 8 題</strong>：答案 (D) 正確，但 (C)「三角波由正弦波加上所有奇次諧波組成」其實也沒錯（<strong>方波、三角波都只含奇次諧波；鋸齒波含奇次＋偶次</strong>）。教師手冊的答案也是 (D)，考試照 (D) 寫。</li><li><strong>p.12 範例 1-4 立即練習</strong>旁邊寫「T = 10ms = 1/f, f = 100」是筆誤 —— 這題的 f 還是 50 Hz（T = 20ms），10ms 只是代入的時間。你下面算的 −4.33 V 是對的。</li></ul>
+<h3 id="ch1-筆記中還沒算完--沒寫的題目">Ch1 筆記中還沒算完 / 沒寫的題目</h3>
+<p><strong>p.23 老師例題</strong>（0–2s 三角波峰值 10V、2–4s 半個正弦峰值 10V、T = 4s）</p>
+<ul><li>Vdc = (½×10×2 + (2/π)×10×2) / 4 = (10 + 12.73) / 4 ≈ <strong>5.68 V</strong></li><li>Vrms = √{[(10/√3)²×2 + (10/√2)²×2] / 4} = √[(66.7 + 100)/4] = √41.7 ≈ <strong>6.45 V</strong></li></ul>
+<p><strong>Ch1 簡答 1：真空管與半導體的差異</strong><br>真空管需先加熱陰極、耗電、體積大、重、易碎、易故障，但音頻響應好、適合大功率；半導體體積小、省電、成本低、不易損壞、中頻響應好，且可積體化使設備微型化。</p>
+<p><strong>Ch1 簡答 2</strong>：見上方「積體電路分類」表。</p>
+<h3 id="ch2-答案核對">Ch2 答案核對</h3>
+<p>Ch2 的範例、立即練習、隨堂練習我都驗算過，也對照了<strong>教師手冊</strong>的官方答案。以下幾題要注意（我之前有幾題判斷錯了，這裡以教師手冊為準更正）：</p>
+<p><strong>✅ 自我評量選擇第 9 題（N 型半導體，何者正確）：官方答案是 (D)，你寫的對</strong></p>
+<ul><li>我之前說應該選 (C)，<strong>這是我錯了</strong></li><li>課本 p.36 寫「外質半導體變成<strong>正溫度係數</strong>材料」，所以照課本的說法，(C)「溫度上升電阻下降」是錯的</li><li>(D)「電洞數量等於電子數量」照字面看其實不太對（N 型電子比電洞多很多），課本應該是想表達「整體電中性」</li><li>考試照課本答案寫 <strong>(D)</strong></li></ul>
+<p><strong>✅ 自我評量簡答第 7 題（稽納 + 方波）：官方答案 Vrms = Vav = 5 V，你寫的對</strong></p>
+<ul><li>我之前說平均值應該是 0 V，<strong>這也是我錯了</strong></li><li>這本課本的慣例（Ch1 p.20）：交流波形的平均值<strong>只取正半週</strong>來算，所以 ±5 V 方波的平均值是 5 V</li></ul>
+<p><strong>✅ 自我評量選擇第 3 題（硼）：官方答案是 (D) 類金屬，你寫的對</strong></p>
+<p><strong>⚠️ p.55 立即練習第 2 題「承範例 2-5」：官方用的是範例 2-5 的電路，答案 Vo = 4.23 V</strong></p>
+<ul><li>你是用「立即練習 1」的電路算的，得到 0.77 V，<strong>要改</strong></li><li>正解：D₂ OFF、D₁ ON，I_R = (5 − 0.6)/(5k + 200) ≈ 0.846 mA，Vo = 0.846 mA × 5 kΩ ≈ <strong>4.23 V</strong></li></ul>
+<p><strong>小提醒</strong></p>
+<ul><li>p.31 你寫「銦 49 = 2 + 8 + 18 + 21」：總數對，但銦是<strong>三價</strong>，最外層只有 3 個電子，應該是 <strong>2 + 8 + 18 + 18 + 3</strong></li><li>p.61 隨堂練習第 3 題：V_R = 1.467 mA × 2 kΩ ≈ <strong>2.93 V</strong>（你寫 2.92 是四捨五入的關係，沒差）</li><li>鍺的逆向飽和電流：p.46 你寫 μA，本章摘要寫 mA。記「<strong>矽 nA、鍺大很多</strong>」就好</li><li>教師手冊 Ch1 簡答 6 的正弦波圖，週期標成「1.67 ms」是印刷錯誤，正確是 <strong>16.7 ms</strong>（1/60 s）</li></ul>
+<p><strong>Ch2 簡答 1：本質 vs 外質半導體</strong><br>本質半導體是沒有摻雜的純矽或純鍺，n = p = nᵢ，導電性很差；外質半導體摻入三價元素（P 型，多數載子電洞）或五價元素（N 型，多數載子電子），載子變多、導電性提高，但整體仍為電中性。</p>
+<p><strong>Ch2 簡答 2：一般二極體、稽納、LED 比較</strong></p>
+<div class="tw"><table><thead><tr><th></th><th>P-N 二極體</th><th>稽納二極體</th><th>LED</th></tr></thead><tbody><tr><td>工作偏壓</td><td>順偏</td><td><strong>逆偏</strong></td><td>順偏</td></tr><tr><td>摻雜</td><td>一般（10⁸ : 1）</td><td>高（10⁵ : 1）</td><td>直接能隙材料</td></tr><tr><td>用途</td><td>整流、檢波</td><td>穩壓、參考電壓</td><td>發光、指示、照明</td></tr><tr><td>切入 / 工作電壓</td><td>矽 0.7 V</td><td>V_Z（逆向）</td><td>1.7–3.3 V</td></tr><tr><td>崩潰電壓</td><td>高（數百 V）</td><td>V_Z（約 3–5 V）</td><td>低（5–10 V）</td></tr></tbody></table></div>
+<p><strong>Ch1 簡答 6：畫波形要標的數據</strong></p>
+<ol><li>v(t) = 5 sin 377t：Vm = 5 V、Vp-p = 10 V、f = 60 Hz、<strong>T ≈ 16.67 ms</strong></li><li>脈波：T = 100 ms → PW = 25 ms（3 V）、SW = 75 ms（−2 V）、f = 10 Hz、Vp-p = 5 V（Vav = (3×25 − 2×75)/100 = −0.75 V）</li><li>三角波：Vm = 4 V、Vp-p = 8 V、f = 20 kHz、<strong>T = 50 μs</strong>（每 T/4 = 12.5 μs 由 0 升到 4 V，斜率 0.32 V/μs）</li></ol>
+
+</section><section class="card"><h2 id="教師手冊補充鍛鍊本統測ch3-後半">教師手冊補充（鍛鍊本、統測、Ch3 後半）</h2>
+<h3 id="ch3-在-p130-之後還有內容">Ch3 在 p.130 之後還有內容</h3>
+<p>教師手冊的 Ch3 答案一路到 <strong>p.158 自我評量</strong>，中間是 3-3 的偏壓電路（負載線、固定偏壓、射極回授、集極回授、分壓偏壓、開關電路）。第二次小考只考到 3-2，所以段考<strong>很可能不考</strong>這部分；下面的重點當作預習或保險。</p>
+<p><strong>3-3 偏壓電路觀念題（手冊答案）</strong></p>
+<ul><li>電晶體當<strong>開關 ON → 飽和區</strong>；截止區、飽和區合起來可視為<strong>開關元件</strong></li><li><strong>溫度上升 → 工作點往飽和區偏移</strong>（β、I_CBO 都會變大）</li><li>三個參數中 <strong>β 最容易受溫度影響</strong></li><li><strong>固定偏壓</strong>的穩定性<strong>最差</strong></li><li><strong>集極回授</strong>偏壓<strong>絕對不會</strong>進入飽和區</li><li>想得到最大不失真輸出 → Q 點放在<strong>負載線中點</strong></li><li>提高 V_CC，負載線<strong>斜率不變</strong>（斜率 = −1/R_C，只是平移）</li><li>R_C 變大 → Q 點往<strong>飽和區</strong>移動</li><li>判斷飽和：算出 βI_B，如果 <strong>βI_B &gt; I_C(sat) = (V_CC − V_CE(sat))/R_C</strong> → 飽和，I_C 就用 I_C(sat)</li></ul>
+<p><strong>3-1 補充（手冊自我評量）</strong></p>
+<ul><li>溫度上升：β ↑、<strong>I_CBO ↑</strong>、V_BE(t) ↓</li><li>提高電流放大率 β：<strong>射極濃度增加、基極變窄</strong></li><li>工作區（主動區）β 是定值；飽和區 β 不是定值</li><li>飽和區：相同 I_C 下，V_CE 很小，所以<strong>消耗功率比主動區小</strong></li><li>單顆電晶體可以代替二極體、電阻、電容，<strong>不能代替電感</strong></li><li>電晶體交換（開關）速度主要由<strong>基極</strong>儲存的少數載子放電速率決定</li><li>集極接面的崩潰電壓<strong>大於</strong>射極接面</li><li>P_C(max) = V_CE × I_C(max)</li></ul>
+<p><strong>統測常見題型</strong></p>
+<ul><li>脈波正峰值、負峰值都不是 0 時：Vav = V₊·D + V₋·(1 − D)，解 D</li><li>稽納題第一步永遠是<strong>先檢查有沒有崩潰</strong>：V_S × R_L/(R + R_L) &lt; V_Z → 稽納不導通，I_Z = 0、P_Z = 0</li><li>稽納限流電阻：I_Z ≤ I_ZM 求 R 最小；I_Z ≥ I_ZK 求 R_L 最小</li><li>換電壓不換變壓器：次級電壓等比例變化，再算 PIV</li><li>整流後負載換成電容（沒有電阻）→ 輸出是直流 Vm = √2 × V(rms)</li><li>橋式整流壞掉兩顆二極體 → 變成半波（峰值不變、只剩半週）</li></ul>
+
+</section><section class="card"><h2 id="隨堂測驗卷補充科友-第59回">隨堂測驗卷補充（科友 第5–9回）</h2>
+<ul><li><strong>第7回</strong>（第一次段考 Ch1–2）、<strong>第8回</strong>（第二次段考 Ch3–4）的 BJT 基礎題 → 跟這次範圍重疊，已收進互動測驗的「測驗卷」分類</li><li><strong>第5、6、9回</strong>（多級放大、MOSFET）和第8回後半（小信號放大、偏壓穩定）→ 不在 Ch1–Ch3 範圍</li><li>解答本的答案我驗算過，<strong>都是對的</strong></li></ul>
+<p><strong>測驗卷裡課本比較少講、但會考的點</strong></p>
+<ul><li><strong>歐姆表測二極體</strong>：兩個方向都低 → 短路；都高 → 斷路；一高一低 → 正常</li><li>電子流方向和電流相反：PN 二極體的電子流比較容易 <strong>N → P</strong></li><li>N 型半導體：多數載子（電子）濃度 ≈ 施體正離子濃度</li><li><strong>漣波的形狀決定公式</strong>：三角／鋸齒漣波 Vr(rms) = Vr(p-p)/(2√3)；<strong>正弦漣波</strong> Vr(rms) = Vr(p-p)/(2√2)</li><li>負載很大（≈ 開路）的電容濾波：Vo ≈ Vm = √2 × V(rms)</li><li>r = 0 是理想值，<strong>做不到</strong></li><li>「流入電晶體為正」時三極電流和為 0 → I_E 是<strong>負的</strong>（−(I_B + I_C)）</li><li>集極、射極對調（逆向主動）→ <strong>耐壓低、增益也低</strong></li><li><strong>NPN 高頻響應比 PNP 好</strong>（電子移動率較快），所以現在大多用 NPN</li><li>矽電晶體受溫度影響比鍺小（鍺 I_CO 是 μA、矽是 nA）</li><li>電晶體全寬 : 基極寬 ≈ <strong>150 : 1</strong></li></ul>
+
+</section><section class="card"><h2 id="自我測驗附詳解">自我測驗（附詳解）</h2>
+<blockquote><p>先自己寫，再點開答案。</p></blockquote>
+<h3 id="ch1">Ch1</h3>
+<p><strong>Q1.</strong> v(t) = 20 sin(377t + 30°) V，求 Vm、f、T、Vrms、Vp-p、正半週 Vav，以及 t = 0 時的電壓。</p>
+<details><summary>答案</summary>
+<p>Vm = 20 V；f = 377/2π = 60 Hz；T ≈ 16.67 ms；Vrms = 14.14 V；Vp-p = 40 V；Vav = 12.72 V；<br>v(0) = 20 sin30° = <strong>10 V</strong></p>
+</details>
+<p><strong>Q2.</strong> 一脈波頻率 2 kHz、工作週期 40%、高準位 5 V、低準位 0 V。求 T、PW、SW、平均值。</p>
+<details><summary>答案</summary>
+<p>T = 0.5 ms；PW = 0.2 ms；SW = 0.3 ms；Vav = 5 × 40% = <strong>2 V</strong></p>
+</details>
+<p><strong>Q3.</strong> 三角波峰值 9 V，求 Vrms、Vav、C.F.。</p>
+<details><summary>答案</summary>
+<p>Vrms = 9/√3 ≈ <strong>5.2 V</strong>；Vav = <strong>4.5 V</strong>；C.F. = √3 ≈ <strong>1.732</strong></p>
+</details>
+<p><strong>Q4.</strong> v(t) = 6 + 8√2 sin ωt V，求有效值、平均值，並判斷屬於哪種波形。</p>
+<details><summary>答案</summary>
+<p>Vrms = √(6² + 8²) = <strong>10 V</strong>；Vav = <strong>6 V</strong>；<br>最低點 6 − 11.3 &lt; 0，極性會改變 → <strong>交流電</strong>（不是脈動直流！）</p>
+</details>
+<p><strong>Q5.</strong> 週期性波形：0–1 ms 為 4 V，1–4 ms 為 −2 V。求 Vrms 與 Vav。</p>
+<details><summary>答案</summary>
+<p>Vrms = √[(4²×1 + 2²×3)/4] = √7 ≈ <strong>2.65 V</strong>；Vav = (4×1 − 2×3)/4 = <strong>−0.5 V</strong></p>
+</details>
+<p><strong>Q6.</strong> 正弦波、方波、三角波的<strong>平均值</strong>都是 50 V，接到相同電阻，誰的功率最大？若改成<strong>峰值</strong>都相同呢？</p>
+<details><summary>答案</summary>
+<p>平均值相同 → <strong>三角波</strong>最大（三 &gt; 正 &gt; 方）<br>峰值相同 → <strong>方波</strong>最大（方 &gt; 正 &gt; 三）</p>
+</details>
+<p><strong>Q7.</strong> 「1904 年弗萊明」發明什麼？「真空三極管」是誰做的？「點接觸型鍺電晶體」是哪一年？</p>
+<details><summary>答案</summary>
+<p>熱離子閥；德福雷斯特（1906）；1947（巴丁等人）</p>
+</details>
+<p><strong>Q8.</strong> 內含 5000 個零件的 IC 屬於哪一類？含 50 個邏輯閘的呢？</p>
+<details><summary>答案</summary>
+<p>5000 個零件 → <strong>LSI</strong>（1k–10k）；50 個邏輯閘 → <strong>MSI</strong>（12–100）</p>
+</details>
+<h3 id="ch2">Ch2</h3>
+<p><strong>Q2-1.</strong> 矽原子密度 5×10²² /cm³、nᵢ = 1.5×10¹⁰ /cm³，以 10⁸ : 1 摻入<strong>磷</strong>。求 n、p，並判斷是 P 型還 N 型。</p>
+<details><summary>答案</summary>
+<p>磷是五價施體 → n ≈ 5×10²²/10⁸ = <strong>5×10¹⁴</strong>；p = nᵢ²/n = 2.25×10²⁰/5×10¹⁴ = <strong>4.5×10⁵</strong>；<strong>N 型</strong></p>
+</details>
+<p><strong>Q2-2.</strong> 矽二極體 25 °C 時 I_S = 10 nA、Vt = 0.7 V。升到 55 °C 時 I_S 與 Vt 各為多少？</p>
+<details><summary>答案</summary>
+<p>I_S = 10n × 2³ = <strong>80 nA</strong>；Vt = 0.7 − 2.5m × 30 = <strong>0.625 V</strong></p>
+</details>
+<p><strong>Q2-3.</strong> 二極體 V_DQ = 0.8 V、I_DQ = 4 mA、Vt = 0.7 V、η = 1、V_T = 26 mV，求 R_D、r_d、R_F。</p>
+<details><summary>答案</summary>
+<p>R_D = 0.8/4m = <strong>200 Ω</strong>；r_d = 26m/4m = <strong>6.5 Ω</strong>；R_F = 0.1/4m = <strong>25 Ω</strong></p>
+</details>
+<p><strong>Q2-4.</strong> E = 10 V 串 R₁ = 2 kΩ，後面 R₂ = 3 kΩ 與矽二極體（Vt = 0.7 V，定電壓模型）並聯。求 V_R1、V_R2、I_D。</p>
+<details><summary>答案</summary>
+<p>先拿掉二極體：V_th = 10 × 3/5 = 6 V ≥ 0.7 → 導通<br>V_R2 = <strong>0.7 V</strong>；V_R1 = <strong>9.3 V</strong><br>I_R1 = 4.65 mA、I_R2 = 0.233 mA → I_D ≈ <strong>4.42 mA</strong></p>
+</details>
+<p><strong>Q2-5.</strong> E = 15 V、R = 1 kΩ、R_L = 2 kΩ、V_Z = 6 V。求 V_L、I_Z、P_Z。若 R_L 改成 500 Ω 呢？</p>
+<details><summary>答案</summary>
+<p>V_th = 15 × 2/3 = 10 V ≥ 6 → 崩潰：V_L = <strong>6 V</strong>；I = 9 mA、I_L = 3 mA → I_Z = <strong>6 mA</strong>；P_Z = <strong>36 mW</strong><br>R_L = 500 Ω：V_th = 15 × 0.5/1.5 = 5 V &lt; 6 → 稽納開路，V_L = <strong>5 V</strong></p>
+</details>
+<p><strong>Q2-6.</strong> 稽納 V_Z = 5 V、P_Z(max) = 100 mW，E = 20 V、R = 300 Ω。R_L 範圍？</p>
+<details><summary>答案</summary>
+<p>I = (20 − 5)/300 = 50 mA；I_ZM = 100m/5 = 20 mA<br>I_L 最大 50 mA → R_L 最小 = 5/50m = <strong>100 Ω</strong><br>I_L 最小 = 50 − 20 = 30 mA → R_L 最大 = 5/30m ≈ <strong>167 Ω</strong></p>
+</details>
+<p><strong>Q2-7.</strong> 5 V 電源驅動一顆 LED（V_F = 2 V、I_F = 15 mA），限流電阻要多大？若 3 顆串聯、電源 12 V 呢？</p>
+<details><summary>答案</summary>
+<p>R = (5 − 2)/15m = <strong>200 Ω</strong>；R = (12 − 6)/15m = <strong>400 Ω</strong></p>
+</details>
+<p><strong>Q2-8.</strong> 變壓器 N₁ : N₂ = 10 : 1，初級接 110 V，次級接 22 Ω。求 V₂、I₂、I₁、初級等效電阻 R₁。</p>
+<details><summary>答案</summary>
+<p>V₂ = <strong>11 V</strong>；I₂ = <strong>0.5 A</strong>；I₁ = <strong>0.05 A</strong>；R₁ = 10² × 22 = <strong>2.2 kΩ</strong></p>
+</details>
+<p><strong>Q2-9.</strong> 輸入峰值 20 V、60 Hz，分別接半波、中心抽頭、橋式整流（理想二極體）。各求 Vo(rms)、Vo(av)、PIV、f_o。</p>
+<details><summary>答案</summary>
+<div class="tw"><table><thead><tr><th></th><th>Vo(rms)</th><th>Vo(av)</th><th>PIV</th><th>f_o</th></tr></thead><tbody><tr><td>半波</td><td>10 V</td><td>6.37 V</td><td>20 V</td><td>60 Hz</td></tr><tr><td>中心抽頭</td><td>14.14 V</td><td>12.73 V</td><td><strong>40 V</strong></td><td>120 Hz</td></tr><tr><td>橋式</td><td>14.14 V</td><td>12.73 V</td><td>20 V</td><td>120 Hz</td></tr></tbody></table></div>
+</details>
+<p><strong>Q2-10.</strong> 濾波輸出 Vm = 12 V、Vr(p-p) = 2 V。求 Vdc、Vr(rms)、漣波百分比。</p>
+<details><summary>答案</summary>
+<p>Vdc = 12 − 1 = <strong>11 V</strong>；Vr(rms) = 2/(2√3) ≈ <strong>0.577 V</strong>；r% = 0.577/11 ≈ <strong>5.2%</strong></p>
+</details>
+<p><strong>Q2-11.</strong> 60 Hz 全波整流電容濾波，R_L = 2 kΩ、C = 100 μF，漣波百分比是多少？改成半波呢？</p>
+<details><summary>答案</summary>
+<p>全波 r = 2.4/(2 × 100) = 0.012 = <strong>1.2%</strong>；半波 r = 4.8/200 = <strong>2.4%</strong></p>
+</details>
+<p><strong>Q2-12.</strong> 全波濾波（60 Hz）輸出 Vdc = 10 V、R_L = 1 kΩ、C = 500 μF。Vr(p-p) 約多少？</p>
+<details><summary>答案</summary>
+<p>Idc = 10 mA；Vr(p-p) = 10m/(500μ × 120) ≈ <strong>0.167 V</strong></p>
+</details>
+<p><strong>Q2-13.</strong> 電源 E = 24 V、內阻 R_S = 2 Ω，接 R_L = 10 Ω。求電壓調整率。</p>
+<details><summary>答案</summary>
+<p>V_NL = 24 V；V_FL = 24 × 10/12 = 20 V；VR% = 4/20 = <strong>20%</strong></p>
+</details>
+<p><strong>Q2-14.</strong> 是非題<br>(a) P 型半導體多數載子是電洞，所以整體帶正電<br>(b) 逆偏越大，空乏電容越小<br>(c) 稽納崩潰屬於正溫度係數<br>(d) LED 是用間接能隙材料做的<br>(e) 純電感濾波適合輕負載<br>(f) 理想電壓源的內阻為無限大<br>(g) 二極體空乏區內的電場方向由 N 指向 P</p>
+<details><summary>答案</summary>
+<p>(a) ✗ 電中性　(b) ✔　(c) ✗ 負溫度係數（累增崩潰才是正）　(d) ✗ 直接能隙<br>(e) ✗ 重負載　(f) ✗ 內阻 = 0（電流源才是 ∞）　(g) ✔</p>
+</details>
+<h3 id="ch3">Ch3</h3>
+<p><strong>Q9.</strong> 判斷工作區（皆為矽晶體）：<br>(a) NPN：V_C = 8 V、V_B = 2.7 V、V_E = 2 V<br>(b) NPN：V_C = 0.2 V、V_B = 0.7 V、V_E = 0 V<br>(c) PNP：V_E = 5 V、V_B = 4.3 V、V_C = 4.9 V<br>(d) PNP：V_E = 0 V、V_B = 1 V、V_C = −5 V</p>
+<details><summary>答案</summary>
+<p>(a) V_BE = 0.7 順、V_BC = −5.3 逆 → <strong>主動區</strong><br>(b) V_BE = 0.7 順、V_BC = 0.5 順 → <strong>飽和區</strong>（V_CE = 0.2 V）<br>(c) V_EB = 0.7 順、V_CB = 0.6 &gt; 0.5 順 → <strong>飽和區</strong><br>(d) V_EB = −1 逆、V_CB = −6 逆 → <strong>截止區</strong></p>
+</details>
+<p><strong>Q10.</strong> 電晶體在主動區，β = 150、I_B = 20 μA。求 I_C、I_E、α、γ。</p>
+<details><summary>答案</summary>
+<p>I_C = 3 mA；I_E = 3.02 mA；α = 150/151 ≈ <strong>0.993</strong>；γ = <strong>151</strong></p>
+</details>
+<p><strong>Q11.</strong> α = 0.98，求 β 與 γ。</p>
+<details><summary>答案</summary>
+<p>β = 0.98/0.02 = <strong>49</strong>；γ = 1 + 49 = <strong>50</strong></p>
+</details>
+<p><strong>Q12.</strong> β = 99、I_CBO = 0.1 μA、I_B = 10 μA，求 I_CEO 與 I_C。</p>
+<details><summary>答案</summary>
+<p>I_CEO = (1 + 99) × 0.1 μA = <strong>10 μA</strong><br>I_C = 99 × 10 μA + 10 μA = <strong>1 mA</strong></p>
+</details>
+<p><strong>Q13.</strong> 共射極電路：V_BB = 5 V、R_B = 100 kΩ、V_CC = 12 V、R_C = 2 kΩ、β = 100、V_BE = 0.7 V。求 I_B、I_C、V_CE、P_Q，並確認工作區。</p>
+<details><summary>答案</summary>
+<p>I_B = (5 − 0.7)/100k = <strong>43 μA</strong><br>I_C = 100 × 43 μA = <strong>4.3 mA</strong><br>V_CE = 12 − 4.3m × 2k = <strong>3.4 V</strong>（&gt; 0.2 V → 主動區 ✔）<br>P_Q = 4.3 mA × 3.4 V ≈ <strong>14.6 mW</strong><br>輸入負載線兩點：(5 V, 0) 與 (0, 50 μA)</p>
+</details>
+<p><strong>Q14.（進階）</strong> 承上題，R_B 改成 20 kΩ，會發生什麼事？</p>
+<details><summary>答案</summary>
+<p>I_B = 4.3/20k = 215 μA → 若在主動區 I_C = 21.5 mA → V_CE = 12 − 43 &lt; 0，不可能！<br>→ 電晶體進入<strong>飽和區</strong>：I_C(sat) = (12 − 0.2)/2k = <strong>5.9 mA</strong>，V_CE = 0.2 V</p>
+</details>
+<p><strong>Q15.</strong> 下列敘述對或錯？<br>(a) 共基極放大的電流增益最大<br>(b) 共集極組態以 E 極為輸出端<br>(c) 飽和區時 C-E 可視為開路<br>(d) PNP 的箭頭由 E 指向 B<br>(e) 電晶體 B 極寬度最寬</p>
+<details><summary>答案</summary>
+<p>(a) ✗ CB 是 α &lt; 1，最小；CC 的 γ 最大<br>(b) ✔<br>(c) ✗ 飽和 = 短路 (ON)；截止才是開路 (OFF)<br>(d) ✔<br>(e) ✗ B 最窄；C 最寬</p>
+</details>
+<p><strong>Q16.</strong> 左邊電路 6 V 電池串 2 kΩ 電阻，電流為 I；右邊相依電流源 3I 接 500 Ω。求 500 Ω 的端電壓。</p>
+<details><summary>答案</summary>
+<p>I = 6/2k = 3 mA → 3I = 9 mA → V = 9 mA × 500 Ω = <strong>4.5 V</strong></p>
+</details>
+
+<p>加油！💪</p></section></main>
+</div>
+</body>
+</html>

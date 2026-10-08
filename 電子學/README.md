@@ -12,10 +12,13 @@
 
 | 網站 / 檔案 | 內容 |
 |---|---|
-| [段考複習_Ch1-Ch3.md](段考複習_Ch1-Ch3.md) | 兩次小考詳解與出題規律、各章重點、課本答案核對（已對照教師手冊）、教師手冊與測驗卷補充、自我測驗（附詳解） |
+| [段考複習（網站）](https://claude.ai/artifact/RMs9UMWxC7Dh1BToh8vM8w) | Ch1～Ch3 總整理：兩次小考詳解與出題規律、各章重點、公式卡、課本答案核對（已對照教師手冊）、教師手冊與測驗卷補充、自我測驗（附詳解）。同一份內容的檔案版：[段考複習_Ch1-Ch3.md](段考複習_Ch1-Ch3.md)、離線版：[段考複習.html](段考複習.html) |
+
+## 練習
+
+| 網站 / 檔案 | 內容 |
+|---|---|
 | [段考題庫（網站）](https://claude.ai/artifact/7MRKh91FGey2pv21aMfpBN) | 235 題互動測驗（課本題、兩次小考、隨堂測驗卷、鍛鍊本、統測），附詳解和錯題本（離線版：[電子學段考題庫.html](電子學段考題庫.html)） |
-| [上冊 Ch1–Ch2 課堂筆記（網站）](https://claude.ai/artifact/1Syf4iAwuFwkkzJaqCPHCG) | Ch1–Ch2 課堂筆記 |
-| [Ch.1 重點整理（網站）](https://claude.ai/artifact/FAkryNRKr3g5kDoAMJKKLD) | Ch1 重點整理 |
 
 **考試範圍**
 - Ch1 概論

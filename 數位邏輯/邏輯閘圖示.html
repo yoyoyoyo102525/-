@@ -1,0 +1,198 @@
+<title>邏輯閘圖示</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one column of gate cards on graph paper, like a lab handout; summary truth table first, then each gate, then equivalent symbols. */
+:root {
+  --paper: #e9eef3;
+  --grid: rgba(60, 96, 140, 0.07);
+  --sheet: #fbfcfd;
+  --ink: #1b2a42;
+  --muted: #5a6a7f;
+  --rule: #d2dbe5;
+  --blue: #1f4fd1;
+  --blue-soft: rgba(31, 79, 209, 0.09);
+  --red: #cf3027;
+  --chip: #dfe6ee;
+  --f-display: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "DFKai-SB", serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0;
+    --muted: #94a3b6; --rule: #2c3644; --blue: #86a6ff; --blue-soft: rgba(134, 166, 255, 0.12);
+    --red: #ff7d70; --chip: #232c38; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11161d; --grid: rgba(140, 170, 210, 0.05); --sheet: #19202a; --ink: #e2e8f0;
+  --muted: #94a3b6; --rule: #2c3644; --blue: #86a6ff; --blue-soft: rgba(134, 166, 255, 0.12);
+  --red: #ff7d70; --chip: #232c38; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font: 400 16px/1.65 var(--f-body);
+  padding-inline: 16px;
+  padding-block: 28px 64px;
+}
+.wrap { max-width: 760px; margin-inline: auto; display: grid; gap: 22px; }
+header { display: grid; gap: 4px; }
+h1 { font: 700 clamp(1.9rem, 6vw, 2.5rem)/1.15 var(--f-display); margin: 0; text-wrap: balance; }
+h2 { font: 700 1.35rem/1.3 var(--f-display); margin: 8px 0 0; text-wrap: balance; }
+.sub { color: var(--muted); font-size: 0.92rem; margin: 0; }
+.panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 18px clamp(14px, 4vw, 26px); display: grid; gap: 12px; min-width: 0; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { border: 1px solid var(--rule); padding: 5px 10px; text-align: center; }
+th { font-weight: 500; background: var(--chip); }
+td { font-family: var(--f-mono); }
+td.one { color: var(--blue); font-weight: 600; background: var(--blue-soft); }
+.summary th small { display: block; font: 500 0.72rem/1.2 var(--f-mono); color: var(--muted); }
+.cards { display: grid; gap: 16px; }
+.gate { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px clamp(14px, 4vw, 24px); display: grid; gap: 12px; min-width: 0; }
+.gate-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.gate-head h3 { font: 700 1.3rem/1.2 var(--f-display); margin: 0; }
+.gate-head .en { font: 600 0.9rem/1 var(--f-mono); color: var(--muted); }
+.gate-head .sec { margin-left: auto; font: 500 0.78rem/1.4 var(--f-mono); color: var(--muted); background: var(--chip); padding: 2px 8px; border-radius: 4px; }
+.symbols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+figure { margin: 0; display: grid; gap: 2px; justify-items: center; border: 1px dashed var(--rule); border-radius: 8px; padding: 8px 6px 6px; min-width: 0; }
+figure svg { width: 100%; max-width: 230px; height: auto; color: var(--ink); }
+figcaption { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em; }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 14px 18px; align-items: start; }
+.facts dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; min-width: 0; }
+.facts dt { color: var(--muted); font-size: 0.85rem; padding-top: 2px; }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.expr { font: 600 1.05rem/1.4 var(--f-mono); }
+.rule { font-family: var(--f-display); font-size: 1.12rem; font-weight: 700; color: var(--red); }
+.note { font-size: 0.9rem; color: var(--muted); margin: 0; }
+.eq { display: grid; gap: 14px; }
+.eq-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
+.eq-row .is { font: 700 1.6rem/1 var(--f-display); color: var(--muted); }
+.eq-row + p { margin: -6px 0 6px; text-align: center; font: 500 0.95rem/1.4 var(--f-mono); }
+ul.tips { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+@media (max-width: 520px) {
+  .facts { grid-template-columns: 1fr; }
+  .gate-head .sec { margin-left: 0; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>邏輯閘圖示</h1>
+    <p class="sub">數位邏輯設計 Ch2｜每個閘的傳統符號、IEEE 矩形符號、布林式、真值表和常用 IC 編號</p>
+  </header>
+
+  <section class="panel" aria-labelledby="sum-h">
+    <h2 id="sum-h">一張表看完 2 輸入閘</h2>
+    <div class="scroll"><table class="summary" id="summary"></table></div>
+    <p class="note">藍色格子是輸出 1。口訣：AND 全 1 才 1、OR 有 1 就 1、NAND 全 1 才 0、NOR 全 0 才 1、XOR 相異為 1、XNOR 相同為 1。</p>
+  </section>
+
+  <h2>各個邏輯閘</h2>
+  <div class="cards" id="cards"></div>
+
+  <section class="panel" aria-labelledby="eq-h">
+    <h2 id="eq-h">等效符號（3-5.2 邏輯閘的互換）</h2>
+    <p class="note">由第摩根定理，換形狀、把圓圈搬到另一邊，功能不變。</p>
+    <div class="eq" id="eq"></div>
+  </section>
+
+  <section class="panel">
+    <h2>看圖的規則</h2>
+    <ul class="tips">
+      <li><b>小圓圈 = 反相（NOT）</b>。輸出有圓圈：NAND、NOR、XNOR、NOT。</li>
+      <li><b>形狀</b>：D 字形是 AND；盾牌形是 OR；盾牌後面多一條弧線是 XOR；三角形是 NOT 或緩衝器。</li>
+      <li><b>IEEE 矩形符號</b>看框內標記：<b>&amp;</b> AND、<b>≥1</b> OR、<b>=1</b> XOR、<b>=</b> XNOR、<b>1</b> NOT／緩衝器。</li>
+      <li>多輸入的閘只是左邊多幾條輸入線，形狀不變。</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const G = [
+  {id:'or',   name:'或閘',       en:'OR',     sec:'2-2.1', shape:'or',  bub:false, ieee:'≥1', n:2, f:(a,b)=>a|b,      expr:'Y = A + B',             rule:'有 1 就 1',  ic:'7432',  note:'控制端接 0：資料通過；接 1：輸出恆為 1（OR 怕 1）。'},
+  {id:'and',  name:'及閘',       en:'AND',    sec:'2-2.2', shape:'and', bub:false, ieee:'&',  n:2, f:(a,b)=>a&b,      expr:'Y = A · B = AB',        rule:'全 1 才 1',  ic:'7408',  note:'控制端接 1：資料通過；接 0：輸出恆為 0（AND 怕 0）。'},
+  {id:'not',  name:'反閘',       en:'NOT',    sec:'2-2.3', shape:'tri', bub:true,  ieee:'1',  n:1, f:a=>a^1,          expr:'Y = A′',                rule:'相反',       ic:'7404（6 個）', note:'只有一個輸入。輸入方波，輸出反相方波，頻率不變。'},
+  {id:'nor',  name:'反或閘',     en:'NOR',    sec:'2-3.1', shape:'or',  bub:true,  ieee:'≥1', n:2, f:(a,b)=>(a|b)^1,  expr:'Y = (A + B)′',          rule:'全 0 才 1',  ic:'7402',  note:'OR 後面加 NOT。萬用閘之一。7402 的接腳和 7400 不同，輸出腳在前。'},
+  {id:'nand', name:'反及閘',     en:'NAND',   sec:'2-3.2', shape:'and', bub:true,  ieee:'&',  n:2, f:(a,b)=>(a&b)^1,  expr:'Y = (AB)′',             rule:'全 1 才 0',  ic:'7400',  note:'AND 後面加 NOT。萬用閘之一。'},
+  {id:'xor',  name:'互斥或閘',   en:'XOR',    sec:'2-4.1', shape:'xor', bub:false, ieee:'=1', n:2, f:(a,b)=>a^b,      expr:'Y = A ⊕ B = A′B + AB′', rule:'相異為 1',   ic:'7486',  note:'多輸入時：1 的個數為奇數，輸出 1。'},
+  {id:'xnor', name:'互斥反或閘', en:'XNOR',   sec:'2-4.2', shape:'xor', bub:true,  ieee:'=',  n:2, f:(a,b)=>(a^b)^1,  expr:'Y = A ⊙ B = A′B′ + AB', rule:'相同為 1',   ic:'74266', note:'又稱同值閘、比較閘。多輸入時：1 的個數為偶數，輸出 1。'},
+  {id:'buf',  name:'緩衝器',     en:'Buffer', sec:'補充',  shape:'tri', bub:false, ieee:'1',  n:1, f:a=>a,            expr:'Y = A',                 rule:'原樣輸出',   ic:'—',     note:'三角形沒有圓圈。用來加強推動能力。'},
+];
+
+const S = 'stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"';
+const FILL = 'fill="var(--sheet)"';
+const T = (x, y, s, anchor = 'start') => `<text x="${x}" y="${y}" fill="currentColor" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" text-anchor="${anchor}">${s}</text>`;
+const ins = n => n === 1 ? [40] : [25, 55];
+
+function wiresIn(n, endX, bubbleIn) {
+  return ins(n).map((y, i) => {
+    const stop = bubbleIn ? endX - 10 : endX;
+    const b = bubbleIn ? `<circle cx="${endX - 5}" cy="${y}" r="5" ${FILL} ${S}/>` : '';
+    return `<line x1="14" y1="${y}" x2="${stop}" y2="${y}" ${S}/>${b}${T(2, y + 4, n === 1 ? 'A' : 'AB'[i])}`;
+  }).join('');
+}
+function out(x, bub) {
+  const b = bub ? `<circle cx="${x + 5}" cy="40" r="5" ${FILL} ${S}/>` : '';
+  const sx = bub ? x + 10 : x;
+  return `${b}<line x1="${sx}" y1="40" x2="146" y2="40" ${S}/>${T(150, 44, 'Y')}`;
+}
+function body(shape) {
+  if (shape === 'and') return { d: `<path d="M40 10 H70 A30 30 0 0 1 70 70 H40 Z" ${FILL} ${S}/>`, inX: 40, outX: 100 };
+  if (shape === 'or') return { d: `<path d="M36 10 Q80 10 106 40 Q80 70 36 70 Q52 40 36 10 Z" ${FILL} ${S}/>`, inX: 42, outX: 106 };
+  if (shape === 'xor') return { d: `<path d="M28 10 Q44 40 28 70" fill="none" ${S}/><path d="M36 10 Q80 10 106 40 Q80 70 36 70 Q52 40 36 10 Z" ${FILL} ${S}/>`, inX: 34, outX: 106 };
+  return { d: `<path d="M48 14 L96 40 L48 66 Z" ${FILL} ${S}/>`, inX: 48, outX: 96 };
+}
+function classic(g, opts = {}) {
+  const b = body(opts.shape || g.shape);
+  const n = opts.n || g.n;
+  return `<svg viewBox="0 0 164 80" role="img" aria-label="${opts.label || g.en + ' 傳統符號'}">${wiresIn(n, b.inX, opts.bubbleIn)}${b.d}${out(b.outX, opts.bub ?? g.bub)}</svg>`;
+}
+function ieee(g) {
+  const lab = `<text x="80" y="30" fill="currentColor" font-family="IBM Plex Mono, monospace" font-size="16" font-weight="600" text-anchor="middle">${g.ieee.replace('&', '&amp;')}</text>`;
+  return `<svg viewBox="0 0 164 80" role="img" aria-label="${g.en} IEEE 矩形符號">${wiresIn(g.n, 50, false)}<rect x="50" y="10" width="60" height="60" ${FILL} ${S}/>${lab}${out(110, g.bub)}</svg>`;
+}
+function truth(g) {
+  const rows = g.n === 1 ? [[0], [1]] : [[0,0],[0,1],[1,0],[1,1]];
+  const head = (g.n === 1 ? '<th>A</th>' : '<th>A</th><th>B</th>') + '<th>Y</th>';
+  const body = rows.map(r => { const y = g.f(...r); return `<tr>${r.map(v => `<td>${v}</td>`).join('')}<td class="${y ? 'one' : ''}">${y}</td></tr>`; }).join('');
+  return `<table aria-label="${g.en} 真值表"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+document.getElementById('cards').innerHTML = G.map(g => `
+  <article class="gate" id="${g.id}">
+    <div class="gate-head"><h3>${g.name}</h3><span class="en">${g.en}</span><span class="sec">${g.sec}</span></div>
+    <div class="symbols">
+      <figure>${classic(g)}<figcaption>傳統符號</figcaption></figure>
+      <figure>${ieee(g)}<figcaption>IEEE 矩形符號</figcaption></figure>
+    </div>
+    <div class="facts">
+      ${truth(g)}
+      <dl>
+        <dt>布林式</dt><dd class="expr">${g.expr}</dd>
+        <dt>口訣</dt><dd class="rule">${g.rule}</dd>
+        <dt>IC</dt><dd>${g.ic}</dd>
+        <dt>說明</dt><dd>${g.note}</dd>
+      </dl>
+    </div>
+  </article>`).join('');
+
+const two = G.filter(g => g.n === 2);
+const rows = [[0,0],[0,1],[1,0],[1,1]];
+document.getElementById('summary').innerHTML =
+  `<thead><tr><th>A</th><th>B</th>${two.map(g => `<th>${g.en}<small>${g.name}</small></th>`).join('')}</tr></thead><tbody>` +
+  rows.map(([a, b]) => `<tr><td>${a}</td><td>${b}</td>${two.map(g => { const y = g.f(a, b); return `<td class="${y ? 'one' : ''}">${y}</td>`; }).join('')}</tr>`).join('') + '</tbody>';
+
+const byId = id => G.find(g => g.id === id);
+document.getElementById('eq').innerHTML = `
+  <div class="eq-row"><figure>${classic(byId('nand'))}<figcaption>NAND</figcaption></figure><span class="is">＝</span><figure>${classic(byId('or'), {bubbleIn: true, bub: false, label: '負 OR'})}<figcaption>負 OR（輸入加圓圈的 OR）</figcaption></figure></div>
+  <p>(AB)′ = A′ + B′</p>
+  <div class="eq-row"><figure>${classic(byId('nor'))}<figcaption>NOR</figcaption></figure><span class="is">＝</span><figure>${classic(byId('and'), {bubbleIn: true, bub: false, label: '負 AND'})}<figcaption>負 AND（輸入加圓圈的 AND）</figcaption></figure></div>
+  <p>(A + B)′ = A′B′</p>`;
+</script>

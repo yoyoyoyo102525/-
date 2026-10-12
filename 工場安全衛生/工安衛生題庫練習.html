@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>工安衛生題庫練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* 版面概念：工地告示牌。頂端一條黃黑警示帶，題目卡像一張檢定答案卡；答對用逃生出口的綠，答錯用禁止標誌的紅。 */
+:root{
+  --bg:#f4f5f2; --card:#ffffff; --ink:#1b1f24; --muted:#5d6570; --rule:#d9dcd5;
+  --hazard:#f2b705; --hazard-ink:#1b1f24; --accent:#2f5d8a; --accent-soft:#e6eef6;
+  --ok:#17824a; --ok-soft:#e2f4e9; --bad:#c23a2b; --bad-soft:#fbe8e5; --mark:#ffe58a;
+  --f-display:"LXGW WenKai TC","Noto Serif TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",monospace;
+  --wrap:44rem;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151a; --card:#1b2027; --ink:#e8eaec; --muted:#9aa2ad; --rule:#2c333c;
+  --hazard:#f2b705; --hazard-ink:#12151a; --accent:#7fb0e0; --accent-soft:#1d2a38;
+  --ok:#4fd18a; --ok-soft:#142d20; --bad:#ff7d6e; --bad-soft:#3a1d1a; --mark:rgba(255,214,80,.3);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151a; --card:#1b2027; --ink:#e8eaec; --muted:#9aa2ad; --rule:#2c333c;
+  --hazard:#f2b705; --hazard-ink:#12151a; --accent:#7fb0e0; --accent-soft:#1d2a38;
+  --ok:#4fd18a; --ok-soft:#142d20; --bad:#ff7d6e; --bad-soft:#3a1d1a; --mark:rgba(255,214,80,.3);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1.0625rem;line-height:1.8;padding-inline:16px;padding-block:0 4rem}
+.wrap{max-width:var(--wrap);margin-inline:auto}
+h1,h2{font-family:var(--f-display);line-height:1.3;margin:0;text-wrap:balance}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.stripe{height:10px;margin-inline:-16px;background:repeating-linear-gradient(-45deg,var(--hazard) 0 14px,var(--hazard-ink) 14px 28px)}
+header.hero{padding-block:1.6rem .4rem}
+.code{font-family:var(--f-num);font-size:.8rem;letter-spacing:.06em;color:var(--muted)}
+.hero h1{font-size:clamp(1.9rem,6.5vw,2.6rem);margin:.2rem 0 .5rem}
+.note{background:var(--card);border:1px solid var(--rule);border-left:6px solid var(--hazard);border-radius:.4rem;padding:.6rem .9rem;font-size:.95rem}
+.note b{background:linear-gradient(transparent 55%,var(--mark) 55%)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:1rem 0}
+.stat{background:var(--card);border:1px solid var(--rule);border-radius:.4rem;padding:.5rem .7rem;line-height:1.3}
+.stat .v{font-family:var(--f-num);font-size:1.45rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:.8rem;color:var(--muted);font-weight:500}
+.stat .k{font-size:.8rem;color:var(--muted)}
+
+.tabs{display:flex;gap:.3rem;border-bottom:2px solid var(--ink);margin-top:1.2rem}
+.tab{border:0;background:transparent;padding:.45rem 1rem;border-radius:.4rem .4rem 0 0;font-weight:700;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+
+.ctl{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.chip{border:1px solid var(--rule);background:var(--card);border-radius:999px;padding:.12rem .75rem;font-size:.88rem}
+.chip .n{font-family:var(--f-num);font-size:.75rem;opacity:.7;margin-left:.3rem}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:disabled{opacity:.45;cursor:default}
+.lbl{font-size:.8rem;color:var(--muted)}
+
+.qcard{background:var(--card);border:1.5px solid var(--ink);border-radius:.5rem;overflow:hidden}
+.qhead{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:center;justify-content:space-between;padding:.45rem .9rem;background:var(--ink);color:var(--bg);font-size:.85rem}
+.qhead .pos{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.qhead .meta{opacity:.8}
+.pbar{height:4px;background:var(--rule)}
+.pbar>span{display:block;height:100%;background:var(--hazard);width:0;transition:width .25s}
+.qbody{padding:1rem 1rem 1.1rem}
+.qtext{font-size:1.12rem;font-weight:500;margin:0 0 .9rem}
+.opts{display:flex;flex-direction:column;gap:.45rem}
+.opt{display:flex;gap:.6rem;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--rule);background:var(--bg);border-radius:.45rem;padding:.55rem .75rem;line-height:1.6}
+.opt .no{font-family:var(--f-num);font-weight:600;flex:none;width:1.6rem;height:1.6rem;display:grid;place-items:center;border-radius:50%;border:1.5px solid currentColor;font-size:.85rem;margin-top:.05rem}
+.opt .t{min-width:0}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.correct .no{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.picked-wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.picked-wrong .no{background:var(--bad);border-color:var(--bad);color:#fff}
+.fb{margin-top:.8rem;font-weight:700;min-height:1.8em}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.qfoot{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:space-between;align-items:center;padding:.6rem 1rem;border-top:1px solid var(--rule)}
+.keys{font-size:.78rem;color:var(--muted)}
+kbd{font-family:var(--f-num);font-size:.75rem;border:1px solid var(--rule);border-bottom-width:2px;border-radius:.25rem;padding:0 .3rem;background:var(--bg)}
+.btn{border:0;border-radius:.4rem;padding:.45rem 1.2rem;background:var(--ink);color:var(--bg);font-weight:700}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+.done{text-align:center;padding:1.6rem 1rem}
+.done .big{font-family:var(--f-num);font-size:2.6rem;font-weight:600;line-height:1.1}
+.done p{color:var(--muted);margin:.4rem 0 1rem}
+.done .row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+
+.search{width:100%;font:inherit;padding:.5rem .8rem;border:1.5px solid var(--rule);border-radius:.4rem;background:var(--card);color:var(--ink)}
+.toggle{display:flex;align-items:center;gap:.4rem;font-size:.92rem}
+.toggle input{width:1.05rem;height:1.05rem;accent-color:var(--ink)}
+.list{display:flex;flex-direction:column;gap:.5rem}
+.item{background:var(--card);border:1px solid var(--rule);border-radius:.45rem;padding:.65rem .85rem}
+.item .q{font-weight:500}
+.item .q .num{font-family:var(--f-num);font-weight:600;color:var(--muted);margin-right:.35rem}
+.item .q .ans{font-family:var(--f-num);font-weight:600;color:var(--ok);margin-right:.35rem}
+.item ol{list-style:none;padding:0;margin:.35rem 0 0;display:flex;flex-direction:column;gap:.1rem}
+.item li{display:flex;gap:.45rem;font-size:.95rem;color:var(--muted)}
+.item li .no{font-family:var(--f-num);flex:none}
+.item li.c{color:var(--ink);font-weight:700}
+.item li.c .t{background:linear-gradient(transparent 55%,var(--mark) 55%)}
+.item .wrongtag{font-size:.72rem;color:var(--bad);border:1px solid currentColor;border-radius:.25rem;padding:0 .3rem;margin-left:.4rem;white-space:nowrap}
+.hide .item:not(.show) .ans{visibility:hidden}
+.hide .item:not(.show) li.c{color:var(--muted);font-weight:400}
+.hide .item:not(.show) li.c .t{background:none}
+.hide .item{cursor:pointer}
+.empty{color:var(--muted);text-align:center;padding:1.5rem;border:1px dashed var(--rule);border-radius:.45rem}
+footer{margin-top:2.5rem;font-size:.82rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:.8rem}
+.linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:0;font-size:.82rem}
+</style>
+</head>
+<body>
+<div class="stripe" aria-hidden="true"></div>
+<main class="wrap">
+<header class="hero">
+  <div class="code">90006 職業安全衛生共同科目 · 115 年 1 月 1 日起適用 · 100 題</div>
+  <h1>工安衛生題庫練習</h1>
+  <div class="note">考試題目直接從這份題庫出，<b>只會打亂題目順序，選項順序和答案不變</b>。所以這裡練習時也只打亂題目，選項一律照原本的 ①②③④。記住「看到這題就選 ③」，考試直接用得上。</div>
+</header>
+
+<div class="stats" aria-live="polite">
+  <div class="stat"><div class="v" id="stSeen">0<small> / 100</small></div><div class="k">練過的題目</div></div>
+  <div class="stat"><div class="v" id="stMaster">0</div><div class="k">最近一次答對</div></div>
+  <div class="stat"><div class="v" id="stWrong">0</div><div class="k">錯題本</div></div>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tabPractice" aria-selected="true" aria-controls="panelPractice">練習</button>
+  <button class="tab" role="tab" id="tabList" aria-selected="false" aria-controls="panelList">題庫總覽</button>
+</div>
+
+<section id="panelPractice" role="tabpanel" aria-labelledby="tabPractice">
+  <div class="ctl">
+    <span class="lbl">範圍（每次都會重新打亂題目順序）</span>
+    <div class="chips" id="scopeChips"></div>
+  </div>
+  <div class="qcard" id="card"></div>
+</section>
+
+<section id="panelList" role="tabpanel" aria-labelledby="tabList" hidden>
+  <div class="ctl">
+    <input class="search" id="search" type="search" placeholder="搜尋題目或選項，例如：感電、加班、8 小時" aria-label="搜尋題目">
+    <div style="display:flex;flex-wrap:wrap;gap:1rem">
+      <label class="toggle"><input type="checkbox" id="hideAns"> 遮住答案（點題目才顯示）</label>
+      <label class="toggle"><input type="checkbox" id="onlyWrong"> 只看錯題本</label>
+    </div>
+    <span class="lbl" id="listCount"></span>
+  </div>
+  <div class="list" id="list"></div>
+</section>
+
+<footer>
+  題目和答案依勞動部勞動力發展署公告「技術士技能檢定職業安全衛生共同科目不分級學科測試參考資料」（檔案名稱 900060A18，版次 V114101518，114 年 10 月 15 日公告）整理。練習紀錄只存在這台裝置的瀏覽器裡。
+  <button class="linkbtn" id="resetAll" type="button">清除所有練習紀錄</button><span id="resetConfirm" hidden>　確定要清除嗎？ <button class="linkbtn" id="resetYes" type="button">清除</button>　<button class="linkbtn" id="resetNo" type="button">取消</button></span>
+</footer>
+</main>
+
+<script>
+const BANK = [{"n": 1, "a": 1, "q": "對於核計勞工所得有無低於基本（最低）工資，下列何者錯誤？", "o": ["僅計入在正常工時內之報酬", "應計入加班費", "不計入休假日出勤加給之工資", "不計入競賽獎金"], "t": "勞基法"}, {"n": 2, "a": 2, "q": "下列何者之工資日數得列入計算平均工資？", "o": ["請事假期間", "職災醫療期間", "發生計算事由之當日前 6 個月", "放無薪假期間"], "t": "勞基法"}, {"n": 3, "a": 3, "q": "有關「例假」之敘述，下列何者錯誤？", "o": ["每 7 日應有例假 1 日", "工資照給", "天災出勤時，工資加倍及補休", "須給假，不必給工資"], "t": "勞基法"}, {"n": 4, "a": 3, "q": "勞動基準法第 84 條之 1 規定之工作者，因工作性質特殊，就其工作時間之敘述，下列何者正確？", "o": ["完全不受限制", "無例假與休假", "不另給予延時工資", "得由勞雇雙方另行約定"], "t": "勞基法"}, {"n": 5, "a": 2, "q": "依勞動基準法規定，雇主應置備勞工工資清冊並應保存幾年？", "o": ["1 年", "2 年", "5 年", "10 年"], "t": "勞基法"}, {"n": 6, "a": 0, "q": "事業單位僱用勞工多少人以上者，應依勞動基準法規定訂立工作規則？", "o": ["30 人", "50 人", "100 人", "200 人"], "t": "勞基法"}, {"n": 7, "a": 2, "q": "依勞動基準法規定，雇主延長勞工之工作時間連同正常工作時間，每日不得超過多少小時？", "o": ["10 小時", "11 小時", "12 小時", "15 小時"], "t": "勞基法"}, {"n": 8, "a": 3, "q": "依勞動基準法規定，下列何者屬不定期契約？", "o": ["臨時性或短期性的工作", "季節性的工作", "特定性的工作", "有繼續性的工作"], "t": "勞基法"}, {"n": 9, "a": 0, "q": "依職業安全衛生法規定，事業單位勞動場所發生死亡職業災害時，雇主應於多少小時內通報勞動檢查機構？", "o": ["8 小時", "12 小時", "24 小時", "48 小時"], "t": "職安法規與職災保險"}, {"n": 10, "a": 3, "q": "有關事業單位之勞資會議主席，下列何者正確？", "o": ["由企業工會推派之", "由產業工會推派之", "由勞資雙方協議推派之", "由勞資雙方輪流擔任之"], "t": "勞基法"}, {"n": 11, "a": 3, "q": "職業安全衛生法所稱有母性健康危害之虞之工作，不包括下列何種工作型態？", "o": ["長時間站立姿勢作業", "人力提舉、搬運及推拉重物", "輪班及工作負荷", "駕駛運輸車輛"], "t": "不法侵害與母性保護"}, {"n": 12, "a": 2, "q": "依職業安全衛生法施行細則規定，下列何者非屬特別危害健康之作業？", "o": ["噪音作業", "游離輻射作業", "會計作業", "粉塵作業"], "t": "職安法規與職災保險"}, {"n": 13, "a": 2, "q": "從事於易踏穿材料構築之屋頂修繕作業時，應有何種作業主管在場執行主管業務？", "o": ["施工架組配", "擋土支撐組配", "屋頂", "模板支撐"], "t": "職安法規與職災保險"}, {"n": 14, "a": 3, "q": "有關「工讀生」之敘述，下列何者正確？", "o": ["工資不得低於基本工資之 80%", "屬短期工作者，加班只能補休", "每日正常工作時間得超過 8 小時", "國定假日出勤，工資加倍發給"], "t": "勞基法"}, {"n": 15, "a": 2, "q": "勞工工作時手部嚴重受傷，住院醫療期間公司應按下列何者給予職業災害補償？", "o": ["前 6 個月平均工資", "前 1 年平均工資", "原領工資", "基本工資"], "t": "勞基法"}, {"n": 16, "a": 1, "q": "勞工在何種情況下，雇主得不經預告終止勞動契約？", "o": ["確定被法院判刑 6 個月以內並諭知緩刑超過 1 年以上者", "不服指揮對雇主暴力相向者", "經常遲到早退者", "非連續曠工但 1 個月內累計 3 日者"], "t": "勞基法"}, {"n": 17, "a": 2, "q": "對於吹哨者保護規定，下列何者錯誤？", "o": ["事業單位不得對勞工申訴人終止勞動契約", "勞動檢查機構受理勞工申訴必須保密", "為實施勞動檢查，必要時得告知事業單位有關勞工申訴人身分", "事業單位不得有不利勞工申訴人之處分"], "t": "職安法規與職災保險"}, {"n": 18, "a": 3, "q": "職業安全衛生法所稱有母性健康危害之虞之工作，係指對於具生育能力之女性勞工從事工作，可能會導致的一些影響。下列何者除外？", "o": ["胚胎發育", "妊娠期間之母體健康", "哺乳期間之嬰兒健康", "經期紊亂"], "t": "不法侵害與母性保護"}, {"n": 19, "a": 2, "q": "下列何者非屬職業安全衛生法規定之勞工法定義務？", "o": ["定期接受健康檢查", "參加安全衛生教育訓練", "實施自動檢查", "遵守安全衛生工作守則"], "t": "職安法規與職災保險"}, {"n": 20, "a": 1, "q": "下列何者非屬應對在職勞工施行之健康檢查？", "o": ["一般健康檢查", "體格檢查", "特殊健康檢查", "特定對象及特定項目之檢查"], "t": "職安法規與職災保險"}, {"n": 21, "a": 3, "q": "下列何者非為防範有害物食入之方法？", "o": ["有害物與食物隔離", "不在工作場所進食或飲水", "常洗手、漱口", "穿工作服"], "t": "職業衛生與職業病"}, {"n": 22, "a": 0, "q": "原事業單位如有違反職業安全衛生法或有關安全衛生規定，致承攬人所僱勞工發生職業災害時，有關承攬管理責任，下列敘述何者正確？", "o": ["原事業單位應與承攬人負連帶賠償責任", "原事業單位不需負連帶補償責任", "承攬廠商應自負職業災害之賠償責任", "勞工投保單位即為職業災害之賠償單位"], "t": "職安法規與職災保險"}, {"n": 23, "a": 3, "q": "依勞動基準法規定，主管機關或檢查機構於接獲勞工申訴事業單位違反本法及其他勞工法令規定後，應為必要之調查，並於幾日內將處理情形，以書面通知勞工？", "o": ["14 日", "20 日", "30 日", "60 日"], "t": "勞基法"}, {"n": 24, "a": 2, "q": "我國中央勞動業務主管機關為下列何者？", "o": ["內政部", "勞工保險局", "勞動部", "經濟部"], "t": "職安法規與職災保險"}, {"n": 25, "a": 3, "q": "對於勞動部公告列入應實施型式驗證之機械、設備或器具，下列何種情形不得免驗證？", "o": ["依其他法律規定實施驗證者", "供國防軍事用途使用者", "輸入僅供科技研發之專用機型", "輸入僅供收藏使用之限量品"], "t": "職安法規與職災保險"}, {"n": 26, "a": 3, "q": "對於墜落危險之預防設施，下列敘述何者較為妥適？", "o": ["在外牆施工架等高處作業應盡量使用繫腰式安全帶", "安全帶應確實配掛在低於足下之堅固點", "高度 2m 以上之邊緣開口部分處應圍起警示帶", "高度 2m 以上之開口處應設護欄或安全網"], "t": "災害預防"}, {"n": 27, "a": 2, "q": "對於感電電流流過人體可能呈現的症狀，下列何者錯誤？", "o": ["痛覺", "強烈痙攣", "血壓降低、呼吸急促、精神亢奮", "造成組織灼傷"], "t": "災害預防"}, {"n": 28, "a": 1, "q": "下列何者非屬於容易發生墜落災害的作業場所或設施？", "o": ["施工架", "廚房", "屋頂", "梯子"], "t": "災害預防"}, {"n": 29, "a": 0, "q": "下列何者非屬危險物儲存場所應採取之火災爆炸預防措施？", "o": ["使用工業用電風扇", "裝設可燃性氣體偵測裝置", "使用防爆電氣設備", "標示「嚴禁煙火」"], "t": "災害預防"}, {"n": 30, "a": 2, "q": "雇主於臨時用電設備加裝漏電斷路器，可減少下列何種災害發生？", "o": ["墜落", "物體倒塌、崩塌", "感電", "被撞"], "t": "災害預防"}, {"n": 31, "a": 2, "q": "雇主要求確實管制人員不得進入吊舉物下方，可避免下列何種災害發生？", "o": ["感電", "墜落", "物體飛落", "缺氧"], "t": "災害預防"}, {"n": 32, "a": 0, "q": "職業上危害因子所引起的勞工疾病，稱為何種疾病？", "o": ["職業疾病", "法定傳染病", "流行性疾病", "遺傳性疾病"], "t": "職業衛生與職業病"}, {"n": 33, "a": 3, "q": "事業招人承攬時，其承攬人就承攬部分負雇主之責任，原事業單位就職業災害補償部分之責任為何？", "o": ["視職業災害原因判定是否補償", "依工程性質決定責任", "依承攬契約決定責任", "仍應與承攬人負連帶責任"], "t": "職安法規與職災保險"}, {"n": 34, "a": 1, "q": "預防職業病最根本的措施為何？", "o": ["實施特殊健康檢查", "實施作業環境改善", "實施定期健康檢查", "實施僱用前體格檢查"], "t": "職業衛生與職業病"}, {"n": 35, "a": 0, "q": "在地下室作業，當通風換氣充分時，則不易發生一氧化碳中毒、缺氧危害或火災爆炸危險。「通風換氣充分」係指下列何種描述？", "o": ["風險控制方法", "發生機率", "危害源", "風險"], "t": "災害預防"}, {"n": 36, "a": 0, "q": "勞工為節省時間，在未斷電情況下清理機臺，易發生危害為何？", "o": ["捲夾", "缺氧", "墜落", "崩塌"], "t": "災害預防"}, {"n": 37, "a": 1, "q": "工作場所具有揮發性化學有害物質進入人體，最常見途徑為下列何者？", "o": ["口腔", "呼吸道", "皮膚", "眼睛"], "t": "職業衛生與職業病"}, {"n": 38, "a": 2, "q": "活線作業勞工應佩戴何種防護手套？", "o": ["棉紗手套", "耐熱手套", "絕緣手套", "防振手套"], "t": "災害預防"}, {"n": 39, "a": 3, "q": "下列何者非屬電氣災害之種類？", "o": ["電弧灼傷", "電氣火災", "靜電危害", "雷電閃爍"], "t": "災害預防"}, {"n": 40, "a": 2, "q": "下列何者非屬於工作場所作業會發生墜落災害的潛在危害因子？", "o": ["開口未設置護欄", "未設置安全之上下設備", "未確實配戴耳罩", "屋頂開口下方未張掛安全網"], "t": "災害預防"}, {"n": 41, "a": 1, "q": "在噪音防治之對策中，從下列何者著手最為有效？", "o": ["偵測儀器", "噪音源", "傳播途徑", "個人防護具"], "t": "職業衛生與職業病"}, {"n": 42, "a": 3, "q": "勞工於室外高氣溫作業環境工作，可能對身體產生之熱危害，下列何者非屬熱危害之症狀？", "o": ["熱衰竭", "中暑", "熱痙攣", "痛風"], "t": "職業衛生與職業病"}, {"n": 43, "a": 2, "q": "下列何者是消除職業病發生率之源頭管理對策？", "o": ["使用個人防護具", "健康檢查", "改善作業環境", "多運動"], "t": "職業衛生與職業病"}, {"n": 44, "a": 0, "q": "下列何者非職業病預防之危害因子？", "o": ["遺傳性疾病", "物理性危害", "人因工程危害", "化學性危害"], "t": "職業衛生與職業病"}, {"n": 45, "a": 2, "q": "依職業安全衛生設施規則規定，下列何者非屬使用合梯，應符合之規定？", "o": ["合梯應具有堅固之構造", "合梯材質不得有顯著之損傷、腐蝕等", "梯腳與地面之角度應在 80 度以上", "有安全之防滑梯面"], "t": "災害預防"}, {"n": 46, "a": 3, "q": "下列何者非屬勞工從事電氣工作安全之規定？", "o": ["使其使用電工安全帽", "穿戴絕緣防護具", "停電作業應斷開、檢電、接地及掛牌", "穿戴棉質手套絕緣"], "t": "災害預防"}, {"n": 47, "a": 2, "q": "為防止勞工感電，下列何者錯誤？", "o": ["使用防水插頭", "避免不當延長接線", "設備有金屬外殼保護即可免接地", "電線架高或加以防護"], "t": "災害預防"}, {"n": 48, "a": 1, "q": "不當抬舉導致肌肉骨骼傷害或肌肉疲勞之現象，可歸類為下列何者？", "o": ["感電事件", "不當動作", "不安全環境", "被撞事件"], "t": "災害預防"}, {"n": 49, "a": 2, "q": "使用鑽孔機時，不應使用下列何護具？", "o": ["耳塞", "防塵口罩", "手套", "護目鏡"], "t": "職業衛生與職業病"}, {"n": 50, "a": 0, "q": "腕道症候群常發生於下列何種作業？", "o": ["電腦鍵盤作業", "潛水作業", "堆高機作業", "第一種壓力容器作業"], "t": "職業衛生與職業病"}, {"n": 51, "a": 0, "q": "對於化學燒傷傷患的一般處理原則，下列何者正確？", "o": ["立即用大量清水沖洗", "傷患必須臥下，而且頭、胸部須高於身體其他部位", "於燒傷處塗抹油膏、油脂或發酵粉", "使用酸鹼中和"], "t": "急救"}, {"n": 52, "a": 3, "q": "下列何者非屬防止搬運事故之一般原則？", "o": ["以機械代替人力", "以機動車輛搬運", "採取適當之搬運方法", "儘量增加搬運距離"], "t": "災害預防"}, {"n": 53, "a": 2, "q": "對於脊柱或頸部受傷患者，下列何者不是適當的處理原則？", "o": ["不輕易移動傷患", "速請醫師", "如無合用的器材，需 2 人作徒手搬運", "向急救中心聯絡"], "t": "急救"}, {"n": 54, "a": 3, "q": "於使用道路作業之工作場所，為防止工作人員遭車輛撞擊危害，所採取防護措施，下列何者錯誤？", "o": ["設置警告標示", "置交通引導人員", "管制非工作人員不得進入", "各包商之車輛一律停放於工地現場"], "t": "災害預防"}, {"n": 55, "a": 0, "q": "安全帽承受巨大外力衝擊後，雖外觀良好，應採下列何種處理方式？", "o": ["廢棄", "繼續使用", "送修", "油漆保護"], "t": "職業衛生與職業病"}, {"n": 56, "a": 1, "q": "因舉重而扭腰係由於身體動作不自然姿勢，動作之反彈，引起扭筋、扭腰及形成類似狀態造成職業災害，其災害類型為下列何者？", "o": ["不當狀態", "不當動作", "不當方針", "不當設備"], "t": "災害預防"}, {"n": 57, "a": 2, "q": "有關工作場所安全衛生之敘述，下列何者錯誤？", "o": ["對於勞工從事其身體或衣著有被污染之虞之特殊作業時，應備置該勞工洗眼、洗澡、漱口、更衣、洗濯等設備", "事業單位應備置足夠急救藥品及器材", "事業單位應備置足夠的零食自動販賣機", "勞工應定期接受健康檢查"], "t": "職業衛生與職業病"}, {"n": 58, "a": 2, "q": "在地下室從事油漆粉刷作業，可能呼吸到揮發性有機化合物時，下列措施何者恰當？", "o": ["用手帕遮擋鼻子", "配戴防塵口罩", "配戴濾毒罐面具", "配戴醫用口罩"], "t": "職業衛生與職業病"}, {"n": 59, "a": 2, "q": "安全門或緊急出口平時應維持何狀態？", "o": ["門可上鎖但不可封死", "保持開門狀態以保持逃生路徑暢通", "門應關上但不可上鎖", "與一般進出門相同，視各樓層規定可開可關"], "t": "災害預防"}, {"n": 60, "a": 2, "q": "下列何種防護具較能消減噪音對聽力的危害？", "o": ["棉花球", "耳塞", "耳罩", "碎布球"], "t": "職業衛生與職業病"}, {"n": 61, "a": 1, "q": "勞工若面臨長期工作負荷壓力及工作疲勞累積，沒有獲得適當休息及充足睡眠，便可能影響體能及精神狀態，甚而較易促發下列何種疾病？", "o": ["皮膚癌", "腦心血管疾病", "多發性神經病變", "肺水腫"], "t": "職業衛生與職業病"}, {"n": 62, "a": 1, "q": "「勞工腦心血管疾病發病的風險與年齡、吸菸、總膽固醇數值、家族病史、生活型態、心臟方面疾病」之相關性為何？", "o": ["無", "正", "負", "可正可負"], "t": "職業衛生與職業病"}, {"n": 63, "a": 2, "q": "下列何者非屬職場不法侵害類型？", "o": ["肢體暴力", "語言暴力", "家庭暴力", "性騷擾"], "t": "不法侵害與母性保護"}, {"n": 64, "a": 3, "q": "職場內部常見之身體或精神不法侵害，不包含下列何者？", "o": ["脅迫、名譽損毀、侮辱、嚴重辱罵勞工", "強求勞工執行業務上明顯不必要或不可能之工作", "過度介入勞工私人事宜", "使勞工執行與能力、經驗相符的工作"], "t": "不法侵害與母性保護"}, {"n": 65, "a": 2, "q": "下列何種措施較可避免工作單調重複或負荷過重？", "o": ["連續夜班", "工時過長", "排班保有規律性", "經常性加班"], "t": "不法侵害與母性保護"}, {"n": 66, "a": 0, "q": "減輕皮膚燒傷程度之最重要步驟為何？", "o": ["儘速用清水沖洗", "立即刺破水泡", "立即在燒傷處塗抹油脂", "在燒傷處塗抹麵粉"], "t": "急救"}, {"n": 67, "a": 2, "q": "眼內噴入化學物或其他異物，應立即使用下列何者沖洗眼睛？", "o": ["牛奶", "蘇打水", "清水", "稀釋的醋"], "t": "急救"}, {"n": 68, "a": 2, "q": "石綿最可能引起下列何種疾病？", "o": ["白指症", "心臟病", "間皮細胞瘤", "巴金森氏症"], "t": "職業衛生與職業病"}, {"n": 69, "a": 1, "q": "作業場所高頻率噪音較易導致下列何種症狀？", "o": ["失眠", "聽力損失", "肺部疾病", "腕道症候群"], "t": "職業衛生與職業病"}, {"n": 70, "a": 1, "q": "廚房設置之排油煙機，為下列何者？", "o": ["整體換氣裝置", "局部排氣裝置", "吹吸型換氣裝置", "排氣煙囪"], "t": "職業衛生與職業病"}, {"n": 71, "a": 3, "q": "下列何者為選用防塵口罩時，最不重要之考量因素？", "o": ["捕集效率愈高愈好", "吸氣阻抗愈低愈好", "重量愈輕愈好", "視野愈小愈好"], "t": "職業衛生與職業病"}, {"n": 72, "a": 1, "q": "若勞工工作性質需與陌生人接觸、工作中需處理不可預期的突發事件或工作場所治安狀況較差，較容易遭遇下列何種危害？", "o": ["組織內部不法侵害", "組織外部不法侵害", "多發性神經病變", "潛涵症"], "t": "不法侵害與母性保護"}, {"n": 73, "a": 2, "q": "下列何者不是發生電氣火災的主要原因？", "o": ["電器接點短路", "電氣火花", "電纜線置於地上", "漏電"], "t": "災害預防"}, {"n": 74, "a": 1, "q": "依勞工職業災害保險及保護法規定，職業災害保險之保險效力，自何時開始起算，至離職當日停止？", "o": ["通知當日", "到職當日", "雇主訂定當日", "勞雇雙方合意之日"], "t": "職安法規與職災保險"}, {"n": 75, "a": 3, "q": "依勞工職業災害保險及保護法規定，勞工職業災害保險以下列何者為保險人，辦理保險業務？", "o": ["財團法人職業災害預防及重建中心", "勞動部職業安全衛生署", "勞動部勞動基金運用局", "勞動部勞工保險局"], "t": "職安法規與職災保險"}, {"n": 76, "a": 0, "q": "有關「童工」之敘述，下列何者正確？", "o": ["每日工作時間不得超過 8 小時", "不得於午後 8 時至翌晨 8 時之時間內工作", "例假日得在監視下工作", "工資不得低於基本工資之 70%"], "t": "勞基法"}, {"n": 77, "a": 3, "q": "依勞動檢查法施行細則規定，事業單位如不服勞動檢查結果，應於勞動檢查結果通知書送達之次日起 10 日內，以書面敘明理由向勞動檢查機構提出？", "o": ["申訴", "陳情", "抗議", "異議"], "t": "職安法規與職災保險"}, {"n": 78, "a": 1, "q": "工作者若因雇主違反職業安全衛生法規定而發生職業災害、疑似罹患職業病或身體、精神遭受不法侵害所提起之訴訟，得向勞動部委託之民間團體提出下列何者？", "o": ["災害理賠", "申請扶助", "精神補償", "國家賠償"], "t": "職安法規與職災保險"}, {"n": 79, "a": 3, "q": "計算平日加班費須按平日每小時工資額加給計算，下列何者錯誤？", "o": ["前 2 小時至少加給 1/3 倍", "超過 2 小時部分至少加給 2/3 倍", "經勞資協商同意後，一律加給 0.5 倍", "未經雇主同意給加班費者，一律補休"], "t": "勞基法"}, {"n": 80, "a": 1, "q": "下列工作場所何者非屬勞動檢查法所定之危險性工作場所？", "o": ["農藥製造", "金屬表面處理", "火藥類製造", "從事石油裂解之石化工業之工作場所"], "t": "職安法規與職災保險"}, {"n": 81, "a": 0, "q": "依職業安全衛生設施規則規定，有關電氣安全，下列何者錯誤？", "o": ["110 伏特之電壓不致造成人員死亡", "電氣室應禁止非工作人員進入", "不可以濕手操作電氣開關，且切斷開關應迅速", "220 伏特為低壓電"], "t": "災害預防"}, {"n": 82, "a": 1, "q": "依職業安全衛生設施規則規定，下列何者非屬於車輛系營建機械？", "o": ["平土機", "堆高機", "推土機", "鏟土機"], "t": "災害預防"}, {"n": 83, "a": 1, "q": "下列何者非為事業單位勞動場所發生職業災害者，雇主應於 8 小時內通報勞動檢查機構？", "o": ["發生死亡災害", "勞工受傷無須住院治療", "發生災害之罹災人數在 3 人以上", "發生災害之罹災人數在 1 人以上，且需住院治療"], "t": "職安法規與職災保險"}, {"n": 84, "a": 3, "q": "依職業安全衛生管理辦法規定，下列何者非屬「自動檢查」之內容？", "o": ["機械之定期檢查", "機械、設備之重點檢查", "機械、設備之作業檢點", "勞工健康檢查"], "t": "職安法規與職災保險"}, {"n": 85, "a": 0, "q": "下列何者係針對於機械操作點的捲夾危害特性可以採用之防護裝置？", "o": ["設置護圍、護罩", "穿戴棉紗手套", "穿戴防護衣", "強化教育訓練"], "t": "災害預防"}, {"n": 86, "a": 3, "q": "下列何者非屬從事起重吊掛作業導致物體飛落災害之可能原因？", "o": ["吊鉤未設防滑舌片致吊掛鋼索鬆脫", "鋼索斷裂", "超過額定荷重作業", "過捲揚警報裝置過度靈敏"], "t": "災害預防"}, {"n": 87, "a": 1, "q": "勞工不遵守安全衛生工作守則規定，屬於下列何者？", "o": ["不安全設備", "不安全行為", "不安全環境", "管理缺陷"], "t": "災害預防"}, {"n": 88, "a": 2, "q": "下列何者不屬於局限空間內作業場所應採取之缺氧、中毒等危害預防措施？", "o": ["實施通風換氣", "進入作業許可程序", "使用柴油內燃機發電提供照明", "測定氧氣、危險物、有害物濃度"], "t": "災害預防"}, {"n": 89, "a": 0, "q": "下列何者非通風換氣之目的？", "o": ["防止游離輻射", "防止火災爆炸", "稀釋空氣中有害物", "補充新鮮空氣"], "t": "職業衛生與職業病"}, {"n": 90, "a": 3, "q": "已在職之勞工，首次從事特別危害健康作業，應實施下列何種檢查？", "o": ["一般體格檢查", "特殊體格檢查", "一般體格檢查及特殊健康檢查", "特殊健康檢查"], "t": "職安法規與職災保險"}, {"n": 91, "a": 3, "q": "依職業安全衛生設施規則規定，噪音超過多少分貝之工作場所，應標示並公告噪音危害之預防事項，使勞工周知？", "o": ["75 分貝", "80 分貝", "85 分貝", "90 分貝"], "t": "職業衛生與職業病"}, {"n": 92, "a": 2, "q": "下列何者非屬工作安全分析的目的？", "o": ["發現並杜絕工作危害", "確立工作安全所需工具與設備", "懲罰犯錯的員工", "作為員工在職訓練的參考"], "t": "災害預防"}, {"n": 93, "a": 2, "q": "可能對勞工之心理或精神狀況造成負面影響的狀態，如異常工作壓力、超時工作、語言脅迫或恐嚇等，可歸屬於下列何者管理不當？", "o": ["職業安全", "職業衛生", "勞工健康", "環保"], "t": "職業衛生與職業病"}, {"n": 94, "a": 2, "q": "有關女性工作者妊娠期間宜避免作業之敘述，下列何者錯誤？", "o": ["避免砷或鉛之暴露", "避免每班站立 7 小時以上之作業", "避免提舉 1 公斤重物之職務", "避免重體力勞動之職務"], "t": "不法侵害與母性保護"}, {"n": 95, "a": 2, "q": "熱中暑時，易發生下列何現象？", "o": ["體溫下降", "體溫正常", "體溫上升", "體溫忽高忽低"], "t": "職業衛生與職業病"}, {"n": 96, "a": 3, "q": "下列何者不會使電路發生過電流？", "o": ["電氣設備過載", "電路短路", "電路漏電", "電路斷路"], "t": "災害預防"}, {"n": 97, "a": 3, "q": "下列何者較屬安全、尊嚴的職場組織文化？", "o": ["不斷責備勞工", "公開在眾人面前長時間責罵勞工", "強求勞工執行業務上明顯不必要或不可能之工作", "不介入勞工私人事宜"], "t": "不法侵害與母性保護"}, {"n": 98, "a": 3, "q": "下列何者與職場母性健康保護較不相關？", "o": ["職業安全衛生法", "妊娠與分娩後女性及未滿十八歲勞工禁止從事危險性或有害性工作認定標準", "性別平等工作法", "動力堆高機型式驗證"], "t": "不法侵害與母性保護"}, {"n": 99, "a": 2, "q": "油漆塗裝工程應注意防火防爆事項，下列何者錯誤？", "o": ["確實通風", "注意電氣火花", "緊密門窗以減少溶劑擴散揮發", "嚴禁煙火"], "t": "災害預防"}, {"n": 100, "a": 2, "q": "依職業安全衛生設施規則規定，雇主對於物料儲存，為防止氣候變化或自然發火發生危險者，下列何者為最佳之採取措施？", "o": ["保持自然通風", "密閉", "與外界隔離及溫濕控制", "靜置於倉儲區，避免陽光直射"], "t": "災害預防"}];
+const TOPICS = ["勞基法", "職安法規與職災保險", "災害預防", "職業衛生與職業病", "急救", "不法侵害與母性保護"];
+const CIRCLE = ['①', '②', '③', '④'];
+const KEY = 'safety115-record';
+
+/* 紀錄：每題 {s: 練過次數, last: 最近一次對錯(1/0)} ；錯題本 = 最近一次答錯 */
+let rec = {};
+try { rec = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { rec = {}; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(rec)); } catch (e) {} }
+const isWrong = q => rec[q.n] && rec[q.n].last === 0;
+
+function renderStats(){
+  const seen = BANK.filter(q => rec[q.n]).length;
+  document.getElementById('stSeen').innerHTML = `${seen}<small> / ${BANK.length}</small>`;
+  document.getElementById('stMaster').textContent = BANK.filter(q => rec[q.n] && rec[q.n].last === 1).length;
+  document.getElementById('stWrong').textContent = BANK.filter(isWrong).length;
+}
+
+/* ---------- 練習 ---------- */
+const SCOPES = [['all', '全部'], ...TOPICS.map(t => [t, t]), ['wrong', '錯題本'], ['new', '還沒練過']];
+let scope = 'all', order = [], idx = 0, answered = null, roundRight = 0, roundDone = 0;
+function poolOf(s){
+  if (s === 'all') return BANK;
+  if (s === 'wrong') return BANK.filter(isWrong);
+  if (s === 'new') return BANK.filter(q => !rec[q.n]);
+  return BANK.filter(q => q.t === s);
+}
+function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+const chipsEl = document.getElementById('scopeChips');
+function renderChips(){
+  chipsEl.innerHTML = SCOPES.map(([k, t]) => { const n = poolOf(k).length; return `<button type="button" class="chip" data-s="${k}" aria-pressed="${k === scope}"${n ? '' : ' disabled'}>${t}<span class="n">${n}</span></button>`; }).join('');
+}
+chipsEl.addEventListener('click', e => { const b = e.target.closest('.chip'); if (b && !b.disabled) startRound(b.dataset.s); });
+
+function startRound(s){
+  scope = s; order = shuffle(poolOf(s)); idx = 0; answered = null; roundRight = 0; roundDone = 0;
+  renderChips(); renderCard();
+}
+
+const card = document.getElementById('card');
+function renderCard(){
+  if (!order.length) {
+    card.innerHTML = `<div class="done"><p>${scope === 'wrong' ? '錯題本是空的。練習時答錯的題目會自動收進來。' : '這個範圍已經沒有題目了。'}</p><div class="row"><button class="btn" data-act="all">練全部 100 題</button></div></div>`;
+    return;
+  }
+  if (idx >= order.length) {
+    const wrongNow = BANK.filter(isWrong).length;
+    card.innerHTML = `<div class="done"><div class="big">${roundRight} / ${roundDone}</div><p>這一輪答對 ${roundRight} 題${roundDone ? `（${Math.round(roundRight / roundDone * 100)}%）` : ''}。${wrongNow ? `錯題本裡還有 ${wrongNow} 題。` : '錯題本已經清空了。'}</p>
+      <div class="row"><button class="btn" data-act="again">再練一輪（重新洗牌）</button>${wrongNow ? '<button class="btn ghost" data-act="wrong">只練錯題本</button>' : ''}</div></div>`;
+    return;
+  }
+  const q = order[idx];
+  card.innerHTML = `
+    <div class="qhead"><span class="pos">第 ${idx + 1} / ${order.length} 題</span><span class="meta">原題號 ${q.n} · ${q.t}</span></div>
+    <div class="pbar"><span style="width:${idx / order.length * 100}%"></span></div>
+    <div class="qbody">
+      <p class="qtext">${q.q}</p>
+      <div class="opts">${q.o.map((o, j) => `<button type="button" class="opt" data-j="${j}"><span class="no">${j + 1}</span><span class="t">${o}</span></button>`).join('')}</div>
+      <div class="fb" id="fb" aria-live="polite"></div>
+    </div>
+    <div class="qfoot"><span class="keys"><kbd>1</kbd>–<kbd>4</kbd> 作答　<kbd>Enter</kbd> 下一題</span><button type="button" class="btn" id="nextBtn" disabled>下一題</button></div>`;
+}
+
+function answer(j){
+  if (answered !== null || idx >= order.length) return;
+  const q = order[idx]; answered = j;
+  const ok = j === q.a;
+  rec[q.n] = { s: ((rec[q.n] && rec[q.n].s) || 0) + 1, last: ok ? 1 : 0 };
+  save(); roundDone++; if (ok) roundRight++;
+  card.querySelectorAll('.opt').forEach((b, k) => { b.disabled = true; if (k === q.a) b.classList.add('correct'); else if (k === j) b.classList.add('picked-wrong'); });
+  const fb = document.getElementById('fb');
+  fb.className = 'fb ' + (ok ? 'ok' : 'bad');
+  fb.textContent = ok ? `答對了！答案是 ${CIRCLE[q.a]}` : `答錯了，正確答案是 ${CIRCLE[q.a]} ${q.o[q.a]}（已收進錯題本）`;
+  const nb = document.getElementById('nextBtn'); nb.disabled = false; nb.focus({preventScroll: true});
+  renderStats(); renderChips();
+}
+function next(){ if (answered === null) return; idx++; answered = null; renderCard(); }
+
+card.addEventListener('click', e => {
+  const o = e.target.closest('.opt'); if (o) return answer(+o.dataset.j);
+  if (e.target.id === 'nextBtn') return next();
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  if (a.dataset.act === 'again') startRound(scope);
+  else if (a.dataset.act === 'wrong') startRound('wrong');
+  else startRound('all');
+});
+document.addEventListener('keydown', e => {
+  if (document.getElementById('panelPractice').hidden || e.target.matches('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (['1', '2', '3', '4'].includes(e.key)) { e.preventDefault(); answer(+e.key - 1); }
+  else if (e.key === 'Enter' || e.key === 'ArrowRight') { if (answered !== null) { e.preventDefault(); next(); } }
+});
+
+/* ---------- 題庫總覽 ---------- */
+const listEl = document.getElementById('list'), searchEl = document.getElementById('search');
+const hideEl = document.getElementById('hideAns'), onlyWrongEl = document.getElementById('onlyWrong');
+function renderList(){
+  const kw = searchEl.value.trim();
+  const items = BANK.filter(q => (!onlyWrongEl.checked || isWrong(q)) && (!kw || q.q.includes(kw) || q.o.some(o => o.includes(kw))));
+  document.getElementById('listCount').textContent = `顯示 ${items.length} 題（依題庫原本順序）`;
+  listEl.classList.toggle('hide', hideEl.checked);
+  listEl.innerHTML = items.length ? items.map(q => `
+    <div class="item" data-n="${q.n}">
+      <div class="q"><span class="num">${q.n}.</span><span class="ans">(${q.a + 1})</span>${q.q}${isWrong(q) ? '<span class="wrongtag">錯題本</span>' : ''}</div>
+      <ol>${q.o.map((o, j) => `<li class="${j === q.a ? 'c' : ''}"><span class="no">${CIRCLE[j]}</span><span class="t">${o}</span></li>`).join('')}</ol>
+    </div>`).join('') : '<div class="empty">沒有符合的題目。</div>';
+}
+[searchEl, hideEl, onlyWrongEl].forEach(el => el.addEventListener('input', renderList));
+listEl.addEventListener('click', e => { const it = e.target.closest('.item'); if (it && hideEl.checked) it.classList.toggle('show'); });
+
+/* ---------- 分頁 ---------- */
+const tabs = { tabPractice: 'panelPractice', tabList: 'panelList' };
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  Object.entries(tabs).forEach(([tid, pid]) => { const on = tid === t.id; document.getElementById(tid).setAttribute('aria-selected', on); document.getElementById(pid).hidden = !on; });
+  if (t.id === 'tabList') renderList();
+}));
+
+/* ---------- 清除紀錄 ---------- */
+const rc = document.getElementById('resetConfirm');
+document.getElementById('resetAll').addEventListener('click', () => { rc.hidden = false; });
+document.getElementById('resetNo').addEventListener('click', () => { rc.hidden = true; });
+document.getElementById('resetYes').addEventListener('click', () => { rec = {}; save(); rc.hidden = true; renderStats(); startRound('all'); renderList(); });
+
+renderStats(); startRound('all');
+</script>
+
+</body>
+</html>

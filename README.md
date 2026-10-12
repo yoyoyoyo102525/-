@@ -38,7 +38,8 @@
 
 | 科目 | 網站 | 內容 |
 |---|---|---|
-| 數位邏輯設計 | [數位邏輯題庫](https://claude.ai/artifact/JuPHBTg22qEu6rHStcdaKM) | 138 題互動測驗 |
+| 數位邏輯設計 | [數位邏輯題庫](https://claude.ai/artifact/JuPHBTg22qEu6rHStcdaKM) | 153 題互動測驗 |
+| 數位邏輯設計 | [邏輯閘圖示](https://claude.ai/artifact/FDEn3DsT79YWNTvWLubCVn) | 各邏輯閘的符號、真值表、IC 編號 |
 | 數學C | [數C③ 段考衝刺本](https://claude.ai/artifact/5XrsMizpKuMQ3LPfxurTeo) | 1-1～2-2 觀念講解、例題、模擬考 |
 | 工場安全衛生 | [工安衛生題庫練習](https://claude.ai/artifact/3UoLPxjPfhdVTf2mWhLjZC) | 115 學年度題庫 100 題練習 |
 | 全科 | [資二仁 段考讀書計劃](https://claude.ai/artifact/NCtxwoZCyMjCiGeNdcPTrc) | 段考讀書計劃 |

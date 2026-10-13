@@ -75,6 +75,14 @@ figcaption { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em; }
 .eq-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
 .eq-row .is { font: 700 1.6rem/1 var(--f-display); color: var(--muted); }
 .eq-row + p { margin: -6px 0 6px; text-align: center; font: 500 0.95rem/1.4 var(--f-mono); }
+.uni { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.uni figure { padding: 10px 8px 8px; gap: 6px; }
+.uni figure svg { max-width: 340px; }
+.uni figcaption { font-size: 0.85rem; color: var(--ink); letter-spacing: 0; text-align: center; }
+.uni figcaption b { font-family: var(--f-mono); }
+.uni figcaption .n { display: inline-block; font: 600 0.75rem/1.4 var(--f-mono); background: var(--chip); color: var(--muted); padding: 0 6px; border-radius: 4px; margin-left: 4px; }
+h3.sub-h { font: 700 1.1rem/1.3 var(--f-display); margin: 6px 0 0; }
+@media (max-width: 560px) { .uni { grid-template-columns: 1fr; } }
 ul.tips { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
 @media (max-width: 520px) {
   .facts { grid-template-columns: 1fr; }
@@ -99,8 +107,21 @@ ul.tips { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
 
   <section class="panel" aria-labelledby="eq-h">
     <h2 id="eq-h">等效符號（3-5.2 邏輯閘的互換）</h2>
-    <p class="note">由第摩根定理，換形狀、把圓圈搬到另一邊，功能不變。</p>
+    <p class="note">由第摩根定理：<b>形狀換（AND ↔ OR），輸入和輸出的圓圈全部翻轉</b>，功能不變。注意名字和等效形狀相反：NAND 的等效符號是 OR 形狀，NOR 的等效符號是 AND 形狀。</p>
     <div class="eq" id="eq"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="uni-h">
+    <h2 id="uni-h">萬用閘：只用 NAND 或只用 NOR（3-5.2）</h2>
+    <p class="note">NAND、NOR 單獨一種就能組出任何電路。輸入端接在一起的閘就是 NOT。小黑點表示導線相連。</p>
+    <div class="scroll"><table id="uni-table"></table></div>
+    <h3 class="sub-h">只用 NAND</h3>
+    <div class="uni" id="uni-nand"></div>
+    <h3 class="sub-h">只用 NOR</h3>
+    <div class="uni" id="uni-nor"></div>
+    <h3 class="sub-h">兩層電路（3-5.4）</h3>
+    <div class="uni" id="uni-two"></div>
+    <p class="note">積項和式 → 全部換成 NAND（NAND-NAND）；和項積式 → 全部換成 NOR（NOR-NOR）。單獨一個變數直接接第二層時要先反相。</p>
   </section>
 
   <section class="panel">
@@ -190,9 +211,79 @@ document.getElementById('summary').innerHTML =
   rows.map(([a, b]) => `<tr><td>${a}</td><td>${b}</td>${two.map(g => { const y = g.f(a, b); return `<td class="${y ? 'one' : ''}">${y}</td>`; }).join('')}</tr>`).join('') + '</tbody>';
 
 const byId = id => G.find(g => g.id === id);
-document.getElementById('eq').innerHTML = `
-  <div class="eq-row"><figure>${classic(byId('nand'))}<figcaption>NAND</figcaption></figure><span class="is">＝</span><figure>${classic(byId('or'), {bubbleIn: true, bub: false, label: '負 OR'})}<figcaption>負 OR（輸入加圓圈的 OR）</figcaption></figure></div>
-  <p>(AB)′ = A′ + B′</p>
-  <div class="eq-row"><figure>${classic(byId('nor'))}<figcaption>NOR</figcaption></figure><span class="is">＝</span><figure>${classic(byId('and'), {bubbleIn: true, bub: false, label: '負 AND'})}<figcaption>負 AND（輸入加圓圈的 AND）</figcaption></figure></div>
-  <p>(A + B)′ = A′B′</p>`;
+document.getElementById('eq').innerHTML = [
+  ['nand', 'or',  true,  false, 'NAND', '負 OR（輸入加圓圈的 OR）', '(AB)′ = A′ + B′'],
+  ['nor',  'and', true,  false, 'NOR',  '負 AND（輸入加圓圈的 AND）', '(A + B)′ = A′B′'],
+  ['and',  'or',  true,  true,  'AND',  '輸入、輸出都加圓圈的 OR', 'AB = (A′ + B′)′'],
+  ['or',   'and', true,  true,  'OR',   '輸入、輸出都加圓圈的 AND', 'A + B = (A′B′)′'],
+].map(([id, shape, bin, bout, name, eqName, f]) => `
+  <div class="eq-row"><figure>${classic(byId(id))}<figcaption>${name}</figcaption></figure><span class="is">＝</span><figure>${classic(byId(id), {shape, bubbleIn: bin, bub: bout, label: eqName})}<figcaption>${eqName}</figcaption></figure></div>
+  <p>${f}</p>`).join('');
+
+/* ---- small circuits built from NAND or NOR gates ---- */
+const SC = 0.55;
+function pins(t, x, y) {
+  const b = body(t);
+  return { a: [x + (b.inX - 8) * SC, y + 25 * SC], b: [x + (b.inX - 8) * SC, y + 55 * SC], o: [x + (b.outX + 10) * SC, y + 40 * SC] };
+}
+function gateSvg(t, x, y, bub = true) {
+  const b = body(t);
+  const sw = `stroke-width="${(2 / SC).toFixed(2)}"`;
+  const inner = (b.d + (bub ? `<circle cx="${b.outX + 5}" cy="40" r="5" ${FILL} ${S}/>` : '') +
+    `<line x1="${b.inX - 8}" y1="25" x2="${b.inX}" y2="25" ${S}/><line x1="${b.inX - 8}" y1="55" x2="${b.inX}" y2="55" ${S}/>`)
+    .replaceAll('stroke-width="2.5"', sw);
+  return `<g transform="translate(${x} ${y}) scale(${SC})">${inner}</g>`;
+}
+function circuit(L, t) {
+  const P = {};
+  Object.entries(L.inputs).forEach(([k, p]) => P[k] = p);
+  let g = '';
+  Object.entries(L.gates).forEach(([k, [x, y]]) => { const q = pins(t, x, y); P[k + '.a'] = q.a; P[k + '.b'] = q.b; P[k + '.o'] = q.o; g += gateSvg(t, x, y); });
+  const uses = {};
+  L.wires.forEach(([f]) => uses[f] = (uses[f] || 0) + 1);
+  let w = '', dots = '';
+  L.wires.forEach(([f, to, mx]) => {
+    const p = P[f], q = P[to];
+    const m = mx ?? (p[0] + q[0]) / 2;
+    w += `<path d="M${p[0]} ${p[1]} H${m} V${q[1]} H${q[0]}" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>`;
+    if (uses[f] > 1 && Math.abs(p[1] - q[1]) > 0.01) dots += `<circle cx="${m}" cy="${p[1]}" r="2.8" fill="currentColor"/>`;
+  });
+  const lab = Object.entries(L.inputs).map(([k, [x, y]]) => T(x - 12, y + 4, k)).join('');
+  const o = P[L.out];
+  const outW = `<line x1="${o[0]}" y1="${o[1]}" x2="${L.w - 16}" y2="${o[1]}" stroke="currentColor" stroke-width="2"/>${T(L.w - 12, o[1] + 4, 'Y')}`;
+  return `<svg viewBox="0 0 ${L.w} ${L.h}" role="img" aria-label="${L.label}">${w}${g}${dots}${outW}${lab}</svg>`;
+}
+const LAYOUT = {
+  one:  { w: 200, h: 60,  inputs: { A: [14, 30] }, gates: { G1: [70, 8] },
+          wires: [['A', 'G1.a', 58], ['A', 'G1.b', 58]], out: 'G1.o' },
+  two:  { w: 250, h: 60,  inputs: { A: [14, 21.75], B: [14, 38.25] }, gates: { G1: [40, 8], G2: [130, 8] },
+          wires: [['A', 'G1.a'], ['B', 'G1.b'], ['G1.o', 'G2.a', 122], ['G1.o', 'G2.b', 122]], out: 'G2.o' },
+  three:{ w: 260, h: 110, inputs: { A: [14, 22], B: [14, 82] }, gates: { G1: [50, 0], G2: [50, 60], G3: [150, 30] },
+          wires: [['A', 'G1.a', 44], ['A', 'G1.b', 44], ['B', 'G2.a', 44], ['B', 'G2.b', 44], ['G1.o', 'G3.a', 138], ['G2.o', 'G3.b', 138]], out: 'G3.o' },
+  four: { w: 345, h: 130, inputs: { A: [14, 13.75], B: [14, 120.25] }, gates: { G1: [80, 45], G2: [170, 0], G3: [170, 90], G4: [255, 45] },
+          wires: [['A', 'G2.a'], ['A', 'G1.a', 40], ['B', 'G3.b'], ['B', 'G1.b', 55], ['G1.o', 'G2.b', 158], ['G1.o', 'G3.a', 158], ['G2.o', 'G4.a', 246], ['G3.o', 'G4.b', 246]], out: 'G4.o' },
+  sop:  { w: 260, h: 110, inputs: { A: [14, 7.75], B: [14, 30.25], C: [14, 67.75], D: [14, 90.25] }, gates: { G1: [50, -6], G2: [50, 54], G3: [150, 30] },
+          wires: [['A', 'G1.a'], ['B', 'G1.b'], ['C', 'G2.a'], ['D', 'G2.b'], ['G1.o', 'G3.a', 138], ['G2.o', 'G3.b', 138]], out: 'G3.o' },
+};
+const fig = (L, t, cap, n) => `<figure>${circuit({...L, label: cap}, t)}<figcaption>${cap}<span class="n">${n} 個</span></figcaption></figure>`;
+document.getElementById('uni-nand').innerHTML = [
+  fig(LAYOUT.one,   'and', 'NOT：<b>(AA)′ = A′</b>', 1),
+  fig(LAYOUT.two,   'and', 'AND：NAND 再反相 <b>((AB)′)′ = AB</b>', 2),
+  fig(LAYOUT.three, 'and', 'OR：先各自反相 <b>(A′B′)′ = A + B</b>', 3),
+  fig(LAYOUT.four,  'and', 'XOR：<b>((AB′)′(A′B)′)′ = A ⊕ B</b>', 4),
+].join('');
+document.getElementById('uni-nor').innerHTML = [
+  fig(LAYOUT.one,   'or', 'NOT：<b>(A + A)′ = A′</b>', 1),
+  fig(LAYOUT.two,   'or', 'OR：NOR 再反相 <b>((A + B)′)′ = A + B</b>', 2),
+  fig(LAYOUT.three, 'or', 'AND：先各自反相 <b>(A′ + B′)′ = AB</b>', 3),
+  fig(LAYOUT.four,  'or', 'XNOR：<b>(A′B + AB′)′ = A ⊙ B</b>', 4),
+].join('');
+document.getElementById('uni-two').innerHTML = [
+  fig(LAYOUT.sop, 'and', 'NAND-NAND：<b>((AB)′(CD)′)′ = AB + CD</b>', 3),
+  fig(LAYOUT.sop, 'or',  'NOR-NOR：<b>((A + B)′ + (C + D)′)′ = (A + B)(C + D)</b>', 3),
+].join('');
+document.getElementById('uni-table').innerHTML =
+  '<thead><tr><th>要組成</th><th>NOT</th><th>AND</th><th>OR</th><th>NAND</th><th>NOR</th><th>XOR</th><th>XNOR</th></tr></thead><tbody>' +
+  '<tr><th>用 NAND</th><td>1</td><td class="one">2</td><td>3</td><td>—</td><td>4</td><td class="one">4</td><td>5</td></tr>' +
+  '<tr><th>用 NOR</th><td>1</td><td>3</td><td class="one">2</td><td>4</td><td>—</td><td>5</td><td class="one">4</td></tr></tbody>';
 </script>

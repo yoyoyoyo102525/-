@@ -14,10 +14,9 @@
 
 ## 怎麼開
 
+- **衝刺本線上版**：https://claude.ai/artifact/5XrsMizpKuMQ3LPfxurTeo （有連結的人都能開）
 - **2-1 指數教學線上版**：https://claude.ai/artifact/PLGHZEcYTrDooLV6bXL4WN （只有本人和被分享的人能開）
-
-- **線上版**：https://claude.ai/artifact/5XrsMizpKuMQ3LPfxurTeo （有連結的人都能開）
-- **離線版**：下載 `數學C3段考衝刺本.html`，用瀏覽器打開就能用。字型要連網才會載入，沒網路時會改用系統字型。
+- **離線版**：下載 `數學C3段考衝刺本.html` 或 `2-1指數教學.html`，用瀏覽器打開就能用。字型要連網才會載入，沒網路時會改用系統字型。
 
 ## 模擬考功能
 

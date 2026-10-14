@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2-1 指數教學</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* 版面概念：衝刺本的同系列分冊。沿用第 2 章的藍綠色，公式框是方格紙；次方一律寫在右上角，跟講義一樣。 */
+:root{
+  --paper:#f6f7fb; --card:#ffffff; --ink:#1c2333; --muted:#596277; --rule:#d8ddea;
+  --grid:rgba(60,90,160,.08); --accent:#0e7a72; --soft:#e2f4f1; --hot:#b02a52; --hot-soft:#fbe9ef;
+  --mark:#ffe17a; --ok:#1d8a4b; --ok-soft:#e3f5ea; --bad:#c0392b; --bad-soft:#fbe7e4; --warn-soft:#fff5d6; --warn:#8a6100;
+  --f-display:"LXGW WenKai TC","Noto Serif TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-math:"STIX Two Text","Times New Roman","Noto Sans TC",serif;
+  --wrap:44rem;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#11151f; --card:#191f2d; --ink:#e7eaf3; --muted:#9ba4ba; --rule:#2b3347;
+  --grid:rgba(140,170,255,.07); --accent:#43c6b8; --soft:#132a2a; --hot:#f0729a; --hot-soft:#2e1a24;
+  --mark:rgba(255,212,80,.32); --ok:#4fd08a; --ok-soft:#143024; --bad:#ff7a6b; --bad-soft:#3a1c1a; --warn-soft:#30280f; --warn:#f0c75a;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11151f; --card:#191f2d; --ink:#e7eaf3; --muted:#9ba4ba; --rule:#2b3347;
+  --grid:rgba(140,170,255,.07); --accent:#43c6b8; --soft:#132a2a; --hot:#f0729a; --hot-soft:#2e1a24;
+  --mark:rgba(255,212,80,.32); --ok:#4fd08a; --ok-soft:#143024; --bad:#ff7a6b; --bad-soft:#3a1c1a; --warn-soft:#30280f; --warn:#f0c75a;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:4rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:1.0625rem;line-height:1.9;padding-inline:16px;padding-block:0 4rem}
+.wrap{max-width:var(--wrap);margin-inline:auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.35;margin:0}
+h2{font-size:clamp(1.5rem,4.5vw,1.95rem)}
+h3{font-size:1.2rem;margin:1.8rem 0 .5rem}
+p{margin:.6rem 0}
+ul,ol{padding-left:1.4rem;margin:.5rem 0}
+li{margin:.25rem 0}
+a{color:var(--accent)}
+mark{background:linear-gradient(transparent 55%,var(--mark) 55%);color:inherit;padding:0 .1em}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* 數學排版 */
+.m{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em;line-height:1.25;font-size:.92em;white-space:nowrap}
+.f>.n{padding:0 .2em .08em;border-bottom:1.2px solid currentColor}
+.f>.d{padding:.08em .2em 0}
+.rt{white-space:nowrap}
+.rt>.rad{border-top:1.2px solid currentColor;padding:0 .1em;margin-left:.02em}
+sup{font-size:.7em;line-height:0;vertical-align:.75em}
+/* 分數次方：右上角的小分數 */
+.ef{display:inline-flex;flex-direction:column;font-size:.7em;line-height:1.08;vertical-align:1.05em;text-align:center;margin-left:.06em;white-space:nowrap}
+.ef>.n{border-bottom:1px solid currentColor;padding:0 .15em}
+.ef>.d{padding:0 .15em}
+.idx{display:inline-block;width:1.4em;height:1.4em;line-height:1.4em;text-align:center;border-radius:50%;background:var(--accent);color:var(--card);font-size:.75em;font-weight:700;vertical-align:.12em;font-family:var(--f-body)}
+
+/* 頂部導覽 */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--paper);border-bottom:1px solid var(--rule);margin-inline:-16px;padding:.5rem 16px}
+.nav{max-width:var(--wrap);margin-inline:auto;display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none;text-decoration:none;color:var(--ink);font-size:.88rem;padding:.15rem .7rem;border-radius:999px;border:1px solid var(--rule);background:var(--card);white-space:nowrap}
+.nav a:hover{border-color:var(--ink)}
+
+.hero{padding-block:2rem .5rem}
+.eyebrow{font-size:.8rem;letter-spacing:.12em;color:var(--muted)}
+.hero h1{font-size:clamp(2rem,7vw,3rem);margin:.3rem 0 .5rem}
+.hero h1 .k{color:var(--accent);font-family:var(--f-math)}
+.core{background:var(--card);border:1.5px solid var(--accent);border-radius:.6rem;padding:.8rem 1rem;font-size:1.05rem}
+.core b{color:var(--accent)}
+
+section.sec{padding-top:2.8rem}
+.sec-head{border-bottom:3px solid var(--accent);padding-bottom:.5rem;margin-bottom:1rem}
+.step{font-family:var(--f-math);font-weight:600;color:var(--accent);letter-spacing:.06em;font-size:.95rem}
+.why{color:var(--muted);margin:.3rem 0 0}
+
+.formula{background-color:var(--card);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:18px 18px;border:1.5px solid var(--accent);border-radius:.5rem;padding:.9rem 1.1rem;margin:1rem 0;overflow-x:auto}
+.formula .ft{font-size:.8rem;letter-spacing:.1em;color:var(--accent);font-weight:700;margin-bottom:.2rem}
+.formula .row{font-family:var(--f-math);font-size:1.18rem;padding:.35rem 0;white-space:nowrap}
+.formula .row small{font-family:var(--f-body);font-size:.85rem;color:var(--muted);margin-left:.6rem}
+
+.ex{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:0 .5rem .5rem 0;padding:.8rem 1.05rem;margin:1rem 0}
+.ex .q{font-weight:500}
+.ex .q .tag{display:inline-block;font-size:.75rem;font-weight:700;color:var(--card);background:var(--accent);border-radius:.25rem;padding:0 .4rem;margin-right:.5rem;vertical-align:.12em;line-height:1.6}
+.ex .sol{margin-top:.45rem;padding-top:.45rem;border-top:1px dashed var(--rule)}
+.ln{display:grid;grid-template-columns:4.2em 1fr;gap:.6rem;margin:.25rem 0}
+.ln>span:first-child{color:var(--muted);font-size:.85rem;padding-top:.2rem}
+.ln>span:last-child{min-width:0}
+.ans{display:inline-block;background:var(--soft);border-radius:.3rem;padding:0 .45rem;font-weight:700}
+
+.tip,.trap{border-radius:.5rem;padding:.7rem 1rem;margin:1rem 0;font-size:.98rem}
+.tip{background:var(--soft)}
+.tip::before{content:"記法";font-weight:700;color:var(--accent);margin-right:.5rem}
+.trap{background:var(--warn-soft)}
+.trap::before{content:"小心";font-weight:700;color:var(--warn);margin-right:.5rem}
+
+.tbl{overflow-x:auto;margin:1rem 0;border:1px solid var(--rule);border-radius:.5rem;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:.45rem .6rem;text-align:center;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{background:var(--soft);font-size:.9rem}
+td{font-family:var(--f-math);font-size:1.08rem}
+td.txt{font-family:var(--f-body);font-size:.95rem;text-align:left;white-space:normal}
+tr:last-child td{border-bottom:0}
+
+/* 0. 看懂寫法 */
+.anatomy{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;align-items:center;background:var(--card);border:1px solid var(--rule);border-radius:.6rem;padding:1.2rem 1rem;margin:1rem 0}
+.big{font-family:var(--f-math);font-size:4.2rem;line-height:1;position:relative;padding:1.6rem 2.6rem 1.8rem 0}
+.big .b{position:relative}
+.big .e{font-size:.5em;vertical-align:1.05em;color:var(--hot);position:relative}
+.lab{position:absolute;font-family:var(--f-body);font-size:.85rem;white-space:nowrap;line-height:1.3}
+.lab.b1{left:-.1rem;bottom:0;color:var(--ink)}
+.lab.e1{right:0;top:0;color:var(--hot)}
+.read{font-size:1rem;line-height:1.7}
+.read .r{font-family:var(--f-display);font-size:1.25rem}
+
+/* 2. 數 2 的個數 */
+.count{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin:.6rem 0;font-family:var(--f-math);font-size:1.1rem}
+.chip2{display:inline-grid;place-items:center;width:2em;height:2em;border-radius:.4rem;font-weight:600}
+.g1{background:var(--soft);color:var(--accent);border:1.5px solid var(--accent)}
+.g2{background:var(--hot-soft);color:var(--hot);border:1.5px solid var(--hot)}
+.op{color:var(--muted);padding:0 .15rem}
+
+/* 3. 次方階梯 */
+.stair{background:var(--card);border:1.5px solid var(--ink);border-radius:.6rem;padding:1rem;margin:1rem 0}
+.stair .ctl{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;justify-content:space-between}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:.4rem;overflow:hidden}
+.seg button{border:0;background:var(--paper);padding:.2rem .9rem;font-family:var(--f-math);font-size:1.05rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.stair input[type=range]{flex:1;min-width:10rem;accent-color:var(--accent)}
+.stair .show{text-align:center;font-family:var(--f-math);font-size:clamp(1.5rem,6vw,2.2rem);margin:.9rem 0 .4rem;min-height:3.2rem}
+.stair .show sup{font-size:.6em}
+.stair .says{text-align:center;color:var(--muted);font-size:.95rem;min-height:1.8em}
+.steps{display:flex;gap:.25rem;overflow-x:auto;padding:.6rem .1rem .2rem}
+.cell{flex:1 0 3.6rem;min-width:3.6rem;text-align:center;border:1px solid var(--rule);border-radius:.4rem;padding:.3rem .2rem;background:var(--paper);font-family:var(--f-math);line-height:1.5;cursor:pointer}
+.cell .p{font-size:.95rem}
+.cell .v{font-size:1.05rem;font-weight:600}
+.cell.on{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.cell.zero .v{color:var(--hot)}
+.stair .hint{font-size:.82rem;color:var(--muted);margin-top:.4rem}
+
+/* 檢查一下 */
+.check{margin:1.2rem 0;border:1px dashed var(--accent);border-radius:.5rem;padding:.7rem 1rem}
+.check .tt{font-weight:700;color:var(--accent);font-size:.95rem}
+details{margin-top:.4rem}
+summary{cursor:pointer;color:var(--accent);font-weight:500;font-size:.95rem}
+
+/* 小測驗 */
+.qq{background:var(--card);border:1px solid var(--rule);border-radius:.5rem;padding:.8rem 1rem;margin:.7rem 0}
+.qq .qt{font-weight:500}
+.qq .qt .n{font-family:var(--f-math);font-weight:600;color:var(--muted);margin-right:.3rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:.4rem;margin-top:.5rem}
+.opt{border:1.5px solid var(--rule);background:var(--paper);border-radius:.4rem;padding:.35rem .6rem;text-align:left;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.picked{border-color:var(--bad);background:var(--bad-soft)}
+.qq .exp{margin-top:.5rem;font-size:.95rem}
+.qq .exp b.ok{color:var(--ok)} .qq .exp b.no{color:var(--bad)}
+.score{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + .6rem);background:var(--card);border:1.5px solid var(--ink);border-radius:.6rem;padding:.5rem .9rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+.score .s{font-family:var(--f-display);font-size:1.15rem}
+.btn{border:1px solid var(--rule);background:transparent;border-radius:.4rem;padding:.3rem .9rem}
+.next{display:block;background:var(--card);border:1.5px solid var(--accent);border-radius:.6rem;padding:.8rem 1rem;margin-top:2rem;text-decoration:none;color:var(--ink)}
+.next b{color:var(--accent)}
+footer{margin-top:2.5rem;color:var(--muted);font-size:.85rem;border-top:1px solid var(--rule);padding-top:.8rem}
+</style>
+</head>
+<body>
+<header class="top"><nav class="nav" aria-label="段落">
+  <a href="#s0">0 看懂寫法</a><a href="#s1">1 次方</a><a href="#s2">2 指數律</a><a href="#s3">3 零次方、負次方</a><a href="#s4">4 分數次方</a><a href="#s5">5 化同底</a><a href="#s6">6 三種題型</a><a href="#s7">易錯</a><a href="#quiz">小測驗</a>
+</nav></header>
+
+<main class="wrap">
+<section class="hero">
+  <div class="eyebrow">龍騰 SUPER 數學C③ · 講義 p.36–43</div>
+  <h1><span class="k">2-1</span> 指數教學</h1>
+  <div class="core">這一節只要記住一句話：<b>能化成同底，就化成同底</b>。下面分成 7 步，每一步都會用到前一步，請照順序讀。</div>
+</section>
+
+<!-- 0 -->
+<section class="sec" id="s0">
+  <div class="sec-head"><div class="step">第 0 步</div><h2>先看懂寫法</h2>
+  <p class="why">次方的數字寫在右上角，而且字比較小。</p></div>
+  <div class="anatomy">
+    <div class="big" aria-label="2 的 3 次方"><span class="b">2</span><span class="e">3</span>
+      <span class="lab b1">↑ 底數（大字）</span><span class="lab e1">指數（右上角小字）↓</span></div>
+    <div class="read">讀作<br><span class="r">「2 的 3 次方」</span><br>意思是 <span class="m">2 × 2 × 2 = 8</span></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>寫法</th><th>讀法</th><th>意思</th></tr>
+    <tr><td>5<sup>2</sup></td><td class="txt">5 的 2 次方</td><td>5 × 5 = 25</td></tr>
+    <tr><td>a<sup>3</sup></td><td class="txt">a 的 3 次方</td><td>a × a × a</td></tr>
+    <tr><td>2<sup>x+1</sup></td><td class="txt">2 的 (x + 1) 次方</td><td class="txt">右上角整個 x + 1 都是次方</td></tr>
+    <tr><td>2<sup>x</sup> + 1</td><td class="txt">2 的 x 次方，再加 1</td><td class="txt">只有 x 在右上角，+ 1 是正常大小</td></tr>
+    <tr><td>2<sup>−3</sup></td><td class="txt">2 的負 3 次方</td><td class="txt">第 3 步會教</td></tr>
+    <tr><td>8<span class="ef"><span class="n">2</span><span class="d">3</span></span></td><td class="txt">8 的三分之二次方</td><td class="txt">右上角是一個小分數，第 4 步會教</td></tr>
+  </table></div>
+  <div class="tip">看次方的時候，<mark>只看右上角的小字</mark>。2<sup>x+1</sup> 和 2<sup>x</sup> + 1 差在「+ 1」是寫在右上角，還是寫在正常的位置。</div>
+</section>
+
+<!-- 1 -->
+<section class="sec" id="s1">
+  <div class="sec-head"><div class="step">第 1 步</div><h2>次方是什麼</h2>
+  <p class="why">次方就是「同一個數連乘好幾次」的簡寫。</p></div>
+  <div class="formula">
+    <div class="row">a<sup>n</sup> = a × a × … × a <small>n 個 a 相乘</small></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>次方</th><th>展開</th><th>答案</th></tr>
+    <tr><td>2<sup>1</sup></td><td>2</td><td>2</td></tr>
+    <tr><td>2<sup>2</sup></td><td>2 × 2</td><td>4</td></tr>
+    <tr><td>2<sup>3</sup></td><td>2 × 2 × 2</td><td>8</td></tr>
+    <tr><td>2<sup>4</sup></td><td>2 × 2 × 2 × 2</td><td>16</td></tr>
+    <tr><td>3<sup>3</sup></td><td>3 × 3 × 3</td><td>27</td></tr>
+  </table></div>
+  <div class="trap">2<sup>3</sup> 不是 2 × 3 = 6，是 2 × 2 × 2 = 8。</div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s2">
+  <div class="sec-head"><div class="step">第 2 步</div><h2>指數律：數一數有幾個</h2>
+  <p class="why">下面每一條規則都不用硬背，把次方展開數一數就知道了。</p></div>
+
+  <h3><span class="idx">1</span> 同底相乘，指數相加</h3>
+  <div class="count" aria-label="三個 2 乘兩個 2 等於五個 2">
+    2<sup>3</sup> × 2<sup>2</sup> <span class="op">=</span>
+    <span class="chip2 g1">2</span><span class="op">×</span><span class="chip2 g1">2</span><span class="op">×</span><span class="chip2 g1">2</span>
+    <span class="op">×</span>
+    <span class="chip2 g2">2</span><span class="op">×</span><span class="chip2 g2">2</span>
+    <span class="op">=</span> 2<sup>5</sup>
+  </div>
+  <p>3 個 2 再乘 2 個 2，總共 5 個 2。</p>
+  <div class="formula"><div class="row">a<sup>m</sup> × a<sup>n</sup> = a<sup>m + n</sup></div></div>
+
+  <h3><span class="idx">2</span> 同底相除，指數相減</h3>
+  <p class="m">2<sup>5</sup> ÷ 2<sup>2</sup> = <span class="f"><span class="n">2 × 2 × 2 × 2 × 2</span><span class="d">2 × 2</span></span> = 2<sup>3</sup></p>
+  <p>分子 5 個 2，分母 2 個 2，約掉 2 個，剩 3 個。</p>
+  <div class="formula"><div class="row">a<sup>m</sup> ÷ a<sup>n</sup> = a<sup>m − n</sup></div></div>
+
+  <h3><span class="idx">3</span> 次方的次方，指數相乘</h3>
+  <p class="m">(2<sup>3</sup>)<sup>2</sup> = 2<sup>3</sup> × 2<sup>3</sup> = 2<sup>6</sup></p>
+  <p>3 個一組，有 2 組，總共 3 × 2 = 6 個。</p>
+  <div class="formula"><div class="row">(a<sup>m</sup>)<sup>n</sup> = a<sup>m × n</sup></div></div>
+
+  <h3><span class="idx">4</span> 乘在一起的次方，可以分給每一個</h3>
+  <div class="formula">
+    <div class="row">(a × b)<sup>n</sup> = a<sup>n</sup> × b<sup>n</sup>　　(<span class="f"><span class="n">a</span><span class="d">b</span></span>)<sup>n</sup> = <span class="f"><span class="n">a<sup>n</sup></span><span class="d">b<sup>n</sup></span></span></div>
+  </div>
+  <p>例如 (2 × 3)<sup>2</sup> = 2<sup>2</sup> × 3<sup>2</sup> = 4 × 9 = 36，跟 6<sup>2</sup> = 36 一樣。</p>
+
+  <div class="trap">指數律只能用在<mark>相乘、相除</mark>，不能用在相加：
+    <ul>
+      <li>2<sup>3</sup> + 2<sup>2</sup> = 8 + 4 = 12，不是 2<sup>5</sup> = 32</li>
+      <li>(a + b)<sup>2</sup> 不等於 a<sup>2</sup> + b<sup>2</sup>。例如 (1 + 2)<sup>2</sup> = 9，但 1<sup>2</sup> + 2<sup>2</sup> = 5</li>
+    </ul>
+  </div>
+
+  <div class="check"><div class="tt">檢查一下</div>
+    <ol><li>2<sup>4</sup> × 2<sup>3</sup> = 2 的幾次方？</li><li>3<sup>7</sup> ÷ 3<sup>5</sup> = ？</li><li>(5<sup>2</sup>)<sup>3</sup> = 5 的幾次方？</li></ol>
+    <details><summary>看答案</summary><ol><li>4 + 3 = 7，是 2<sup>7</sup></li><li>3<sup>7 − 5</sup> = 3<sup>2</sup> = 9</li><li>2 × 3 = 6，是 5<sup>6</sup></li></ol></details>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s3">
+  <div class="sec-head"><div class="step">第 3 步</div><h2>0 次方和負次方</h2>
+  <p class="why">「乘 0 次」「乘負 3 次」聽起來很奇怪，但只要看規律就懂了：指數每少 1，數值就除以底數一次。</p></div>
+
+  <div class="stair" id="stair">
+    <div class="ctl">
+      <span>底數 <span class="seg" role="group" aria-label="底數"><button type="button" data-b="2" aria-pressed="true">2</button><button type="button" data-b="3" aria-pressed="false">3</button><button type="button" data-b="10" aria-pressed="false">10</button></span></span>
+      <label style="display:flex;gap:.5rem;align-items:center;flex:1;min-width:12rem">指數 <input type="range" id="nRange" min="-3" max="4" step="1" value="3" aria-label="指數"></label>
+    </div>
+    <div class="show" id="stShow" aria-live="polite"></div>
+    <div class="says" id="stSays"></div>
+    <div class="steps" id="stSteps"></div>
+    <div class="hint">拖動指數，或點下面的格子。往左每走一格，數值就除以底數一次。</div>
+  </div>
+
+  <div class="formula">
+    <div class="ft">一定要背</div>
+    <div class="row">a<sup>0</sup> = 1 <small>任何不是 0 的數，0 次方都是 1</small></div>
+    <div class="row">a<sup>−n</sup> = <span class="f"><span class="n">1</span><span class="d">a<sup>n</sup></span></span> <small>負次方就是取倒數</small></div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例</span>求 7<sup>0</sup>、5<sup>−2</sup>、(<span class="f"><span class="n">2</span><span class="d">3</span></span>)<sup>−2</sup>。</div>
+    <div class="sol">
+      <div class="ln"><span>7<sup>0</sup></span><span><span class="ans">1</span></span></div>
+      <div class="ln"><span>5<sup>−2</sup></span><span class="m"><span class="f"><span class="n">1</span><span class="d">5<sup>2</sup></span></span> = <span class="ans"><span class="f"><span class="n">1</span><span class="d">25</span></span></span></span></div>
+      <div class="ln"><span>(2/3)<sup>−2</sup></span><span>分數的負次方，就是把分數倒過來再做次方：<span class="m">(<span class="f"><span class="n">3</span><span class="d">2</span></span>)<sup>2</sup> = <span class="ans"><span class="f"><span class="n">9</span><span class="d">4</span></span></span></span></span></div>
+    </div>
+  </div>
+  <div class="trap">2<sup>−1</sup> = <span class="f"><span class="n">1</span><span class="d">2</span></span>，<b>不是 −2</b>。次方的負號代表「倒數」，不會讓數字變成負的。</div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s4">
+  <div class="sec-head"><div class="step">第 4 步</div><h2>分數次方就是根號</h2>
+  <p class="why">右上角寫一個小分數，例如 9<span class="ef"><span class="n">1</span><span class="d">2</span></span>，意思就是開根號。</p></div>
+  <h3>為什麼 9<span class="ef"><span class="n">1</span><span class="d">2</span></span> = <span class="rt">√<span class="rad">9</span></span>？</h3>
+  <p>兩個 9<span class="ef"><span class="n">1</span><span class="d">2</span></span> 相乘，用第 2 步的「指數相加」：</p>
+  <p class="m" style="text-align:center;white-space:normal">9<span class="ef"><span class="n">1</span><span class="d">2</span></span> × 9<span class="ef"><span class="n">1</span><span class="d">2</span></span> = 9 的（<span class="f"><span class="n">1</span><span class="d">2</span></span> + <span class="f"><span class="n">1</span><span class="d">2</span></span>）次方 = 9<sup>1</sup> = 9</p>
+  <p>「自己乘自己等於 9」的數是 3，也就是 <span class="rt">√<span class="rad">9</span></span>。所以 9<span class="ef"><span class="n">1</span><span class="d">2</span></span> = <span class="rt">√<span class="rad">9</span></span> = 3。</p>
+  <div class="formula">
+    <div class="ft">一定要背</div>
+    <div class="row">a<span class="ef"><span class="n">1</span><span class="d">n</span></span> = <sup>n</sup><span class="rt">√<span class="rad">a</span></span> <small>分母 n 是開幾次根號</small></div>
+    <div class="row">a<span class="ef"><span class="n">m</span><span class="d">n</span></span> = <sup>n</sup><span class="rt">√<span class="rad">a<sup>m</sup></span></span> = (<sup>n</sup><span class="rt">√<span class="rad">a</span></span>)<sup>m</sup> <small>分母當根號，分子當次方</small></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>寫法</th><th>讀法</th><th>算法</th><th>答案</th></tr>
+    <tr><td>9<span class="ef"><span class="n">1</span><span class="d">2</span></span></td><td class="txt">9 的二分之一次方</td><td><span class="rt">√<span class="rad">9</span></span></td><td>3</td></tr>
+    <tr><td>8<span class="ef"><span class="n">1</span><span class="d">3</span></span></td><td class="txt">8 的三分之一次方</td><td><sup>3</sup><span class="rt">√<span class="rad">8</span></span></td><td>2</td></tr>
+    <tr><td>8<span class="ef"><span class="n">2</span><span class="d">3</span></span></td><td class="txt">8 的三分之二次方</td><td>(<sup>3</sup><span class="rt">√<span class="rad">8</span></span>)<sup>2</sup> = 2<sup>2</sup></td><td>4</td></tr>
+    <tr><td>16<span class="ef"><span class="n">3</span><span class="d">4</span></span></td><td class="txt">16 的四分之三次方</td><td>(<sup>4</sup><span class="rt">√<span class="rad">16</span></span>)<sup>3</sup> = 2<sup>3</sup></td><td>8</td></tr>
+  </table></div>
+  <div class="tip">根號也能反過來寫成分數次方：<span class="rt">√<span class="rad">2</span></span> = 2<span class="ef"><span class="n">1</span><span class="d">2</span></span>，<sup>3</sup><span class="rt">√<span class="rad">5</span></span> = 5<span class="ef"><span class="n">1</span><span class="d">3</span></span>，<sup>4</sup><span class="rt">√<span class="rad">8</span></span> = 8<span class="ef"><span class="n">1</span><span class="d">4</span></span>。化簡含有根號的式子時，先把根號全部改寫成分數次方，就可以用指數律算。</div>
+  <div class="check"><div class="tt">檢查一下</div>
+    <ol><li>25<span class="ef"><span class="n">1</span><span class="d">2</span></span> = ？</li><li>27<span class="ef"><span class="n">2</span><span class="d">3</span></span> = ？</li><li>把 <span class="rt">√<span class="rad">a</span></span> 寫成 a 的幾次方？</li></ol>
+    <details><summary>看答案</summary><ol><li><span class="rt">√<span class="rad">25</span></span> = 5</li><li>(<sup>3</sup><span class="rt">√<span class="rad">27</span></span>)<sup>2</sup> = 3<sup>2</sup> = 9</li><li>a<span class="ef"><span class="n">1</span><span class="d">2</span></span></li></ol></details>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s5">
+  <div class="sec-head"><div class="step">第 5 步</div><h2>化同底（最重要的技巧）</h2>
+  <p class="why">把題目裡每一個數，都改寫成同一個底數的次方，然後就能用指數律算。</p></div>
+  <p>先把這張表背起來：</p>
+  <div class="tbl"><table>
+    <tr><th>以 2 為底</th><th>以 3 為底</th><th>以 5 為底</th></tr>
+    <tr><td>4 = 2<sup>2</sup></td><td>9 = 3<sup>2</sup></td><td>25 = 5<sup>2</sup></td></tr>
+    <tr><td>8 = 2<sup>3</sup></td><td>27 = 3<sup>3</sup></td><td>125 = 5<sup>3</sup></td></tr>
+    <tr><td>16 = 2<sup>4</sup></td><td>81 = 3<sup>4</sup></td><td><span class="f"><span class="n">1</span><span class="d">5</span></span> = 5<sup>−1</sup></td></tr>
+    <tr><td>32 = 2<sup>5</sup></td><td><span class="f"><span class="n">1</span><span class="d">3</span></span> = 3<sup>−1</sup></td><td><span class="f"><span class="n">1</span><span class="d">25</span></span> = 5<sup>−2</sup></td></tr>
+    <tr><td>64 = 2<sup>6</sup></td><td><span class="f"><span class="n">1</span><span class="d">9</span></span> = 3<sup>−2</sup></td><td></td></tr>
+    <tr><td><span class="f"><span class="n">1</span><span class="d">2</span></span> = 2<sup>−1</sup>，<span class="f"><span class="n">1</span><span class="d">4</span></span> = 2<sup>−2</sup>，<span class="f"><span class="n">1</span><span class="d">8</span></span> = 2<sup>−3</sup></td><td><span class="f"><span class="n">1</span><span class="d">27</span></span> = 3<sup>−3</sup></td><td></td></tr>
+    <tr><td><span class="rt">√<span class="rad">2</span></span> = 2<span class="ef"><span class="n">1</span><span class="d">2</span></span>，0.25 = 2<sup>−2</sup></td><td><span class="rt">√<span class="rad">3</span></span> = 3<span class="ef"><span class="n">1</span><span class="d">2</span></span></td><td></td></tr>
+  </table></div>
+
+  <div class="ex">
+    <div class="q"><span class="tag">例 1</span>求 27<span class="ef"><span class="n">−2</span><span class="d">3</span></span>。</div>
+    <div class="sol">
+      <div class="ln"><span>化同底</span><span>27 = 3<sup>3</sup>，所以 27<span class="ef"><span class="n">−2</span><span class="d">3</span></span> = (3<sup>3</sup>)<span class="ef"><span class="n">−2</span><span class="d">3</span></span></span></div>
+      <div class="ln"><span>指數相乘</span><span class="m">3 × (<span class="f"><span class="n">−2</span><span class="d">3</span></span>) = −2，得到 3<sup>−2</sup></span></div>
+      <div class="ln"><span>負次方</span><span class="m">3<sup>−2</sup> = <span class="f"><span class="n">1</span><span class="d">9</span></span>　<span class="ans">答案 <span class="f"><span class="n">1</span><span class="d">9</span></span></span></span></div>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 2</span>求 (<span class="f"><span class="n">1</span><span class="d">4</span></span>)<span class="ef"><span class="n">−3</span><span class="d">2</span></span>。</div>
+    <div class="sol">
+      <div class="ln"><span>化同底</span><span><span class="f"><span class="n">1</span><span class="d">4</span></span> = 2<sup>−2</sup>，所以變成 (2<sup>−2</sup>)<span class="ef"><span class="n">−3</span><span class="d">2</span></span></span></div>
+      <div class="ln"><span>指數相乘</span><span class="m">(−2) × (<span class="f"><span class="n">−3</span><span class="d">2</span></span>) = 3，得到 2<sup>3</sup></span></div>
+      <div class="ln"><span>答案</span><span><span class="ans">8</span></span></div>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 3</span>化簡 <sup>3</sup><span class="rt">√<span class="rad">a<sup>2</sup></span></span> × <span class="rt">√<span class="rad">a</span></span> ÷ a<span class="ef"><span class="n">1</span><span class="d">6</span></span>。</div>
+    <div class="sol">
+      <div class="ln"><span>改寫</span><span><sup>3</sup><span class="rt">√<span class="rad">a<sup>2</sup></span></span> = a<span class="ef"><span class="n">2</span><span class="d">3</span></span>，<span class="rt">√<span class="rad">a</span></span> = a<span class="ef"><span class="n">1</span><span class="d">2</span></span></span></div>
+      <div class="ln"><span>指數律</span><span>指數是 <span class="f"><span class="n">2</span><span class="d">3</span></span> + <span class="f"><span class="n">1</span><span class="d">2</span></span> − <span class="f"><span class="n">1</span><span class="d">6</span></span>，通分成 <span class="f"><span class="n">4</span><span class="d">6</span></span> + <span class="f"><span class="n">3</span><span class="d">6</span></span> − <span class="f"><span class="n">1</span><span class="d">6</span></span> = <span class="f"><span class="n">6</span><span class="d">6</span></span> = 1</span></div>
+      <div class="ln"><span>答案</span><span>a<sup>1</sup> = <span class="ans">a</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s6">
+  <div class="sec-head"><div class="step">第 6 步</div><h2>三種必考題型</h2></div>
+
+  <h3>題型 A：乘法公式（平方技巧）</h3>
+  <div class="formula"><div class="row">(x + <span class="f"><span class="n">1</span><span class="d">x</span></span>)<sup>2</sup> = x<sup>2</sup> + 2 + <span class="f"><span class="n">1</span><span class="d">x<sup>2</sup></span></span> <small>中間的 2 是 2 × x × <span class="f"><span class="n">1</span><span class="d">x</span></span> = 2</small></div></div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 4</span>a<span class="ef"><span class="n">1</span><span class="d">2</span></span> + a<span class="ef"><span class="n">−1</span><span class="d">2</span></span> = 3，求 a + a<sup>−1</sup>。</div>
+    <div class="sol">
+      <div class="ln"><span>兩邊平方</span><span>(a<span class="ef"><span class="n">1</span><span class="d">2</span></span> + a<span class="ef"><span class="n">−1</span><span class="d">2</span></span>)<sup>2</sup> = 3<sup>2</sup> = 9</span></div>
+      <div class="ln"><span>展開</span><span>(a<span class="ef"><span class="n">1</span><span class="d">2</span></span>)<sup>2</sup> + 2 × a<span class="ef"><span class="n">1</span><span class="d">2</span></span> × a<span class="ef"><span class="n">−1</span><span class="d">2</span></span> + (a<span class="ef"><span class="n">−1</span><span class="d">2</span></span>)<sup>2</sup> = a + 2 + a<sup>−1</sup></span></div>
+      <div class="ln"><span>為什麼是 2</span><span>a<span class="ef"><span class="n">1</span><span class="d">2</span></span> × a<span class="ef"><span class="n">−1</span><span class="d">2</span></span> = a<sup>0</sup> = 1，正負次方相乘剛好抵消</span></div>
+      <div class="ln"><span>答案</span><span>a + 2 + a<sup>−1</sup> = 9，所以 a + a<sup>−1</sup> = <span class="ans">7</span></span></div>
+    </div>
+  </div>
+  <p>再平方一次：(a + a<sup>−1</sup>)<sup>2</sup> = a<sup>2</sup> + 2 + a<sup>−2</sup> = 49，所以 a<sup>2</sup> + a<sup>−2</sup> = 47。</p>
+
+  <h3>題型 B：解指數方程式</h3>
+  <p><b>方法一：化成同底，指數就相等。</b>如果 2<sup>□</sup> = 2<sup>○</sup>，那麼 □ = ○。</p>
+  <div class="ex">
+    <div class="q"><span class="tag">例 5</span>解 2<sup>x+1</sup> = <span class="f"><span class="n">1</span><span class="d">8</span></span>。</div>
+    <div class="sol">
+      <div class="ln"><span>化同底</span><span><span class="f"><span class="n">1</span><span class="d">8</span></span> = 2<sup>−3</sup>，所以 2<sup>x+1</sup> = 2<sup>−3</sup></span></div>
+      <div class="ln"><span>指數相等</span><span>x + 1 = −3，<span class="ans">x = −4</span></span></div>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 6</span>解 9<sup>x</sup> = 27。</div>
+    <div class="sol">
+      <div class="ln"><span>化同底</span><span>9<sup>x</sup> = (3<sup>2</sup>)<sup>x</sup> = 3<sup>2x</sup>，27 = 3<sup>3</sup></span></div>
+      <div class="ln"><span>指數相等</span><span>2x = 3，<span class="ans">x = <span class="f"><span class="n">3</span><span class="d">2</span></span></span></span></div>
+    </div>
+  </div>
+  <p><b>方法二：提出公因式。</b></p>
+  <div class="ex">
+    <div class="q"><span class="tag">例 7</span>解 3<sup>x+1</sup> + 3<sup>x</sup> = 36。</div>
+    <div class="sol">
+      <div class="ln"><span>拆開</span><span>3<sup>x+1</sup> = 3<sup>x</sup> × 3<sup>1</sup> = 3 × 3<sup>x</sup></span></div>
+      <div class="ln"><span>提出</span><span>3 × 3<sup>x</sup> + 3<sup>x</sup> = (3 + 1) × 3<sup>x</sup> = 4 × 3<sup>x</sup> = 36</span></div>
+      <div class="ln"><span>答案</span><span>3<sup>x</sup> = 9 = 3<sup>2</sup>，<span class="ans">x = 2</span></span></div>
+    </div>
+  </div>
+  <p><b>方法三：令 t，變成一元二次方程式。</b>看到 4<sup>x</sup> 和 2<sup>x</sup> 一起出現，就令 t = 2<sup>x</sup>。因為 4<sup>x</sup> = (2<sup>2</sup>)<sup>x</sup> = (2<sup>x</sup>)<sup>2</sup>，所以 4<sup>x</sup> = t<sup>2</sup>。</p>
+  <div class="ex">
+    <div class="q"><span class="tag">例 8</span>解 4<sup>x</sup> − 6 × 2<sup>x</sup> + 8 = 0。</div>
+    <div class="sol">
+      <div class="ln"><span>令 t</span><span>t = 2<sup>x</sup>，方程式變成 t<sup>2</sup> − 6t + 8 = 0</span></div>
+      <div class="ln"><span>因式分解</span><span>(t − 2)(t − 4) = 0，t = 2 或 t = 4</span></div>
+      <div class="ln"><span>換回來</span><span>2<sup>x</sup> = 2 = 2<sup>1</sup>，x = 1；2<sup>x</sup> = 4 = 2<sup>2</sup>，x = 2</span></div>
+      <div class="ln"><span>答案</span><span><span class="ans">x = 1 或 x = 2</span></span></div>
+    </div>
+  </div>
+  <div class="trap">t = 2<sup>x</sup> 一定大於 0。如果解出來 t 是負數，那個答案要捨去。例如 t<sup>2</sup> − 2t − 8 = 0 解出 t = 4 或 t = −2，t = −2 要丟掉，只留 t = 4。</div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s7">
+  <div class="sec-head"><div class="step">考試前看</div><h2>最常見的錯誤</h2></div>
+  <div class="tbl"><table>
+    <tr><th>錯誤寫法</th><th>正確</th></tr>
+    <tr><td>2<sup>3</sup> × 2<sup>4</sup> = 2<sup>12</sup></td><td class="txt">相乘是指數<b>相加</b>：2<sup>7</sup></td></tr>
+    <tr><td>2<sup>−1</sup> = −2</td><td class="txt">負次方是倒數：2<sup>−1</sup> = <span class="f"><span class="n">1</span><span class="d">2</span></span></td></tr>
+    <tr><td>−2<sup>2</sup> = 4</td><td class="txt">只有 2 做次方：−2<sup>2</sup> = −4。(−2)<sup>2</sup> 才是 4</td></tr>
+    <tr><td>2<sup>3</sup> + 2<sup>3</sup> = 2<sup>6</sup></td><td class="txt">相加不能用指數律：8 + 8 = 16 = 2<sup>4</sup></td></tr>
+    <tr><td>2<sup>3</sup> = 6</td><td class="txt">2<sup>3</sup> = 2 × 2 × 2 = 8</td></tr>
+    <tr><td>t = 2<sup>x</sup> = −1 也保留</td><td class="txt">2<sup>x</sup> 永遠大於 0，負的要捨去</td></tr>
+  </table></div>
+</section>
+
+<!-- 小測驗 -->
+<section class="sec" id="quiz">
+  <div class="sec-head"><div class="step">換你試試</div><h2>小測驗 10 題</h2>
+  <p class="why">點選答案會馬上告訴你對不對，並附上解法。</p></div>
+  <div id="qz"></div>
+  <div class="score"><span class="s" id="qs">已作答 0 / 10</span><button type="button" class="btn" id="qReset">重新作答</button></div>
+  <a class="next" href="https://claude.ai/artifact/5XrsMizpKuMQ3LPfxurTeo">想練更多？到 <b>數C③ 段考衝刺本</b> 的模擬考，把範圍選「2-1」，有 23 題可以練 →</a>
+</section>
+
+<footer>依龍騰《SUPER 數學C③ 教學講義》2-1 指數（p.36–43）整理。</footer>
+</main>
+
+<script>
+const QUIZ = [{"q": "2<sup>−2</sup> = ？", "o": ["−4", "<span class=\"f\"><span class=\"n\">1</span><span class=\"d\">4</span></span>", "−<span class=\"f\"><span class=\"n\">1</span><span class=\"d\">4</span></span>", "4"], "a": 1, "e": "負次方是取倒數：2<sup>−2</sup> = <span class=\"f\"><span class=\"n\">1</span><span class=\"d\">2<sup>2</sup></span></span> = <span class=\"f\"><span class=\"n\">1</span><span class=\"d\">4</span></span>。負號不會讓答案變負的。"}, {"q": "16<span class=\"ef\"><span class=\"n\">3</span><span class=\"d\">4</span></span> = ？", "o": ["12", "8", "6", "4"], "a": 1, "e": "16 = 2<sup>4</sup>，(2<sup>4</sup>)<span class=\"ef\"><span class=\"n\">3</span><span class=\"d\">4</span></span> = 2<sup>3</sup> = 8。也可以想成先開 4 次根號得 2，再 3 次方得 8。"}, {"q": "(−2)<sup>4</sup> 和 −2<sup>4</sup> 分別是多少？", "o": ["16 和 16", "16 和 −16", "−16 和 16", "−16 和 −16"], "a": 1, "e": "(−2)<sup>4</sup> 是 4 個 −2 相乘 = 16；−2<sup>4</sup> 只有 2 做次方，前面的負號照抄 = −16。"}, {"q": "2<sup>3</sup> + 2<sup>3</sup> = ？", "o": ["2<sup>6</sup>", "2<sup>4</sup>", "4<sup>3</sup>", "2<sup>9</sup>"], "a": 1, "e": "相加不能用指數律。8 + 8 = 16 = 2<sup>4</sup>（或想成 2 × 2<sup>3</sup> = 2<sup>4</sup>）。"}, {"q": "27<span class=\"ef\"><span class=\"n\">−2</span><span class=\"d\">3</span></span> = ？", "o": ["−18", "9", "<span class=\"f\"><span class=\"n\">1</span><span class=\"d\">9</span></span>", "−<span class=\"f\"><span class=\"n\">1</span><span class=\"d\">9</span></span>"], "a": 2, "e": "27 = 3<sup>3</sup>，(3<sup>3</sup>)<span class=\"ef\"><span class=\"n\">−2</span><span class=\"d\">3</span></span> = 3<sup>−2</sup> = <span class=\"f\"><span class=\"n\">1</span><span class=\"d\">9</span></span>。"}, {"q": "化簡 a<span class=\"ef\"><span class=\"n\">1</span><span class=\"d\">3</span></span> × a<span class=\"ef\"><span class=\"n\">1</span><span class=\"d\">2</span></span> ÷ a<span class=\"ef\"><span class=\"n\">1</span><span class=\"d\">6</span></span>（a &gt; 0）", "o": ["a", "a<span class=\"ef\"><span class=\"n\">2</span><span class=\"d\">3</span></span>", "a<span class=\"ef\"><span class=\"n\">1</span><span class=\"d\">2</span></span>", "a<span class=\"ef\"><span class=\"n\">1</span><span class=\"d\">36</span></span>"], "a": 1, "e": "指數 <span class=\"f\"><span class=\"n\">1</span><span class=\"d\">3</span></span> + <span class=\"f\"><span class=\"n\">1</span><span class=\"d\">2</span></span> − <span class=\"f\"><span class=\"n\">1</span><span class=\"d\">6</span></span> = <span class=\"f\"><span class=\"n\">2</span><span class=\"d\">6</span></span> + <span class=\"f\"><span class=\"n\">3</span><span class=\"d\">6</span></span> − <span class=\"f\"><span class=\"n\">1</span><span class=\"d\">6</span></span> = <span class=\"f\"><span class=\"n\">4</span><span class=\"d\">6</span></span> = <span class=\"f\"><span class=\"n\">2</span><span class=\"d\">3</span></span>，答案是 a<span class=\"ef\"><span class=\"n\">2</span><span class=\"d\">3</span></span>。"}, {"q": "解 25<sup>x</sup> = 125，x = ？", "o": ["5", "<span class=\"f\"><span class=\"n\">3</span><span class=\"d\">2</span></span>", "<span class=\"f\"><span class=\"n\">2</span><span class=\"d\">3</span></span>", "3"], "a": 1, "e": "25<sup>x</sup> = (5<sup>2</sup>)<sup>x</sup> = 5<sup>2x</sup>，125 = 5<sup>3</sup>，所以 2x = 3，x = <span class=\"f\"><span class=\"n\">3</span><span class=\"d\">2</span></span>。"}, {"q": "x + x<sup>−1</sup> = 3，x<sup>2</sup> + x<sup>−2</sup> = ？", "o": ["9", "11", "7", "5"], "a": 2, "e": "兩邊平方：x<sup>2</sup> + 2 + x<sup>−2</sup> = 9，所以 x<sup>2</sup> + x<sup>−2</sup> = 7。"}, {"q": "解 2<sup>x+2</sup> + 2<sup>x</sup> = 40，x = ？", "o": ["2", "3", "4", "5"], "a": 1, "e": "2<sup>x+2</sup> = 4 × 2<sup>x</sup>，所以 (4 + 1) × 2<sup>x</sup> = 40，2<sup>x</sup> = 8 = 2<sup>3</sup>，x = 3。"}, {"q": "解 4<sup>x</sup> − 2<sup>x+1</sup> − 8 = 0", "o": ["x = 2", "x = −1", "x = 2 或 x = −1", "x = 4"], "a": 0, "e": "令 t = 2<sup>x</sup>：2<sup>x+1</sup> = 2t，方程式變成 t<sup>2</sup> − 2t − 8 = 0，(t − 4)(t + 2) = 0。t = −2 不合（2<sup>x</sup> 一定大於 0），t = 4，x = 2。"}];
+
+/* ---------- 次方階梯 ---------- */
+const SUP = n => `<sup>${n < 0 ? '−' + (-n) : n}</sup>`;
+let base = 2, n = 3;
+const showEl = document.getElementById('stShow'), saysEl = document.getElementById('stSays'), stepsEl = document.getElementById('stSteps'), range = document.getElementById('nRange');
+function frac(a, b){ return `<span class="f"><span class="n">${a}</span><span class="d">${b}</span></span>`; }
+function valueHTML(b, k){ return k >= 0 ? String(b ** k) : frac(1, b ** -k); }
+function renderStair(){
+  const rep = k => Array(k).fill(base).join(' × ');
+  let html;
+  if (n > 0) html = `${base}${SUP(n)} = ${rep(n)} = ${base ** n}`;
+  else if (n === 0) html = `${base}${SUP(0)} = 1`;
+  else html = `${base}${SUP(n)} = ${frac(1, `${base}${SUP(-n)}`)} = ${frac(1, rep(-n))} = ${frac(1, base ** -n)}`;
+  showEl.innerHTML = html;
+  saysEl.textContent = n > 0 ? `${n} 個 ${base} 相乘` : n === 0 ? `從 ${base}${'¹'} = ${base} 再除以 ${base}，剛好是 1` : `${base} 的 ${-n} 次方，再取倒數`;
+  stepsEl.innerHTML = [-3, -2, -1, 0, 1, 2, 3, 4].map(k => `<div class="cell${k === n ? ' on' : ''}${k === 0 ? ' zero' : ''}" data-k="${k}" role="button" tabindex="0" aria-label="${base} 的 ${k} 次方"><div class="p">${base}${SUP(k)}</div><div class="v">${valueHTML(base, k)}</div></div>`).join('');
+}
+range.addEventListener('input', () => { n = +range.value; renderStair(); });
+stepsEl.addEventListener('click', e => { const c = e.target.closest('.cell'); if (c) { n = +c.dataset.k; range.value = n; renderStair(); } });
+stepsEl.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.cell')) { e.preventDefault(); e.target.click(); } });
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+  base = +b.dataset.b; document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b)); renderStair();
+}));
+renderStair();
+
+/* ---------- 小測驗 ---------- */
+const qz = document.getElementById('qz'), qs = document.getElementById('qs');
+let done = 0, right = 0;
+function renderQuiz(){
+  done = 0; right = 0;
+  qz.innerHTML = QUIZ.map((q, i) => `
+    <div class="qq" data-i="${i}">
+      <div class="qt"><span class="n">${i + 1}.</span>${q.q}</div>
+      <div class="opts">${q.o.map((o, j) => `<button type="button" class="opt" data-j="${j}">(${'ABCD'[j]}) ${o}</button>`).join('')}</div>
+      <div class="exp" hidden></div>
+    </div>`).join('');
+  qs.textContent = `已作答 0 / ${QUIZ.length}`;
+}
+qz.addEventListener('click', e => {
+  const b = e.target.closest('.opt'); if (!b || b.disabled) return;
+  const box = b.closest('.qq'), q = QUIZ[+box.dataset.i], j = +b.dataset.j, ok = j === q.a;
+  box.querySelectorAll('.opt').forEach((x, k) => { x.disabled = true; if (k === q.a) x.classList.add('correct'); else if (k === j) x.classList.add('picked'); });
+  const ex = box.querySelector('.exp'); ex.hidden = false;
+  ex.innerHTML = `<b class="${ok ? 'ok' : 'no'}">${ok ? '答對了！' : '答錯了，正確答案是 (' + 'ABCD'[q.a] + ')。'}</b> ${q.e}`;
+  done++; if (ok) right++;
+  qs.textContent = done === QUIZ.length ? `完成！答對 ${right} / ${QUIZ.length} 題` : `已作答 ${done} / ${QUIZ.length}，答對 ${right} 題`;
+});
+document.getElementById('qReset').addEventListener('click', renderQuiz);
+renderQuiz();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1-2 複數平面教學</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+
+/* 版面概念：衝刺本的同系列分冊。沿用第 1 章的洋紅色，公式框是方格紙；次方一律寫在右上角，跟講義一樣。 */
+:root{
+  --paper:#f6f7fb; --card:#ffffff; --ink:#1c2333; --muted:#596277; --rule:#d8ddea;
+  --grid:rgba(60,90,160,.08); --accent:#b02a52; --soft:#fbe9ef; --hot:#0e7a72; --hot-soft:#e2f4f1;
+  --mark:#ffe17a; --ok:#1d8a4b; --ok-soft:#e3f5ea; --bad:#c0392b; --bad-soft:#fbe7e4; --warn-soft:#fff5d6; --warn:#8a6100;
+  --f-display:"LXGW WenKai TC","Noto Serif TC",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-math:"STIX Two Text","Times New Roman","Noto Sans TC",serif;
+  --wrap:44rem;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#11151f; --card:#191f2d; --ink:#e7eaf3; --muted:#9ba4ba; --rule:#2b3347;
+  --grid:rgba(140,170,255,.07); --accent:#f0729a; --soft:#2e1a24; --hot:#43c6b8; --hot-soft:#132a2a;
+  --mark:rgba(255,212,80,.32); --ok:#4fd08a; --ok-soft:#143024; --bad:#ff7a6b; --bad-soft:#3a1c1a; --warn-soft:#30280f; --warn:#f0c75a;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11151f; --card:#191f2d; --ink:#e7eaf3; --muted:#9ba4ba; --rule:#2b3347;
+  --grid:rgba(140,170,255,.07); --accent:#f0729a; --soft:#2e1a24; --hot:#43c6b8; --hot-soft:#132a2a;
+  --mark:rgba(255,212,80,.32); --ok:#4fd08a; --ok-soft:#143024; --bad:#ff7a6b; --bad-soft:#3a1c1a; --warn-soft:#30280f; --warn:#f0c75a;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:4rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:1.0625rem;line-height:1.9;padding-inline:16px;padding-block:0 4rem}
+.wrap{max-width:var(--wrap);margin-inline:auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.35;margin:0}
+h2{font-size:clamp(1.5rem,4.5vw,1.95rem)}
+h3{font-size:1.2rem;margin:1.8rem 0 .5rem}
+p{margin:.6rem 0}
+ul,ol{padding-left:1.4rem;margin:.5rem 0}
+li{margin:.25rem 0}
+a{color:var(--accent)}
+mark{background:linear-gradient(transparent 55%,var(--mark) 55%);color:inherit;padding:0 .1em}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* 數學排版 */
+.m{font-family:var(--f-math);font-size:1.12em;white-space:nowrap}
+.f{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em;line-height:1.25;font-size:.92em;white-space:nowrap}
+.f>.n{padding:0 .2em .08em;border-bottom:1.2px solid currentColor}
+.f>.d{padding:.08em .2em 0}
+.rt{white-space:nowrap}
+.rt>.rad{border-top:1.2px solid currentColor;padding:0 .1em;margin-left:.02em}
+sup{font-size:.7em;line-height:0;vertical-align:.75em}
+/* 分數次方：右上角的小分數 */
+.ef{display:inline-flex;flex-direction:column;font-size:.7em;line-height:1.08;vertical-align:1.05em;text-align:center;margin-left:.06em;white-space:nowrap}
+.ef>.n{border-bottom:1px solid currentColor;padding:0 .15em}
+.ef>.d{padding:0 .15em}
+.idx{display:inline-block;width:1.4em;height:1.4em;line-height:1.4em;text-align:center;border-radius:50%;background:var(--accent);color:var(--card);font-size:.75em;font-weight:700;vertical-align:.12em;font-family:var(--f-body)}
+
+/* 頂部導覽 */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--paper);border-bottom:1px solid var(--rule);margin-inline:-16px;padding:.5rem 16px}
+.nav{max-width:var(--wrap);margin-inline:auto;display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none;text-decoration:none;color:var(--ink);font-size:.88rem;padding:.15rem .7rem;border-radius:999px;border:1px solid var(--rule);background:var(--card);white-space:nowrap}
+.nav a:hover{border-color:var(--ink)}
+
+.hero{padding-block:2rem .5rem}
+.eyebrow{font-size:.8rem;letter-spacing:.12em;color:var(--muted)}
+.hero h1{font-size:clamp(2rem,7vw,3rem);margin:.3rem 0 .5rem}
+.hero h1 .k{color:var(--accent);font-family:var(--f-math)}
+.core{background:var(--card);border:1.5px solid var(--accent);border-radius:.6rem;padding:.8rem 1rem;font-size:1.05rem}
+.core b{color:var(--accent)}
+
+section.sec{padding-top:2.8rem}
+.sec-head{border-bottom:3px solid var(--accent);padding-bottom:.5rem;margin-bottom:1rem}
+.step{font-family:var(--f-math);font-weight:600;color:var(--accent);letter-spacing:.06em;font-size:.95rem}
+.why{color:var(--muted);margin:.3rem 0 0}
+
+.formula{background-color:var(--card);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:18px 18px;border:1.5px solid var(--accent);border-radius:.5rem;padding:.9rem 1.1rem;margin:1rem 0;overflow-x:auto}
+.formula .ft{font-size:.8rem;letter-spacing:.1em;color:var(--accent);font-weight:700;margin-bottom:.2rem}
+.formula .row{font-family:var(--f-math);font-size:1.18rem;padding:.35rem 0;white-space:nowrap}
+.formula .row small{font-family:var(--f-body);font-size:.85rem;color:var(--muted);margin-left:.6rem}
+
+.ex{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:0 .5rem .5rem 0;padding:.8rem 1.05rem;margin:1rem 0}
+.ex .q{font-weight:500}
+.ex .q .tag{display:inline-block;font-size:.75rem;font-weight:700;color:var(--card);background:var(--accent);border-radius:.25rem;padding:0 .4rem;margin-right:.5rem;vertical-align:.12em;line-height:1.6}
+.ex .sol{margin-top:.45rem;padding-top:.45rem;border-top:1px dashed var(--rule)}
+.ln{display:grid;grid-template-columns:4.2em 1fr;gap:.6rem;margin:.25rem 0}
+.ln>span:first-child{color:var(--muted);font-size:.85rem;padding-top:.2rem}
+.ln>span:last-child{min-width:0}
+.ans{display:inline-block;background:var(--soft);border-radius:.3rem;padding:0 .45rem;font-weight:700}
+
+.tip,.trap{border-radius:.5rem;padding:.7rem 1rem;margin:1rem 0;font-size:.98rem}
+.tip{background:var(--soft)}
+.tip::before{content:"記法";font-weight:700;color:var(--accent);margin-right:.5rem}
+.trap{background:var(--warn-soft)}
+.trap::before{content:"小心";font-weight:700;color:var(--warn);margin-right:.5rem}
+
+.tbl{overflow-x:auto;margin:1rem 0;border:1px solid var(--rule);border-radius:.5rem;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:.45rem .6rem;text-align:center;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{background:var(--soft);font-size:.9rem}
+td{font-family:var(--f-math);font-size:1.08rem}
+td.txt{font-family:var(--f-body);font-size:.95rem;text-align:left;white-space:normal}
+tr:last-child td{border-bottom:0}
+
+/* 0. 看懂寫法 */
+.anatomy{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;align-items:center;background:var(--card);border:1px solid var(--rule);border-radius:.6rem;padding:1.2rem 1rem;margin:1rem 0}
+.big{font-family:var(--f-math);font-size:4.2rem;line-height:1;position:relative;padding:1.6rem 2.6rem 1.8rem 0}
+.big .b{position:relative}
+.big .e{font-size:.5em;vertical-align:1.05em;color:var(--hot);position:relative}
+.lab{position:absolute;font-family:var(--f-body);font-size:.85rem;white-space:nowrap;line-height:1.3}
+.lab.b1{left:-.1rem;bottom:0;color:var(--ink)}
+.lab.e1{right:0;top:0;color:var(--hot)}
+.read{font-size:1rem;line-height:1.7}
+.read .r{font-family:var(--f-display);font-size:1.25rem}
+
+/* 2. 數 2 的個數 */
+.count{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin:.6rem 0;font-family:var(--f-math);font-size:1.1rem}
+.chip2{display:inline-grid;place-items:center;width:2em;height:2em;border-radius:.4rem;font-weight:600}
+.g1{background:var(--soft);color:var(--accent);border:1.5px solid var(--accent)}
+.g2{background:var(--hot-soft);color:var(--hot);border:1.5px solid var(--hot)}
+.op{color:var(--muted);padding:0 .15rem}
+
+/* 3. 次方階梯 */
+.stair{background:var(--card);border:1.5px solid var(--ink);border-radius:.6rem;padding:1rem;margin:1rem 0}
+.stair .ctl{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;justify-content:space-between}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:.4rem;overflow:hidden}
+.seg button{border:0;background:var(--paper);padding:.2rem .9rem;font-family:var(--f-math);font-size:1.05rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.stair input[type=range]{flex:1;min-width:10rem;accent-color:var(--accent)}
+.stair .show{text-align:center;font-family:var(--f-math);font-size:clamp(1.5rem,6vw,2.2rem);margin:.9rem 0 .4rem;min-height:3.2rem}
+.stair .show sup{font-size:.6em}
+.stair .says{text-align:center;color:var(--muted);font-size:.95rem;min-height:1.8em}
+.steps{display:flex;gap:.25rem;overflow-x:auto;padding:.6rem .1rem .2rem}
+.cell{flex:1 0 3.6rem;min-width:3.6rem;text-align:center;border:1px solid var(--rule);border-radius:.4rem;padding:.3rem .2rem;background:var(--paper);font-family:var(--f-math);line-height:1.5;cursor:pointer}
+.cell .p{font-size:.95rem}
+.cell .v{font-size:1.05rem;font-weight:600}
+.cell.on{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.cell.zero .v{color:var(--hot)}
+.stair .hint{font-size:.82rem;color:var(--muted);margin-top:.4rem}
+
+/* 檢查一下 */
+.check{margin:1.2rem 0;border:1px dashed var(--accent);border-radius:.5rem;padding:.7rem 1rem}
+.check .tt{font-weight:700;color:var(--accent);font-size:.95rem}
+details{margin-top:.4rem}
+summary{cursor:pointer;color:var(--accent);font-weight:500;font-size:.95rem}
+
+/* 小測驗 */
+.qq{background:var(--card);border:1px solid var(--rule);border-radius:.5rem;padding:.8rem 1rem;margin:.7rem 0}
+.qq .qt{font-weight:500}
+.qq .qt .n{font-family:var(--f-math);font-weight:600;color:var(--muted);margin-right:.3rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:.4rem;margin-top:.5rem}
+.opt{border:1.5px solid var(--rule);background:var(--paper);border-radius:.4rem;padding:.35rem .6rem;text-align:left;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.picked{border-color:var(--bad);background:var(--bad-soft)}
+.qq .exp{margin-top:.5rem;font-size:.95rem}
+.qq .exp b.ok{color:var(--ok)} .qq .exp b.no{color:var(--bad)}
+.score{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + .6rem);background:var(--card);border:1.5px solid var(--ink);border-radius:.6rem;padding:.5rem .9rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+.score .s{font-family:var(--f-display);font-size:1.15rem}
+.btn{border:1px solid var(--rule);background:transparent;border-radius:.4rem;padding:.3rem .9rem}
+.next{display:block;background:var(--card);border:1.5px solid var(--accent);border-radius:.6rem;padding:.8rem 1rem;margin-top:2rem;text-decoration:none;color:var(--ink)}
+.next b{color:var(--accent)}
+footer{margin-top:2.5rem;color:var(--muted);font-size:.85rem;border-top:1px solid var(--rule);padding-top:.8rem}
+
+.ln .m,.ex .sol .m{white-space:normal}
+/* 複數平面互動 */
+.plane{background:var(--card);border:1.5px solid var(--ink);border-radius:.6rem;padding:1rem;margin:1rem 0}
+.plane .wrapsvg{display:flex;justify-content:center}
+.plane svg{width:100%;max-width:22rem;height:auto;touch-action:none;user-select:none}
+.plane svg .gr{stroke:var(--rule);stroke-width:1}
+.plane svg .ax{stroke:var(--ink);stroke-width:1.5}
+.plane svg .tk{fill:var(--muted);font-family:var(--f-math);font-size:11px}
+.plane svg .lb{fill:var(--ink);font-family:var(--f-body);font-size:12px}
+.plane svg .vec{stroke:var(--accent);stroke-width:2.5}
+.plane svg .proj{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3}
+.plane svg .conj{stroke:var(--hot);stroke-width:1.6;stroke-dasharray:5 4}
+.plane svg .arc{stroke:var(--accent);stroke-width:1.5;fill:none}
+.plane svg .pt{fill:var(--accent);stroke:var(--card);stroke-width:2;cursor:grab}
+.plane svg .pt:focus-visible{outline:none;stroke:var(--ink);stroke-width:3}
+.plane svg .cpt{fill:var(--hot)}
+.plane svg .ptl{fill:var(--accent);font-family:var(--f-math);font-size:13px;font-weight:600}
+.plane svg .cptl{fill:var(--hot);font-family:var(--f-math);font-size:12px}
+.readout{display:grid;grid-template-columns:auto 1fr;gap:.2rem .8rem;margin-top:.6rem;font-size:1rem}
+.readout dt{color:var(--muted);font-size:.88rem;padding-top:.15rem}
+.readout dd{margin:0;font-family:var(--f-math);font-size:1.12rem;min-width:0}
+.readout dd.big{font-size:1.25rem;color:var(--accent);font-weight:600}
+.btns{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.7rem}
+.btns .lbl2{font-size:.8rem;color:var(--muted);width:100%}
+.pbtn{border:1px solid var(--rule);background:var(--paper);border-radius:999px;padding:.12rem .7rem;font-family:var(--f-math);font-size:.98rem}
+.pbtn:hover{border-color:var(--ink)}
+.pbtn.act{border-color:var(--accent);color:var(--accent);font-family:var(--f-body);font-size:.9rem}
+.hint{font-size:.82rem;color:var(--muted);margin-top:.4rem}
+/* i 的次方 */
+.ipow{background:var(--card);border:1.5px solid var(--ink);border-radius:.6rem;padding:1rem;margin:1rem 0}
+.ipow .in{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:1.05rem}
+.ipow input{font:inherit;font-family:var(--f-math);width:7rem;padding:.25rem .5rem;border:1.5px solid var(--rule);border-radius:.4rem;background:var(--paper);color:var(--ink)}
+.ipow .out{font-family:var(--f-math);font-size:1.25rem;margin-top:.6rem;min-height:2rem}
+.cycle{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;margin-top:.6rem}
+.cycle div{text-align:center;border:1px solid var(--rule);border-radius:.4rem;padding:.25rem;background:var(--paper);font-family:var(--f-math);line-height:1.4}
+.cycle div small{display:block;font-family:var(--f-body);font-size:.75rem;color:var(--muted)}
+.cycle div.on{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+</style>
+</head>
+<body>
+<header class="top"><nav class="nav" aria-label="段落">
+  <a href="#s1">1 虛數 i</a><a href="#s2">2 四則運算</a><a href="#s3">3 複數平面</a><a href="#s4">4 絕對值</a><a href="#s5">5 極式</a><a href="#s6">6 乘除</a><a href="#s7">7 棣美弗</a><a href="#s8">8 n 次方根</a><a href="#s9">易錯</a><a href="#quiz">小測驗</a>
+</nav></header>
+
+<main class="wrap">
+<section class="hero">
+  <div class="eyebrow">龍騰 SUPER 數學C③ · 講義 p.18–29</div>
+  <h1><span class="k">1-2</span> 複數平面教學</h1>
+  <div class="core">這一節在做一件事：把複數 <b>a + bi</b> 畫成平面上的一個點，再用<b>長度和角度</b>來表示它。用長度和角度表示以後，乘法、除法、次方都會變得很快。</div>
+</section>
+
+<!-- 1 -->
+<section class="sec" id="s1">
+  <div class="sec-head"><div class="step">第 1 步</div><h2>虛數 i</h2>
+  <p class="why">平方以後等於 −1 的數，實數裡找不到，所以數學家另外規定一個新的數叫 i。</p></div>
+  <div class="formula"><div class="ft">一定要背</div><div class="row">i<sup>2</sup> = −1 <small>也就是 i = <span class="rt">√<span class="rad">−1</span></span></small></div></div>
+  <h3>i 的次方，每 4 個重複一次</h3>
+  <div class="tbl"><table>
+    <tr><th>次方</th><th>怎麼算</th><th>答案</th></tr>
+    <tr><td>i<sup>1</sup></td><td class="txt">就是 i</td><td>i</td></tr>
+    <tr><td>i<sup>2</sup></td><td class="txt">規定</td><td>−1</td></tr>
+    <tr><td>i<sup>3</sup></td><td>i<sup>2</sup> × i = −1 × i</td><td>−i</td></tr>
+    <tr><td>i<sup>4</sup></td><td>i<sup>2</sup> × i<sup>2</sup> = (−1) × (−1)</td><td>1</td></tr>
+    <tr><td>i<sup>5</sup></td><td>i<sup>4</sup> × i = 1 × i</td><td>i（又回到開頭）</td></tr>
+  </table></div>
+  <div class="ipow" id="ipow">
+    <div class="in"><label for="ipowN">算 i 的幾次方？</label><input id="ipowN" type="number" inputmode="numeric" min="0" max="999999" value="2026"></div>
+    <div class="out" id="ipowOut" aria-live="polite"></div>
+    <div class="cycle" id="ipowCycle">
+      <div data-r="1">i<small>餘 1</small></div><div data-r="2">−1<small>餘 2</small></div><div data-r="3">−i<small>餘 3</small></div><div data-r="0">1<small>整除</small></div>
+    </div>
+  </div>
+  <div class="tip">次方除以 4 看餘數：餘 1 是 i、餘 2 是 −1、餘 3 是 −i、整除是 1。連續 4 個加起來一定是 0：i + i<sup>2</sup> + i<sup>3</sup> + i<sup>4</sup> = i − 1 − i + 1 = 0。</div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s2">
+  <div class="sec-head"><div class="step">第 2 步</div><h2>複數和它的四則運算</h2>
+  <p class="why">實數和 i 混在一起的數，就叫複數。</p></div>
+  <div class="formula">
+    <div class="row">z = a + bi <small>a、b 都是實數</small></div>
+    <div class="row">a 叫<b>實部</b>，b 叫<b>虛部</b> <small>虛部是 b，不含 i</small></div>
+  </div>
+  <p>例如 3 − 2i 的實部是 3、虛部是 −2。兩個複數相等，代表<mark>實部相等，而且虛部也相等</mark>。</p>
+  <div class="ex">
+    <div class="q"><span class="tag">例 1</span>x、y 是實數，(x + 2) + (y − 1)i = 5 + 3i，求 x + y。</div>
+    <div class="sol">
+      <div class="ln"><span>實部</span><span>x + 2 = 5，x = 3</span></div>
+      <div class="ln"><span>虛部</span><span>y − 1 = 3，y = 4</span></div>
+      <div class="ln"><span>答案</span><span>x + y = <span class="ans">7</span></span></div>
+    </div>
+  </div>
+
+  <h3>加減：實部跟實部算，虛部跟虛部算</h3>
+  <p class="m" style="white-space:normal">(2 + 3i) + (4 − 5i) = (2 + 4) + (3 − 5)i = 6 − 2i</p>
+
+  <h3>乘法：像多項式一樣展開，看到 i<sup>2</sup> 就換成 −1</h3>
+  <div class="ex">
+    <div class="q"><span class="tag">例 2</span>求 (2 + 3i)(1 − i)。</div>
+    <div class="sol">
+      <div class="ln"><span>展開</span><span>2 × 1 + 2 × (−i) + 3i × 1 + 3i × (−i) = 2 − 2i + 3i − 3i<sup>2</sup></span></div>
+      <div class="ln"><span>換 i<sup>2</sup></span><span>−3i<sup>2</sup> = −3 × (−1) = +3</span></div>
+      <div class="ln"><span>整理</span><span>2 + 3 + (−2i + 3i) = <span class="ans">5 + i</span></span></div>
+    </div>
+  </div>
+
+  <h3>除法：分子分母同乘「分母的共軛複數」</h3>
+  <p><b>共軛複數</b>就是把虛部的正負號反過來：a + bi 的共軛是 a − bi，寫成 z̄（z 上面加一橫）。</p>
+  <div class="formula"><div class="row">(a + bi)(a − bi) = a<sup>2</sup> + b<sup>2</sup> <small>相乘後 i 會消失，變成實數</small></div></div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 3</span>求 <span class="f"><span class="n">3 + 4i</span><span class="d">1 + 2i</span></span>。</div>
+    <div class="sol">
+      <div class="ln"><span>同乘共軛</span><span>分母 1 + 2i 的共軛是 1 − 2i：<span class="f"><span class="n">(3 + 4i)(1 − 2i)</span><span class="d">(1 + 2i)(1 − 2i)</span></span></span></div>
+      <div class="ln"><span>分母</span><span>1<sup>2</sup> + 2<sup>2</sup> = 5</span></div>
+      <div class="ln"><span>分子</span><span>3 − 6i + 4i − 8i<sup>2</sup> = 3 − 2i + 8 = 11 − 2i</span></div>
+      <div class="ln"><span>答案</span><span><span class="ans m"><span class="f"><span class="n">11</span><span class="d">5</span></span> − <span class="f"><span class="n">2</span><span class="d">5</span></span>i</span></span></div>
+    </div>
+  </div>
+  <div class="check"><div class="tt">檢查一下</div>
+    <ol><li>(2 + i)(3 − 2i) = ？</li><li><span class="f"><span class="n">1</span><span class="d">i</span></span> = ？</li><li><span class="f"><span class="n">1 + i</span><span class="d">1 − i</span></span> = ？</li></ol>
+    <details><summary>看答案</summary><ol>
+      <li>6 − 4i + 3i − 2i<sup>2</sup> = 6 − i + 2 = 8 − i</li>
+      <li>分子分母同乘 i：<span class="f"><span class="n">i</span><span class="d">i<sup>2</sup></span></span> = <span class="f"><span class="n">i</span><span class="d">−1</span></span> = −i</li>
+      <li>同乘 1 + i：<span class="f"><span class="n">(1 + i)<sup>2</sup></span><span class="d">1 + 1</span></span> = <span class="f"><span class="n">1 + 2i − 1</span><span class="d">2</span></span> = <span class="f"><span class="n">2i</span><span class="d">2</span></span> = i</li></ol></details>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s3">
+  <div class="sec-head"><div class="step">第 3 步</div><h2>把複數畫成一個點</h2>
+  <p class="why">橫軸放實部、縱軸放虛部，每個複數 a + bi 就對應到一個點 (a, b)。</p></div>
+  <div class="plane" id="plane">
+    <div class="wrapsvg"><svg id="pSvg" viewBox="0 0 320 320" role="img" aria-label="複數平面，可以拖動點"></svg></div>
+    <dl class="readout" aria-live="polite">
+      <dt>複數</dt><dd class="big" id="rZ"></dd>
+      <dt>點</dt><dd id="rPt"></dd>
+      <dt>共軛 z̄</dt><dd id="rConj"></dd>
+      <dt>長度 r = |z|</dt><dd id="rR"></dd>
+      <dt>角度 θ</dt><dd id="rT"></dd>
+      <dt>極式</dt><dd id="rPolar"></dd>
+    </dl>
+    <div class="btns" id="presets"><span class="lbl2">常考的點（點一下）</span></div>
+    <div class="btns"><span class="lbl2">試試看</span><button type="button" class="pbtn act" id="bMulI">乘上 i（逆時針轉 90°）</button><button type="button" class="pbtn act" id="bConj">換成共軛（對實軸翻過去）</button></div>
+    <div class="hint">拖動洋紅色的點（會停在整數格上），或點上面的按鈕。藍綠色虛線是共軛複數 z̄。</div>
+  </div>
+  <div class="formula">
+    <div class="row">z = a + bi　↔　點 (a, b) <small>橫軸叫實軸、縱軸叫虛軸</small></div>
+    <div class="row">z̄ = a − bi <small>和 z 對稱於實軸（上下翻過去）</small></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s4">
+  <div class="sec-head"><div class="step">第 4 步</div><h2>絕對值 = 到原點的距離</h2>
+  <p class="why">|z| 就是點 (a, b) 到原點的距離，用畢氏定理算。</p></div>
+  <div class="formula">
+    <div class="ft">一定要背</div>
+    <div class="row">|a + bi| = <span class="rt">√<span class="rad">a<sup>2</sup> + b<sup>2</sup></span></span></div>
+    <div class="row">|z<sub>1</sub> − z<sub>2</sub>| = 兩點的距離</div>
+    <div class="row">z · z̄ = |z|<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup></div>
+  </div>
+  <div class="formula">
+    <div class="ft">絕對值的性質（不用展開就能算）</div>
+    <div class="row">|z<sub>1</sub> × z<sub>2</sub>| = |z<sub>1</sub>| × |z<sub>2</sub>|　　|<span class="f"><span class="n">z<sub>1</sub></span><span class="d">z<sub>2</sub></span></span>| = <span class="f"><span class="n">|z<sub>1</sub>|</span><span class="d">|z<sub>2</sub>|</span></span>　　|z<sup>n</sup>| = |z|<sup>n</sup></div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 4</span>求 |3 + 4i|，以及 1 + 2i 和 4 + 6i 兩點的距離。</div>
+    <div class="sol">
+      <div class="ln"><span>絕對值</span><span><span class="rt">√<span class="rad">3<sup>2</sup> + 4<sup>2</sup></span></span> = <span class="rt">√<span class="rad">25</span></span> = <span class="ans">5</span></span></div>
+      <div class="ln"><span>距離</span><span>(4 + 6i) − (1 + 2i) = 3 + 4i，|3 + 4i| = <span class="ans">5</span></span></div>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 5</span>求 |(3 + 4i)(5 − 12i)| 和 |(1 + i)<sup>10</sup>|。</div>
+    <div class="sol">
+      <div class="ln"><span>第一題</span><span>|3 + 4i| × |5 − 12i| = 5 × 13 = <span class="ans">65</span>（不用先乘開）</span></div>
+      <div class="ln"><span>第二題</span><span>|1 + i| = <span class="rt">√<span class="rad">2</span></span>，所以 (<span class="rt">√<span class="rad">2</span></span>)<sup>10</sup> = 2<sup>5</sup> = <span class="ans">32</span></span></div>
+    </div>
+  </div>
+  <div class="tip">|z| = 3 代表所有到原點距離是 3 的點，也就是圓心在原點、半徑 3 的圓。</div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s5">
+  <div class="sec-head"><div class="step">第 5 步</div><h2>極式：用長度和角度表示</h2>
+  <p class="why">同一個點，除了說「往右 a、往上 b」，也可以說「離原點 r 遠、方向是 θ 度」。</p></div>
+  <div class="formula">
+    <div class="ft">一定要背</div>
+    <div class="row">z = r(cos θ + i sin θ)</div>
+    <div class="row">r = |z| = <span class="rt">√<span class="rad">a<sup>2</sup> + b<sup>2</sup></span></span> <small>長度，一定是正的</small></div>
+    <div class="row">θ = 從正實軸<b>逆時針</b>轉到 z 的角度 <small>叫做輻角，取 0° ～ 360°</small></div>
+  </div>
+  <p><b>化成極式的四個步驟</b>（可以拿上面的複數平面對照）：</p>
+  <ol>
+    <li>算出長度 r = <span class="rt">√<span class="rad">a<sup>2</sup> + b<sup>2</sup></span></span></li>
+    <li>把 r 提出來：z = r(<span class="f"><span class="n">a</span><span class="d">r</span></span> + <span class="f"><span class="n">b</span><span class="d">r</span></span> i)</li>
+    <li>找一個角 θ，讓 cos θ = <span class="f"><span class="n">a</span><span class="d">r</span></span>、sin θ = <span class="f"><span class="n">b</span><span class="d">r</span></span></li>
+    <li>看點在第幾象限，確認角度沒錯</li>
+  </ol>
+  <div class="ex">
+    <div class="q"><span class="tag">例 6</span>把 −1 + <span class="rt">√<span class="rad">3</span></span> i 化成極式。</div>
+    <div class="sol">
+      <div class="ln"><span>步驟 1</span><span>r = <span class="rt">√<span class="rad">1 + 3</span></span> = 2</span></div>
+      <div class="ln"><span>步驟 2</span><span>z = 2(−<span class="f"><span class="n">1</span><span class="d">2</span></span> + <span class="f"><span class="n"><span class="rt">√<span class="rad">3</span></span></span><span class="d">2</span></span> i)</span></div>
+      <div class="ln"><span>步驟 3</span><span>cos θ = −<span class="f"><span class="n">1</span><span class="d">2</span></span>、sin θ = <span class="f"><span class="n"><span class="rt">√<span class="rad">3</span></span></span><span class="d">2</span></span></span></div>
+      <div class="ln"><span>步驟 4</span><span>點 (−1, <span class="rt">√<span class="rad">3</span></span>) 在第二象限，θ = 120°</span></div>
+      <div class="ln"><span>答案</span><span><span class="ans m">2(cos 120° + i sin 120°)</span></span></div>
+    </div>
+  </div>
+  <p>常考的極式（建議背起來，也可以在上面的複數平面點按鈕看）：</p>
+  <div class="tbl"><table>
+    <tr><th>z</th><th>點</th><th>r</th><th>θ</th></tr>
+    <tr><td>1 + i</td><td>(1, 1)</td><td><span class="rt">√<span class="rad">2</span></span></td><td>45°</td></tr>
+    <tr><td>1 − i</td><td>(1, −1)</td><td><span class="rt">√<span class="rad">2</span></span></td><td>315°</td></tr>
+    <tr><td><span class="rt">√<span class="rad">3</span></span> + i</td><td>(<span class="rt">√<span class="rad">3</span></span>, 1)</td><td>2</td><td>30°</td></tr>
+    <tr><td>1 + <span class="rt">√<span class="rad">3</span></span> i</td><td>(1, <span class="rt">√<span class="rad">3</span></span>)</td><td>2</td><td>60°</td></tr>
+    <tr><td>−1 + <span class="rt">√<span class="rad">3</span></span> i</td><td>(−1, <span class="rt">√<span class="rad">3</span></span>)</td><td>2</td><td>120°</td></tr>
+    <tr><td>−<span class="rt">√<span class="rad">3</span></span> + i</td><td>(−<span class="rt">√<span class="rad">3</span></span>, 1)</td><td>2</td><td>150°</td></tr>
+    <tr><td>−<span class="rt">√<span class="rad">3</span></span> − i</td><td>(−<span class="rt">√<span class="rad">3</span></span>, −1)</td><td>2</td><td>210°</td></tr>
+    <tr><td>2i</td><td>(0, 2)</td><td>2</td><td>90°</td></tr>
+    <tr><td>−2i</td><td>(0, −2)</td><td>2</td><td>270°</td></tr>
+    <tr><td>−3</td><td>(−3, 0)</td><td>3</td><td>180°</td></tr>
+  </table></div>
+  <div class="trap">標準極式要同時做到：<b>r 是正的</b>、<b>cos 在前、sin 在後</b>、<b>中間是加號</b>、<b>兩個角度一樣</b>。下面這些都<b>不是</b>標準極式：
+    <ul>
+      <li>−2(cos 30° + i sin 30°)：r 是負的</li>
+      <li>2(cos 30° − i sin 30°)：中間是減號，應該改成 2(cos 330° + i sin 330°)</li>
+      <li>2(sin 30° + i cos 30°)：sin 和 cos 位置反了，應該改成 2(cos 60° + i sin 60°)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s6">
+  <div class="sec-head"><div class="step">第 6 步</div><h2>極式的乘法和除法</h2>
+  <p class="why">用極式算乘除，只要處理長度和角度，不用展開。</p></div>
+  <div class="formula">
+    <div class="ft">一定要背</div>
+    <div class="row">乘法：<b>長度相乘、角度相加</b></div>
+    <div class="row">r<sub>1</sub>(cos θ<sub>1</sub> + i sin θ<sub>1</sub>) × r<sub>2</sub>(cos θ<sub>2</sub> + i sin θ<sub>2</sub>) = r<sub>1</sub>r<sub>2</sub>[cos(θ<sub>1</sub> + θ<sub>2</sub>) + i sin(θ<sub>1</sub> + θ<sub>2</sub>)]</div>
+    <div class="row">除法：<b>長度相除、角度相減</b></div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 7</span>z<sub>1</sub> = 2(cos 40° + i sin 40°)，z<sub>2</sub> = 4(cos 20° + i sin 20°)，求 z<sub>1</sub>z<sub>2</sub>（化成 a + bi）和 <span class="f"><span class="n">z<sub>1</sub></span><span class="d">z<sub>2</sub></span></span>。</div>
+    <div class="sol">
+      <div class="ln"><span>乘法</span><span>長度 2 × 4 = 8，角度 40° + 20° = 60°：8(cos 60° + i sin 60°)</span></div>
+      <div class="ln"><span>化開</span><span class="m">8(<span class="f"><span class="n">1</span><span class="d">2</span></span> + <span class="f"><span class="n"><span class="rt">√<span class="rad">3</span></span></span><span class="d">2</span></span> i) = <span class="ans">4 + 4<span class="rt">√<span class="rad">3</span></span> i</span></span></div>
+      <div class="ln"><span>除法</span><span>長度 2 ÷ 4 = <span class="f"><span class="n">1</span><span class="d">2</span></span>，角度 40° − 20° = 20°：<span class="ans"><span class="f"><span class="n">1</span><span class="d">2</span></span>(cos 20° + i sin 20°)</span></span></div>
+    </div>
+  </div>
+  <h3>乘上 i = 逆時針轉 90°</h3>
+  <p>i = 1 × (cos 90° + i sin 90°)，長度 1、角度 90°。所以乘上 i，長度不變、角度加 90°，也就是繞原點逆時針轉 90°。在上面的複數平面按「乘上 i」就能看到。</p>
+  <div class="ex">
+    <div class="q"><span class="tag">例 8</span>點 2 + 3i 繞原點逆時針轉 90° 後是哪個複數？</div>
+    <div class="sol">乘上 i：i(2 + 3i) = 2i + 3i<sup>2</sup> = <span class="ans">−3 + 2i</span></div>
+  </div>
+  <div class="tip">一般來說，乘上 (cos θ + i sin θ) 就是把點繞原點逆時針轉 θ 度，長度不變。</div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s7">
+  <div class="sec-head"><div class="step">第 7 步</div><h2>棣美弗定理：算 n 次方</h2>
+  <p class="why">次方就是自己乘自己 n 次，用第 6 步的規則：長度乘 n 次、角度加 n 次。</p></div>
+  <div class="formula">
+    <div class="ft">一定要背</div>
+    <div class="row">[r(cos θ + i sin θ)]<sup>n</sup> = r<sup>n</sup>(cos nθ + i sin nθ) <small>長度 n 次方、角度乘 n</small></div>
+  </div>
+  <p><b>步驟</b>：① 化成極式 → ② 長度做 n 次方、角度乘 n → ③ 角度超過 360° 就減掉 360° 的倍數 → ④ 代入 cos、sin 算成 a + bi。</p>
+  <div class="ex">
+    <div class="q"><span class="tag">例 9</span>求 (1 + i)<sup>8</sup>。</div>
+    <div class="sol">
+      <div class="ln"><span>極式</span><span>1 + i = <span class="rt">√<span class="rad">2</span></span>(cos 45° + i sin 45°)</span></div>
+      <div class="ln"><span>次方</span><span>(<span class="rt">√<span class="rad">2</span></span>)<sup>8</sup> = 2<sup>4</sup> = 16，角度 45° × 8 = 360°</span></div>
+      <div class="ln"><span>答案</span><span>16(cos 360° + i sin 360°) = 16(1 + 0i) = <span class="ans">16</span></span></div>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 10</span>求 (1 + <span class="rt">√<span class="rad">3</span></span> i)<sup>5</sup>。</div>
+    <div class="sol">
+      <div class="ln"><span>極式</span><span>1 + <span class="rt">√<span class="rad">3</span></span> i = 2(cos 60° + i sin 60°)</span></div>
+      <div class="ln"><span>次方</span><span>2<sup>5</sup> = 32，角度 60° × 5 = 300°</span></div>
+      <div class="ln"><span>答案</span><span class="m">32(cos 300° + i sin 300°) = 32(<span class="f"><span class="n">1</span><span class="d">2</span></span> − <span class="f"><span class="n"><span class="rt">√<span class="rad">3</span></span></span><span class="d">2</span></span> i) = <span class="ans">16 − 16<span class="rt">√<span class="rad">3</span></span> i</span></span></div>
+    </div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 11</span>求 (1 − i)<sup>6</sup>。</div>
+    <div class="sol">
+      <div class="ln"><span>極式</span><span>1 − i = <span class="rt">√<span class="rad">2</span></span>(cos 315° + i sin 315°)</span></div>
+      <div class="ln"><span>次方</span><span>(<span class="rt">√<span class="rad">2</span></span>)<sup>6</sup> = 8，角度 315° × 6 = 1890°</span></div>
+      <div class="ln"><span>化角度</span><span>1890° − 5 × 360° = 90°</span></div>
+      <div class="ln"><span>答案</span><span>8(cos 90° + i sin 90°) = 8(0 + i) = <span class="ans">8i</span></span></div>
+    </div>
+  </div>
+  <div class="check"><div class="tt">檢查一下</div>
+    <ol><li>(<span class="rt">√<span class="rad">3</span></span> + i)<sup>6</sup> = ？</li><li>(cos 10° + i sin 10°)<sup>9</sup> = ？</li><li>(−1 + i)<sup>4</sup> = ？</li></ol>
+    <details><summary>看答案</summary><ol>
+      <li>2(cos 30° + i sin 30°)，6 次方 = 64(cos 180° + i sin 180°) = −64</li>
+      <li>角度 10° × 9 = 90°：cos 90° + i sin 90° = i</li>
+      <li><span class="rt">√<span class="rad">2</span></span>(cos 135° + i sin 135°)，4 次方 = 4(cos 540° + i sin 540°) = 4(cos 180° + i sin 180°) = −4</li></ol></details>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s8">
+  <div class="sec-head"><div class="step">第 8 步</div><h2>n 次方根（講義有教才需要讀）</h2>
+  <p class="why">反過來問：哪些複數的 n 次方會等於某個數？答案一定剛好有 n 個。</p></div>
+  <div class="formula">
+    <div class="row">z<sup>n</sup> = r(cos θ + i sin θ) 的 n 個根：</div>
+    <div class="row">長度 = <sup>n</sup><span class="rt">√<span class="rad">r</span></span>，角度 = <span class="f"><span class="n">θ + 360° × k</span><span class="d">n</span></span>，k = 0, 1, …, n − 1</div>
+  </div>
+  <div class="ex">
+    <div class="q"><span class="tag">例 12</span>解 z<sup>3</sup> = 1。</div>
+    <div class="sol">
+      <div class="ln"><span>極式</span><span>1 = 1(cos 0° + i sin 0°)，r = 1、θ = 0°</span></div>
+      <div class="ln"><span>三個角度</span><span><span class="f"><span class="n">0° + 360° × k</span><span class="d">3</span></span>：k = 0, 1, 2 得到 0°、120°、240°</span></div>
+      <div class="ln"><span>答案</span><span><span class="ans m">1、−<span class="f"><span class="n">1</span><span class="d">2</span></span> + <span class="f"><span class="n"><span class="rt">√<span class="rad">3</span></span></span><span class="d">2</span></span> i、−<span class="f"><span class="n">1</span><span class="d">2</span></span> − <span class="f"><span class="n"><span class="rt">√<span class="rad">3</span></span></span><span class="d">2</span></span> i</span></span></div>
+    </div>
+  </div>
+  <div class="tip">n 個根平均分布在同一個圓上，連起來是正 n 邊形（3 個根就是正三角形）。</div>
+</section>
+
+<!-- 易錯 -->
+<section class="sec" id="s9">
+  <div class="sec-head"><div class="step">考試前看</div><h2>最常見的錯誤</h2></div>
+  <div class="tbl"><table>
+    <tr><th>錯誤</th><th>正確</th></tr>
+    <tr><td class="txt">3 − 2i 的虛部是 −2i</td><td class="txt">虛部是 −2，不含 i</td></tr>
+    <tr><td class="txt">i<sup>2</sup> = 1</td><td class="txt">i<sup>2</sup> = −1</td></tr>
+    <tr><td class="txt">除法直接把實部、虛部分別相除</td><td class="txt">分子分母同乘分母的共軛</td></tr>
+    <tr><td class="txt">1 − i 的角度是 45°</td><td class="txt">點 (1, −1) 在第四象限，是 315°</td></tr>
+    <tr><td class="txt">−2(cos 30° + i sin 30°) 是極式</td><td class="txt">r 要正、中間要加號、cos 在前</td></tr>
+    <tr><td class="txt">極式相乘，角度相乘</td><td class="txt">長度相乘、<b>角度相加</b></td></tr>
+    <tr><td class="txt">棣美弗算完角度沒化簡</td><td class="txt">減掉 360° 的倍數再代 cos、sin</td></tr>
+  </table></div>
+</section>
+
+<!-- 小測驗 -->
+<section class="sec" id="quiz">
+  <div class="sec-head"><div class="step">換你試試</div><h2>小測驗 10 題</h2>
+  <p class="why">點選答案會馬上告訴你對不對，並附上解法。</p></div>
+  <div id="qz"></div>
+  <div class="score"><span class="s" id="qs">已作答 0 / 10</span><button type="button" class="btn" id="qReset">重新作答</button></div>
+  <a class="next" href="https://claude.ai/artifact/5XrsMizpKuMQ3LPfxurTeo">想練更多？到 <b>數C③ 段考衝刺本</b> 的模擬考，把範圍選「1-2」，有 35 題可以練 →</a>
+</section>
+
+<footer>依龍騰《SUPER 數學C③ 教學講義》1-2 複數平面（p.18–29）整理。</footer>
+</main>
+
+<script>
+const QUIZ = [{"q": "i<sup>99</sup> = ？", "o": ["i", "−1", "−i", "1"], "a": 2, "e": "99 ÷ 4 = 24 餘 3，所以 i<sup>99</sup> = i<sup>3</sup> = −i。"}, {"q": "3 − 2i 的虛部是多少？", "o": ["3", "−2", "−2i", "2"], "a": 1, "e": "a + bi 的虛部是 b，不含 i，所以是 −2。"}, {"q": "(2 + i)(3 − 2i) = ？", "o": ["6 − 2i", "8 − i", "8 + i", "4 − i"], "a": 1, "e": "6 − 4i + 3i − 2i<sup>2</sup> = 6 − i + 2 = 8 − i。"}, {"q": "<span class=\"f\"><span class=\"n\">3 + 4i</span><span class=\"d\">1 + 2i</span></span> = ？", "o": ["<span class=\"f\"><span class=\"n\">11</span><span class=\"d\">5</span></span> − <span class=\"f\"><span class=\"n\">2</span><span class=\"d\">5</span></span>i", "3 + 2i", "<span class=\"f\"><span class=\"n\">11</span><span class=\"d\">5</span></span> + <span class=\"f\"><span class=\"n\">2</span><span class=\"d\">5</span></span>i", "−1 + 2i"], "a": 0, "e": "同乘 1 − 2i：分母 1 + 4 = 5，分子 3 − 6i + 4i − 8i<sup>2</sup> = 11 − 2i，答案 <span class=\"f\"><span class=\"n\">11</span><span class=\"d\">5</span></span> − <span class=\"f\"><span class=\"n\">2</span><span class=\"d\">5</span></span>i。"}, {"q": "|(3 + 4i)(5 − 12i)| = ？", "o": ["17", "25", "65", "169"], "a": 2, "e": "|3 + 4i| × |5 − 12i| = 5 × 13 = 65，不用先乘開。"}, {"q": "z = 2 − 3i，z · z̄ = ？", "o": ["13", "5", "−5", "4 + 9i"], "a": 0, "e": "z · z̄ = a<sup>2</sup> + b<sup>2</sup> = 4 + 9 = 13。"}, {"q": "−1 + <span class=\"rt\">√<span class=\"rad\">3</span></span> i 的極式是？", "o": ["2(cos 60° + i sin 60°)", "2(cos 120° + i sin 120°)", "2(cos 150° + i sin 150°)", "4(cos 120° + i sin 120°)"], "a": 1, "e": "r = <span class=\"rt\">√<span class=\"rad\">1 + 3</span></span> = 2；cos θ = −<span class=\"f\"><span class=\"n\">1</span><span class=\"d\">2</span></span>、sin θ = <span class=\"f\"><span class=\"n\"><span class=\"rt\">√<span class=\"rad\">3</span></span></span><span class=\"d\">2</span></span>，點在第二象限，θ = 120°。"}, {"q": "下列哪一個是標準極式？", "o": ["−2(cos 30° + i sin 30°)", "2(cos 30° − i sin 30°)", "2(sin 30° + i cos 30°)", "2(cos 330° + i sin 330°)"], "a": 3, "e": "標準極式要 r 是正的、cos 在前、中間是加號、兩個角度相同，只有 2(cos 330° + i sin 330°) 符合。"}, {"q": "z<sub>1</sub> = 2(cos 40° + i sin 40°)，z<sub>2</sub> = 4(cos 20° + i sin 20°)，z<sub>1</sub>z<sub>2</sub> = ？", "o": ["8(cos 20° + i sin 20°)", "6(cos 60° + i sin 60°)", "4 + 4<span class=\"rt\">√<span class=\"rad\">3</span></span> i", "4<span class=\"rt\">√<span class=\"rad\">3</span></span> + 4i"], "a": 2, "e": "長度相乘 2 × 4 = 8，角度相加 40° + 20° = 60°：8(<span class=\"f\"><span class=\"n\">1</span><span class=\"d\">2</span></span> + <span class=\"f\"><span class=\"n\"><span class=\"rt\">√<span class=\"rad\">3</span></span></span><span class=\"d\">2</span></span>i) = 4 + 4<span class=\"rt\">√<span class=\"rad\">3</span></span> i。"}, {"q": "(1 + i)<sup>8</sup> = ？", "o": ["8", "16", "16i", "−16"], "a": 1, "e": "1 + i = <span class=\"rt\">√<span class=\"rad\">2</span></span>(cos 45° + i sin 45°)，8 次方：(<span class=\"rt\">√<span class=\"rad\">2</span></span>)<sup>8</sup> = 16，角度 360°，答案 16(1 + 0i) = 16。"}];
+
+/* ---------- i 的次方 ---------- */
+const nIn = document.getElementById('ipowN'), nOut = document.getElementById('ipowOut');
+const IV = ['1', 'i', '−1', '−i'];
+function renderIpow(){
+  const n = Math.floor(Math.abs(+nIn.value || 0));
+  const r = n % 4;
+  nOut.innerHTML = n === 0 ? 'i<sup>0</sup> = 1' : `${n} ÷ 4 = ${Math.floor(n / 4)} 餘 ${r}　→　i<sup>${n}</sup> = i<sup>${r || 4}</sup> = <b>${IV[r]}</b>`;
+  document.querySelectorAll('#ipowCycle div').forEach(d => d.classList.toggle('on', +d.dataset.r === r));
+}
+nIn.addEventListener('input', renderIpow); renderIpow();
+
+/* ---------- 複數平面 ---------- */
+const svg = document.getElementById('pSvg');
+const NS = 'http://www.w3.org/2000/svg';
+const O = 160, U = 34, LIM = 4;   // 原點、每格像素、範圍 ±4
+const X = a => O + a * U, Y = b => O - b * U;
+let a = 3, b = 2;
+const S3 = Math.sqrt(3), S2 = Math.SQRT2;
+function fmt(x){
+  const near = (v, t) => Math.abs(v - t) < 1e-9;
+  if (near(x, Math.round(x))) return String(Math.round(x)).replace('-', '−');
+  for (const [k, s] of [ [S3, '√3'], [S2, '√2'] ]) { const q = x / k; if (near(q, Math.round(q))) { const m = Math.round(q); return (m < 0 ? '−' : '') + (Math.abs(m) === 1 ? '' : Math.abs(m)) + s; } }
+  return x.toFixed(2).replace('-', '−');
+}
+function sqrtFmt(n){   // n 是整數，化簡 √n
+  n = Math.round(n); if (n === 0) return '0';
+  let out = 1, inner = n;
+  for (let k = Math.floor(Math.sqrt(n)); k > 1; k--) if (inner % (k * k) === 0) { out *= k; inner /= k * k; }
+  return inner === 1 ? String(out) : `${out === 1 ? '' : out}√${inner}`;
+}
+function zStr(x, y){
+  const re = fmt(x), imAbs = fmt(Math.abs(y)), imPart = imAbs === '1' ? 'i' : imAbs + (imAbs.includes('√') ? ' i' : 'i');
+  if (Math.abs(y) < 1e-9) return re;
+  if (Math.abs(x) < 1e-9) return (y < 0 ? '−' : '') + imPart;
+  return `${re} ${y < 0 ? '−' : '+'} ${imPart}`;
+}
+function el(tag, attrs, text){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+function drawStatic(){
+  const g = el('g', {});
+  for (let k = -LIM; k <= LIM; k++) {
+    g.appendChild(el('line', { x1: X(k), y1: Y(LIM + .3), x2: X(k), y2: Y(-LIM - .3), class: 'gr' }));
+    g.appendChild(el('line', { x1: X(-LIM - .3), y1: Y(k), x2: X(LIM + .3), y2: Y(k), class: 'gr' }));
+    if (k) { g.appendChild(el('text', { x: X(k), y: O + 14, 'text-anchor': 'middle', class: 'tk' }, String(k).replace('-', '−'))); g.appendChild(el('text', { x: O - 6, y: Y(k) + 4, 'text-anchor': 'end', class: 'tk' }, String(k).replace('-', '−'))); }
+  }
+  g.appendChild(el('line', { x1: X(-LIM - .3), y1: O, x2: X(LIM + .3), y2: O, class: 'ax' }));
+  g.appendChild(el('line', { x1: O, y1: Y(LIM + .3), x2: O, y2: Y(-LIM - .3), class: 'ax' }));
+  g.appendChild(el('text', { x: X(LIM + .3) - 2, y: O - 6, 'text-anchor': 'end', class: 'lb' }, '實軸'));
+  g.appendChild(el('text', { x: O + 6, y: Y(LIM + .3) + 12, class: 'lb' }, '虛軸'));
+  svg.appendChild(g);
+}
+drawStatic();
+const dyn = el('g', {}); svg.appendChild(dyn);
+const pt = el('circle', { r: 9, class: 'pt', tabindex: 0, role: 'slider', 'aria-label': '複數的點，用方向鍵移動' });
+function render(){
+  dyn.innerHTML = '';
+  const px = X(a), py = Y(b), cy = Y(-b);
+  if (Math.abs(b) > 1e-9) dyn.appendChild(el('line', { x1: px, y1: cy, x2: px, y2: py, class: 'conj' }));
+  dyn.appendChild(el('line', { x1: px, y1: O, x2: px, y2: py, class: 'proj' }));
+  dyn.appendChild(el('line', { x1: O, y1: py, x2: px, y2: py, class: 'proj' }));
+  const r = Math.hypot(a, b);
+  let th = Math.atan2(b, a) * 180 / Math.PI; if (th < 0) th += 360;
+  if (r > 1e-9) {
+    const R = 20, t = th * Math.PI / 180;
+    dyn.appendChild(el('path', { d: `M${O + R} ${O} A${R} ${R} 0 ${th > 180 ? 1 : 0} 0 ${O + R * Math.cos(t)} ${O - R * Math.sin(t)}`, class: 'arc' }));
+    dyn.appendChild(el('line', { x1: O, y1: O, x2: px, y2: py, class: 'vec' }));
+  }
+  if (Math.abs(b) > 1e-9) { dyn.appendChild(el('circle', { cx: px, cy: cy, r: 5, class: 'cpt' })); dyn.appendChild(el('text', { x: px + (a >= 0 ? 8 : -8), y: cy + (b > 0 ? 14 : -6), 'text-anchor': a >= 0 ? 'start' : 'end', class: 'cptl' }, 'z̄')); }
+  pt.setAttribute('cx', px); pt.setAttribute('cy', py); dyn.appendChild(pt);
+  dyn.appendChild(el('text', { x: px + (a >= 0 ? 12 : -12), y: py + (b >= 0 ? -10 : 18), 'text-anchor': a >= 0 ? 'start' : 'end', class: 'ptl' }, zStr(a, b)));
+
+  const r2 = a * a + b * b;
+  const rS = Math.abs(r2 - Math.round(r2)) < 1e-9 ? sqrtFmt(r2) : r.toFixed(2);
+  const thR = Math.round(th), exact = Math.abs(th - thR) < 1e-6;
+  const thS = r < 1e-9 ? '（原點沒有角度）' : exact ? `${thR}°` : `約 ${th.toFixed(1)}°`;
+  const quad = r < 1e-9 ? '' : Math.abs(b) < 1e-9 ? (a > 0 ? '在正實軸上' : '在負實軸上') : Math.abs(a) < 1e-9 ? (b > 0 ? '在正虛軸上' : '在負虛軸上') : `第${a > 0 ? (b > 0 ? '一' : '四') : (b > 0 ? '二' : '三')}象限`;
+  document.getElementById('rZ').textContent = zStr(a, b);
+  document.getElementById('rPt').textContent = `(${fmt(a)}, ${fmt(b)})　${quad}`;
+  document.getElementById('rConj').textContent = zStr(a, -b);
+  const par = v => (v < 0 || fmt(v).includes('√')) ? `(${fmt(v)})` : fmt(v);
+  document.getElementById('rR').textContent = `√(${par(a)}² + ${par(b)}²) = ${rS}`;
+  document.getElementById('rT').textContent = thS;
+  document.getElementById('rPolar').textContent = r < 1e-9 ? '0' : `${rS === '1' ? '' : rS}(cos ${exact ? thR : th.toFixed(1)}° + i sin ${exact ? thR : th.toFixed(1)}°)${exact ? '' : '（角度不是特殊角，只能寫約略值）'}`;
+  pt.setAttribute('aria-valuetext', zStr(a, b));
+}
+function toCoord(e){ const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return [Math.max(-LIM, Math.min(LIM, Math.round((q.x - O) / U))), Math.max(-LIM, Math.min(LIM, Math.round((O - q.y) / U)))]; }
+let dragging = false;
+svg.addEventListener('pointerdown', e => { dragging = true; svg.setPointerCapture(e.pointerId); [a, b] = toCoord(e); render(); });
+svg.addEventListener('pointermove', e => { if (!dragging) return; const [x, y] = toCoord(e); if (x !== a || y !== b) { a = x; b = y; render(); } });
+svg.addEventListener('pointerup', () => { dragging = false; });
+pt.addEventListener('keydown', e => {
+  const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key]; if (!d) return;
+  e.preventDefault(); a = Math.max(-LIM, Math.min(LIM, Math.round(a) + d[0])); b = Math.max(-LIM, Math.min(LIM, Math.round(b) + d[1])); render();
+});
+const PRESETS = [ [1, 1], [1, -1], [S3, 1], [1, S3], [-1, S3], [-S3, -1], [0, -2], [-3, 0], [3, 4]];
+const pre = document.getElementById('presets');
+PRESETS.forEach(([x, y]) => { const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'pbtn'; bt.textContent = zStr(x, y); bt.addEventListener('click', () => { a = x; b = y; render(); }); pre.appendChild(bt); });
+document.getElementById('bMulI').addEventListener('click', () => { [a, b] = [-b, a]; render(); });
+document.getElementById('bConj').addEventListener('click', () => { b = -b; render(); });
+render();
+
+/* ---------- 小測驗 ---------- */
+const qz = document.getElementById('qz'), qs = document.getElementById('qs');
+let done = 0, right = 0;
+function renderQuiz(){
+  done = 0; right = 0;
+  qz.innerHTML = QUIZ.map((q, i) => `
+    <div class="qq" data-i="${i}">
+      <div class="qt"><span class="n">${i + 1}.</span>${q.q}</div>
+      <div class="opts">${q.o.map((o, j) => `<button type="button" class="opt" data-j="${j}">(${'ABCD'[j]}) ${o}</button>`).join('')}</div>
+      <div class="exp" hidden></div>
+    </div>`).join('');
+  qs.textContent = `已作答 0 / ${QUIZ.length}`;
+}
+qz.addEventListener('click', e => {
+  const bt = e.target.closest('.opt'); if (!bt || bt.disabled) return;
+  const box = bt.closest('.qq'), q = QUIZ[+box.dataset.i], j = +bt.dataset.j, ok = j === q.a;
+  box.querySelectorAll('.opt').forEach((x, k) => { x.disabled = true; if (k === q.a) x.classList.add('correct'); else if (k === j) x.classList.add('picked'); });
+  const ex = box.querySelector('.exp'); ex.hidden = false;
+  ex.innerHTML = `<b class="${ok ? 'ok' : 'no'}">${ok ? '答對了！' : '答錯了，正確答案是 (' + 'ABCD'[q.a] + ')。'}</b> ${q.e}`;
+  done++; if (ok) right++;
+  qs.textContent = done === QUIZ.length ? `完成！答對 ${right} / ${QUIZ.length} 題` : `已作答 ${done} / ${QUIZ.length}，答對 ${right} 題`;
+});
+document.getElementById('qReset').addEventListener('click', renderQuiz);
+renderQuiz();
+</script>
+
+</body>
+</html>
